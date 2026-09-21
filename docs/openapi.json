@@ -1,0 +1,3321 @@
+{
+  "components": {
+    "schemas": {
+      "AIDraftStatus": {
+        "enum": [
+          "disabled",
+          "unavailable_fallback",
+          "rejected_fallback",
+          "validated"
+        ],
+        "title": "AIDraftStatus",
+        "type": "string"
+      },
+      "AIStatusView": {
+        "additionalProperties": false,
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AIDraftStatus"
+          }
+        },
+        "required": [
+          "status",
+          "detail"
+        ],
+        "title": "AIStatusView",
+        "type": "object"
+      },
+      "AbsenceFinding": {
+        "additionalProperties": false,
+        "description": "An absence answer is a claim about a SEARCH, not about the patient.\nCannot be constructed without its search scope.",
+        "properties": {
+          "cutoff": {
+            "format": "date-time",
+            "title": "Cutoff",
+            "type": "string"
+          },
+          "question_template_id": {
+            "title": "Question Template Id",
+            "type": "string"
+          },
+          "registry_version": {
+            "title": "Registry Version",
+            "type": "string"
+          },
+          "sources_searched": {
+            "items": {
+              "$ref": "#/components/schemas/SearchedSource"
+            },
+            "minItems": 1,
+            "title": "Sources Searched",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "not_documented_in_supplied_sources",
+              "incomplete_extraction"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "terms_searched": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Terms Searched",
+            "type": "array"
+          }
+        },
+        "required": [
+          "question_template_id",
+          "terms_searched",
+          "registry_version",
+          "sources_searched",
+          "cutoff",
+          "status"
+        ],
+        "title": "AbsenceFinding",
+        "type": "object"
+      },
+      "BubbleList": {
+        "additionalProperties": false,
+        "properties": {
+          "ai_status": {
+            "$ref": "#/components/schemas/AIDraftStatus",
+            "default": "disabled"
+          },
+          "bubbles": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionBubble"
+            },
+            "title": "Bubbles",
+            "type": "array"
+          },
+          "cutoff": {
+            "format": "date-time",
+            "title": "Cutoff",
+            "type": "string"
+          }
+        },
+        "required": [
+          "cutoff",
+          "bubbles"
+        ],
+        "title": "BubbleList",
+        "type": "object"
+      },
+      "BubbleStatus": {
+        "description": "The ONLY answers a question bubble may give (Section 8.8).",
+        "enum": [
+          "documented",
+          "not_documented_in_supplied_sources",
+          "conflicting",
+          "incomplete_extraction",
+          "requires_human_review"
+        ],
+        "title": "BubbleStatus",
+        "type": "string"
+      },
+      "CareTeamMembership": {
+        "additionalProperties": false,
+        "properties": {
+          "encounter_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Encounter Id",
+            "type": "string"
+          },
+          "staff_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Staff Id",
+            "type": "string"
+          },
+          "team_role": {
+            "$ref": "#/components/schemas/TeamRole"
+          },
+          "valid_from": {
+            "format": "date-time",
+            "title": "Valid From",
+            "type": "string"
+          },
+          "valid_to": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid To"
+          }
+        },
+        "required": [
+          "encounter_id",
+          "staff_id",
+          "team_role",
+          "valid_from"
+        ],
+        "title": "CareTeamMembership",
+        "type": "object"
+      },
+      "ChangeKind": {
+        "enum": [
+          "new",
+          "explicit_change",
+          "reworded",
+          "carried_forward",
+          "removed"
+        ],
+        "title": "ChangeKind",
+        "type": "string"
+      },
+      "ChangeView": {
+        "additionalProperties": false,
+        "description": "Diff chip data: '+ new', '~ explicit change', '= carried forward', '! contradicts'.",
+        "properties": {
+          "from_evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Evidence"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ChangeKind"
+          },
+          "subject_key": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Subject Key",
+            "type": "string"
+          },
+          "to_evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Evidence"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "subject_key",
+          "from_evidence",
+          "to_evidence"
+        ],
+        "title": "ChangeView",
+        "type": "object"
+      },
+      "CheckRun": {
+        "additionalProperties": false,
+        "properties": {
+          "completed_at": {
+            "format": "date-time",
+            "title": "Completed At",
+            "type": "string"
+          },
+          "encounter_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Encounter Id",
+            "type": "string"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/CheckRunOutcome"
+          },
+          "registry_version": {
+            "title": "Registry Version",
+            "type": "string"
+          },
+          "ruleset_version": {
+            "title": "Ruleset Version",
+            "type": "string"
+          },
+          "run_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "source_cutoff": {
+            "format": "date-time",
+            "title": "Source Cutoff",
+            "type": "string"
+          },
+          "source_set_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Source Set Hash",
+            "type": "string"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "encounter_id",
+          "source_cutoff",
+          "ruleset_version",
+          "registry_version",
+          "source_set_hash",
+          "started_at",
+          "completed_at",
+          "outcome"
+        ],
+        "title": "CheckRun",
+        "type": "object"
+      },
+      "CheckRunOutcome": {
+        "enum": [
+          "completed",
+          "completed_with_extraction_gaps",
+          "failed"
+        ],
+        "title": "CheckRunOutcome",
+        "type": "string"
+      },
+      "CheckRunRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "cutoff": {
+            "format": "date-time",
+            "title": "Cutoff",
+            "type": "string"
+          }
+        },
+        "required": [
+          "cutoff"
+        ],
+        "title": "CheckRunRequest",
+        "type": "object"
+      },
+      "CheckRunView": {
+        "additionalProperties": false,
+        "properties": {
+          "changes": {
+            "items": {
+              "$ref": "#/components/schemas/ChangeView"
+            },
+            "title": "Changes",
+            "type": "array"
+          },
+          "flags": {
+            "items": {
+              "$ref": "#/components/schemas/Flag"
+            },
+            "title": "Flags",
+            "type": "array"
+          },
+          "run": {
+            "$ref": "#/components/schemas/CheckRun"
+          }
+        },
+        "required": [
+          "run",
+          "flags",
+          "changes"
+        ],
+        "title": "CheckRunView",
+        "type": "object"
+      },
+      "ClosureBlocker": {
+        "additionalProperties": false,
+        "properties": {
+          "flag_id": {
+            "pattern": "^flg_[0-9a-f]{24}$",
+            "title": "Flag Id",
+            "type": "string"
+          },
+          "opened_at": {
+            "format": "date-time",
+            "title": "Opened At",
+            "type": "string"
+          },
+          "owner_staff_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Owner Staff Id",
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/FlagState"
+          },
+          "tier": {
+            "$ref": "#/components/schemas/Tier"
+          }
+        },
+        "required": [
+          "flag_id",
+          "tier",
+          "state",
+          "owner_staff_id",
+          "opened_at"
+        ],
+        "title": "ClosureBlocker",
+        "type": "object"
+      },
+      "ClosureStatus": {
+        "enum": [
+          "blocked",
+          "clear_with_open_tier2",
+          "clear"
+        ],
+        "title": "ClosureStatus",
+        "type": "string"
+      },
+      "ClosureView": {
+        "additionalProperties": false,
+        "properties": {
+          "cutoff": {
+            "format": "date-time",
+            "title": "Cutoff",
+            "type": "string"
+          },
+          "decisions": {
+            "items": {
+              "$ref": "#/components/schemas/Decision"
+            },
+            "title": "Decisions",
+            "type": "array"
+          },
+          "encounter_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Encounter Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ClosureStatus"
+          },
+          "tier1_blockers": {
+            "items": {
+              "$ref": "#/components/schemas/ClosureBlocker"
+            },
+            "title": "Tier1 Blockers",
+            "type": "array"
+          },
+          "tier2_open": {
+            "items": {
+              "$ref": "#/components/schemas/ClosureBlocker"
+            },
+            "title": "Tier2 Open",
+            "type": "array"
+          },
+          "tier3_open_count": {
+            "minimum": 0.0,
+            "title": "Tier3 Open Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "encounter_id",
+          "cutoff",
+          "status",
+          "tier1_blockers",
+          "tier2_open",
+          "tier3_open_count",
+          "decisions"
+        ],
+        "title": "ClosureView",
+        "type": "object"
+      },
+      "Decision": {
+        "additionalProperties": false,
+        "description": "Append-only record of a human decision.",
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/DecisionAction"
+          },
+          "actor_role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "actor_staff_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Actor Staff Id",
+            "type": "string"
+          },
+          "adjudicated_assertion_ids": {
+            "default": [],
+            "items": {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_\\-]+$",
+              "type": "string"
+            },
+            "title": "Adjudicated Assertion Ids",
+            "type": "array"
+          },
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "decision_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Decision Id",
+            "type": "string"
+          },
+          "edit_field": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EditField"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "encounter_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Encounter Id",
+            "type": "string"
+          },
+          "expected_revision": {
+            "exclusiveMinimum": 0.0,
+            "title": "Expected Revision",
+            "type": "integer"
+          },
+          "flag_id": {
+            "pattern": "^flg_[0-9a-f]{24}$",
+            "title": "Flag Id",
+            "type": "string"
+          },
+          "from_state": {
+            "$ref": "#/components/schemas/FlagState"
+          },
+          "new_owner_staff_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_\\-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "New Owner Staff Id"
+          },
+          "prepared_check": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PreparedCheck"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rationale_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rationale Text"
+          },
+          "reason_code": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReasonCode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "resulting_revision": {
+            "exclusiveMinimum": 0.0,
+            "title": "Resulting Revision",
+            "type": "integer"
+          },
+          "to_state": {
+            "$ref": "#/components/schemas/FlagState"
+          }
+        },
+        "required": [
+          "decision_id",
+          "flag_id",
+          "encounter_id",
+          "expected_revision",
+          "resulting_revision",
+          "action",
+          "actor_staff_id",
+          "actor_role",
+          "from_state",
+          "to_state",
+          "at"
+        ],
+        "title": "Decision",
+        "type": "object"
+      },
+      "DecisionAction": {
+        "enum": [
+          "accept",
+          "edit",
+          "reassign",
+          "mark_ready_for_clinician",
+          "dismiss",
+          "resolve"
+        ],
+        "title": "DecisionAction",
+        "type": "string"
+      },
+      "Discipline": {
+        "enum": [
+          "clinician",
+          "nursing",
+          "physiotherapy",
+          "counselling_social_work",
+          "pharmacy",
+          "other"
+        ],
+        "title": "Discipline",
+        "type": "string"
+      },
+      "EditField": {
+        "enum": [
+          "owner",
+          "explanation",
+          "resolution"
+        ],
+        "title": "EditField",
+        "type": "string"
+      },
+      "Encounter": {
+        "additionalProperties": false,
+        "properties": {
+          "attending_clinician_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Attending Clinician Id",
+            "type": "string"
+          },
+          "clinic_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Clinic Id",
+            "type": "string"
+          },
+          "encounter_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Encounter Id",
+            "type": "string"
+          },
+          "encounter_ref": {
+            "title": "Encounter Ref",
+            "type": "string"
+          },
+          "patient_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Patient Id",
+            "type": "string"
+          },
+          "responsible_clinician_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_\\-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Responsible Clinician Id"
+          },
+          "setting": {
+            "title": "Setting",
+            "type": "string"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "encounter_id",
+          "encounter_ref",
+          "clinic_id",
+          "patient_id",
+          "setting",
+          "started_at",
+          "responsible_clinician_id",
+          "attending_clinician_id"
+        ],
+        "title": "Encounter",
+        "type": "object"
+      },
+      "EncounterListItem": {
+        "additionalProperties": false,
+        "properties": {
+          "encounter_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Encounter Id",
+            "type": "string"
+          },
+          "encounter_ref": {
+            "title": "Encounter Ref",
+            "type": "string"
+          },
+          "patient_label": {
+            "title": "Patient Label",
+            "type": "string"
+          },
+          "responsible_clinician_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_\\-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Responsible Clinician Id"
+          },
+          "setting": {
+            "title": "Setting",
+            "type": "string"
+          }
+        },
+        "required": [
+          "encounter_id",
+          "encounter_ref",
+          "patient_label",
+          "setting",
+          "responsible_clinician_id"
+        ],
+        "title": "EncounterListItem",
+        "type": "object"
+      },
+      "EncounterView": {
+        "additionalProperties": false,
+        "properties": {
+          "encounter": {
+            "$ref": "#/components/schemas/Encounter"
+          },
+          "memberships": {
+            "items": {
+              "$ref": "#/components/schemas/CareTeamMembership"
+            },
+            "title": "Memberships",
+            "type": "array"
+          },
+          "patient_label": {
+            "title": "Patient Label",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceView"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "staff": {
+            "items": {
+              "$ref": "#/components/schemas/Staff"
+            },
+            "title": "Staff",
+            "type": "array"
+          }
+        },
+        "required": [
+          "encounter",
+          "patient_label",
+          "staff",
+          "memberships",
+          "sources"
+        ],
+        "title": "EncounterView",
+        "type": "object"
+      },
+      "Evidence": {
+        "additionalProperties": false,
+        "description": "Version-bound anchor. Wire name of source_version_id is note_version_id.",
+        "properties": {
+          "end": {
+            "minimum": 0.0,
+            "title": "End",
+            "type": "integer"
+          },
+          "evidence_revision": {
+            "default": 1,
+            "exclusiveMinimum": 0.0,
+            "title": "Evidence Revision",
+            "type": "integer"
+          },
+          "note_version_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Note Version Id",
+            "type": "string"
+          },
+          "page": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page"
+          },
+          "quote": {
+            "title": "Quote",
+            "type": "string"
+          },
+          "quote_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Quote Sha256",
+            "type": "string"
+          },
+          "role_in_flag": {
+            "$ref": "#/components/schemas/EvidenceRole"
+          },
+          "start": {
+            "minimum": 0.0,
+            "title": "Start",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "note_version_id",
+          "start",
+          "end",
+          "quote",
+          "quote_sha256",
+          "role_in_flag"
+        ],
+        "title": "Evidence",
+        "type": "object"
+      },
+      "EvidenceRole": {
+        "enum": [
+          "claim",
+          "counter_claim",
+          "origin",
+          "suppressor",
+          "trigger",
+          "extraction_gap",
+          "missing_response_window"
+        ],
+        "title": "EvidenceRole",
+        "type": "string"
+      },
+      "ExtractionStatus": {
+        "enum": [
+          "complete",
+          "partial",
+          "no_text_layer",
+          "failed",
+          "not_applicable"
+        ],
+        "title": "ExtractionStatus",
+        "type": "string"
+      },
+      "Flag": {
+        "additionalProperties": false,
+        "description": "Serialises to the appendix flag JSON exactly, plus additive fields.",
+        "properties": {
+          "affected_contributor_ids": {
+            "default": [],
+            "items": {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_\\-]+$",
+              "type": "string"
+            },
+            "title": "Affected Contributor Ids",
+            "type": "array"
+          },
+          "category": {
+            "$ref": "#/components/schemas/FlagCategory"
+          },
+          "check_version": {
+            "pattern": "^ruleset@[A-Za-z0-9.\\-]+;rule@[A-Z]+-\\d{3}\\.\\d+;registry@[A-Za-z0-9.\\-]+$",
+            "title": "Check Version",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/Evidence"
+            },
+            "minItems": 1,
+            "title": "Evidence",
+            "type": "array"
+          },
+          "evidence_revision": {
+            "exclusiveMinimum": 0.0,
+            "title": "Evidence Revision",
+            "type": "integer"
+          },
+          "first_run_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "First Run Id",
+            "type": "string"
+          },
+          "flag_id": {
+            "pattern": "^flg_[0-9a-f]{24}$",
+            "title": "Flag Id",
+            "type": "string"
+          },
+          "last_run_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Last Run Id",
+            "type": "string"
+          },
+          "lens": {
+            "$ref": "#/components/schemas/Lens"
+          },
+          "new_evidence_since_decision": {
+            "default": false,
+            "title": "New Evidence Since Decision",
+            "type": "boolean"
+          },
+          "owner_staff_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Owner Staff Id",
+            "type": "string"
+          },
+          "question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question"
+          },
+          "ready_for_clinician": {
+            "default": false,
+            "title": "Ready For Clinician",
+            "type": "boolean"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "revision": {
+            "exclusiveMinimum": 0.0,
+            "title": "Revision",
+            "type": "integer"
+          },
+          "rule_id": {
+            "$ref": "#/components/schemas/RuleId"
+          },
+          "source_changed_since_flag": {
+            "default": false,
+            "title": "Source Changed Since Flag",
+            "type": "boolean"
+          },
+          "state": {
+            "$ref": "#/components/schemas/FlagState"
+          },
+          "subject_key": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Subject Key",
+            "type": "string"
+          },
+          "tier": {
+            "$ref": "#/components/schemas/Tier"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "flag_id",
+          "tier",
+          "category",
+          "title",
+          "reason",
+          "evidence",
+          "owner_staff_id",
+          "check_version",
+          "created_at",
+          "rule_id",
+          "lens",
+          "subject_key",
+          "state",
+          "revision",
+          "evidence_revision",
+          "first_run_id",
+          "last_run_id"
+        ],
+        "title": "Flag",
+        "type": "object"
+      },
+      "FlagCategory": {
+        "description": "Wire ``category`` values (kebab-case, as in the appendix example).",
+        "enum": [
+          "critical-observation-unacknowledged",
+          "allergy-conflict",
+          "dose-discrepancy",
+          "unparsed-dose",
+          "pending-action-owner-timing",
+          "incomplete-extraction",
+          "possible-copied-forward-text",
+          "no-responsible-clinician",
+          "reassurance-after-deterioration",
+          "laterality-conflict",
+          "incomplete-metadata",
+          "no-next-step"
+        ],
+        "title": "FlagCategory",
+        "type": "string"
+      },
+      "FlagDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "decisions": {
+            "items": {
+              "$ref": "#/components/schemas/Decision"
+            },
+            "title": "Decisions",
+            "type": "array"
+          },
+          "flag": {
+            "$ref": "#/components/schemas/Flag"
+          },
+          "revisions": {
+            "items": {
+              "$ref": "#/components/schemas/FlagRevision"
+            },
+            "title": "Revisions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "flag",
+          "revisions",
+          "decisions"
+        ],
+        "title": "FlagDetail",
+        "type": "object"
+      },
+      "FlagRevision": {
+        "additionalProperties": false,
+        "properties": {
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "decision_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_\\-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Id"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/Evidence"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "evidence_revision": {
+            "exclusiveMinimum": 0.0,
+            "title": "Evidence Revision",
+            "type": "integer"
+          },
+          "owner_staff_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Owner Staff Id",
+            "type": "string"
+          },
+          "revision": {
+            "exclusiveMinimum": 0.0,
+            "title": "Revision",
+            "type": "integer"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_\\-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "state": {
+            "$ref": "#/components/schemas/FlagState"
+          }
+        },
+        "required": [
+          "revision",
+          "evidence_revision",
+          "state",
+          "owner_staff_id",
+          "evidence",
+          "run_id",
+          "decision_id",
+          "at"
+        ],
+        "title": "FlagRevision",
+        "type": "object"
+      },
+      "FlagState": {
+        "enum": [
+          "open",
+          "accepted",
+          "edited",
+          "dismissed",
+          "resolved",
+          "superseded"
+        ],
+        "title": "FlagState",
+        "type": "string"
+      },
+      "GlanceView": {
+        "additionalProperties": false,
+        "description": "Top strip (Section 13): computed server-side; the UI only renders it.",
+        "properties": {
+          "closure_status": {
+            "$ref": "#/components/schemas/ClosureStatus"
+          },
+          "cutoff": {
+            "format": "date-time",
+            "title": "Cutoff",
+            "type": "string"
+          },
+          "encounter_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Encounter Id",
+            "type": "string"
+          },
+          "open_tier1": {
+            "minimum": 0.0,
+            "title": "Open Tier1",
+            "type": "integer"
+          },
+          "open_tier2": {
+            "minimum": 0.0,
+            "title": "Open Tier2",
+            "type": "integer"
+          },
+          "open_tier3": {
+            "minimum": 0.0,
+            "title": "Open Tier3",
+            "type": "integer"
+          },
+          "tier1_owner_ids": {
+            "items": {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_\\-]+$",
+              "type": "string"
+            },
+            "title": "Tier1 Owner Ids",
+            "type": "array"
+          },
+          "top_bubble_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Top Bubble Ids",
+            "type": "array"
+          },
+          "top_bubble_statuses": {
+            "items": {
+              "$ref": "#/components/schemas/BubbleStatus"
+            },
+            "title": "Top Bubble Statuses",
+            "type": "array"
+          }
+        },
+        "required": [
+          "encounter_id",
+          "cutoff",
+          "closure_status",
+          "open_tier1",
+          "open_tier2",
+          "open_tier3",
+          "tier1_owner_ids",
+          "top_bubble_ids",
+          "top_bubble_statuses"
+        ],
+        "title": "GlanceView",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "Lens": {
+        "enum": [
+          "consistency",
+          "continuity",
+          "completeness",
+          "contradiction",
+          "closure"
+        ],
+        "title": "Lens",
+        "type": "string"
+      },
+      "LoginRequest": {
+        "additionalProperties": false,
+        "description": "Synthetic login for the demonstrator: pick a synthetic staff member.",
+        "properties": {
+          "staff_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Staff Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "staff_id"
+        ],
+        "title": "LoginRequest",
+        "type": "object"
+      },
+      "PageSpan": {
+        "additionalProperties": false,
+        "properties": {
+          "char_count": {
+            "minimum": 0.0,
+            "title": "Char Count",
+            "type": "integer"
+          },
+          "end": {
+            "minimum": 0.0,
+            "title": "End",
+            "type": "integer"
+          },
+          "page": {
+            "exclusiveMinimum": 0.0,
+            "title": "Page",
+            "type": "integer"
+          },
+          "start": {
+            "minimum": 0.0,
+            "title": "Start",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "page",
+          "start",
+          "end",
+          "char_count"
+        ],
+        "title": "PageSpan",
+        "type": "object"
+      },
+      "PreparedCheck": {
+        "description": "What a non-clinician attaches when marking a flag ready for clinician (L16).",
+        "enum": [
+          "pharmacy_check_attached",
+          "patient_verified",
+          "source_document_checked",
+          "manual_pdf_review_done"
+        ],
+        "title": "PreparedCheck",
+        "type": "string"
+      },
+      "QuestionBubble": {
+        "additionalProperties": false,
+        "properties": {
+          "absence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AbsenceFinding"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bubble_id": {
+            "pattern": "^bbl_[0-9a-f]{24}$",
+            "title": "Bubble Id",
+            "type": "string"
+          },
+          "cutoff": {
+            "format": "date-time",
+            "title": "Cutoff",
+            "type": "string"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/Evidence"
+            },
+            "minItems": 1,
+            "title": "Evidence",
+            "type": "array"
+          },
+          "flag_id": {
+            "anyOf": [
+              {
+                "pattern": "^flg_[0-9a-f]{24}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flag Id"
+          },
+          "question": {
+            "title": "Question",
+            "type": "string"
+          },
+          "question_template_id": {
+            "title": "Question Template Id",
+            "type": "string"
+          },
+          "rank": {
+            "exclusiveMinimum": 0.0,
+            "title": "Rank",
+            "type": "integer"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BubbleStatus"
+          },
+          "subject_key": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Subject Key",
+            "type": "string"
+          },
+          "uncertainty_note": {
+            "minLength": 1,
+            "title": "Uncertainty Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bubble_id",
+          "question_template_id",
+          "question",
+          "subject_key",
+          "status",
+          "evidence",
+          "cutoff",
+          "uncertainty_note",
+          "rank"
+        ],
+        "title": "QuestionBubble",
+        "type": "object"
+      },
+      "ReasonCode": {
+        "description": "Fixed reason codes (L15). Which codes each action allows is in permissions.py.",
+        "enum": [
+          "extraction_error",
+          "already_addressed_in_source",
+          "wrong_encounter",
+          "duplicate_of",
+          "not_clinically_relevant",
+          "response_documented_confirmed",
+          "allergy_entry_confirmed",
+          "intolerance_not_allergy",
+          "dose_entry_current",
+          "owner_and_timing_documented",
+          "manual_review_completed",
+          "ocr_completed",
+          "statement_confirmed_current",
+          "statement_corrected_in_source",
+          "work_completed_documented"
+        ],
+        "title": "ReasonCode",
+        "type": "string"
+      },
+      "Role": {
+        "description": "System (authorisation) role of a staff member. Distinct from Discipline,\nwhich describes a source document, and from TeamRole.",
+        "enum": [
+          "clinician",
+          "nurse",
+          "pharmacist",
+          "allied_health",
+          "clerical_staff",
+          "clinic_admin",
+          "medical_director",
+          "quality_risk",
+          "legal"
+        ],
+        "title": "Role",
+        "type": "string"
+      },
+      "RuleId": {
+        "description": "Rule catalog (Section 8.2). MVP rules are enabled in rulesets/v1.json;\nstretch rules exist here so their wire values are frozen, and are disabled\nin v1 until a CCR adds golden expectations for them.",
+        "enum": [
+          "CRIT-001",
+          "ALG-001",
+          "DOSE-001",
+          "DOSE-002",
+          "PEND-001",
+          "PDF-001",
+          "DIFF-001",
+          "OWN-001",
+          "DET-001",
+          "LAT-001",
+          "META-001",
+          "NEXT-001"
+        ],
+        "title": "RuleId",
+        "type": "string"
+      },
+      "SearchedSource": {
+        "additionalProperties": false,
+        "properties": {
+          "extraction_status": {
+            "$ref": "#/components/schemas/ExtractionStatus"
+          },
+          "note_version_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Note Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "note_version_id",
+          "extraction_status"
+        ],
+        "title": "SearchedSource",
+        "type": "object"
+      },
+      "SessionView": {
+        "additionalProperties": false,
+        "properties": {
+          "discipline": {
+            "$ref": "#/components/schemas/Discipline"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "staff_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Staff Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "staff_id",
+          "display_name",
+          "role",
+          "discipline"
+        ],
+        "title": "SessionView",
+        "type": "object"
+      },
+      "SourceText": {
+        "additionalProperties": false,
+        "properties": {
+          "extraction_status": {
+            "$ref": "#/components/schemas/ExtractionStatus"
+          },
+          "note_version_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Note Version Id",
+            "type": "string"
+          },
+          "pages": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/PageSpan"
+            },
+            "title": "Pages",
+            "type": "array"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "note_version_id",
+          "extraction_status",
+          "text"
+        ],
+        "title": "SourceText",
+        "type": "object"
+      },
+      "SourceType": {
+        "enum": [
+          "pasted_text",
+          "pdf",
+          "fhir_documentreference",
+          "hl7v2",
+          "cda",
+          "transcript_segment"
+        ],
+        "title": "SourceType",
+        "type": "string"
+      },
+      "SourceView": {
+        "additionalProperties": false,
+        "description": "Metadata only (no text). Text is fetched per version via SOURCE_TEXT.",
+        "properties": {
+          "author_staff_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Author Staff Id",
+            "type": "string"
+          },
+          "discipline": {
+            "$ref": "#/components/schemas/Discipline"
+          },
+          "extraction_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extraction Note"
+          },
+          "extraction_status": {
+            "$ref": "#/components/schemas/ExtractionStatus"
+          },
+          "note_version_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Note Version Id",
+            "type": "string"
+          },
+          "page_count": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Page Count",
+            "type": "integer"
+          },
+          "received_at": {
+            "format": "date-time",
+            "title": "Received At",
+            "type": "string"
+          },
+          "sha256": {
+            "title": "Sha256",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "source_time": {
+            "format": "date-time",
+            "title": "Source Time",
+            "type": "string"
+          },
+          "source_type": {
+            "$ref": "#/components/schemas/SourceType"
+          },
+          "supersedes_version_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_\\-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supersedes Version Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "version": {
+            "exclusiveMinimum": 0.0,
+            "title": "Version",
+            "type": "integer"
+          },
+          "version_time": {
+            "format": "date-time",
+            "title": "Version Time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_id",
+          "note_version_id",
+          "version",
+          "supersedes_version_id",
+          "title",
+          "source_type",
+          "discipline",
+          "author_staff_id",
+          "source_time",
+          "version_time",
+          "received_at",
+          "sha256",
+          "extraction_status"
+        ],
+        "title": "SourceView",
+        "type": "object"
+      },
+      "Staff": {
+        "additionalProperties": false,
+        "properties": {
+          "clinic_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Clinic Id",
+            "type": "string"
+          },
+          "discipline": {
+            "$ref": "#/components/schemas/Discipline"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "staff_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Staff Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "staff_id",
+          "display_name",
+          "discipline",
+          "role",
+          "clinic_id"
+        ],
+        "title": "Staff",
+        "type": "object"
+      },
+      "Summary": {
+        "additionalProperties": false,
+        "properties": {
+          "claims": {
+            "items": {
+              "$ref": "#/components/schemas/SummaryClaim"
+            },
+            "title": "Claims",
+            "type": "array"
+          },
+          "closure_status": {
+            "$ref": "#/components/schemas/ClosureStatus"
+          },
+          "cutoff": {
+            "format": "date-time",
+            "title": "Cutoff",
+            "type": "string"
+          },
+          "encounter_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Encounter Id",
+            "type": "string"
+          },
+          "encounter_ref": {
+            "title": "Encounter Ref",
+            "type": "string"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "human_review_statement": {
+            "const": "Requires human review. Not the medical record. Does not diagnose or recommend treatment.",
+            "default": "Requires human review. Not the medical record. Does not diagnose or recommend treatment.",
+            "title": "Human Review Statement",
+            "type": "string"
+          },
+          "patient_ref": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Patient Ref",
+            "type": "string"
+          },
+          "registry_version": {
+            "title": "Registry Version",
+            "type": "string"
+          },
+          "ruleset_version": {
+            "title": "Ruleset Version",
+            "type": "string"
+          },
+          "stale_after_source_change": {
+            "default": false,
+            "title": "Stale After Source Change",
+            "type": "boolean"
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/TimelineEntry"
+            },
+            "title": "Timeline",
+            "type": "array"
+          }
+        },
+        "required": [
+          "encounter_id",
+          "encounter_ref",
+          "patient_ref",
+          "generated_at",
+          "cutoff",
+          "ruleset_version",
+          "registry_version",
+          "closure_status",
+          "timeline",
+          "claims"
+        ],
+        "title": "Summary",
+        "type": "object"
+      },
+      "SummaryClaim": {
+        "additionalProperties": false,
+        "description": "Every claim is a deterministic template over flag/decision/bubble records,\nwith evidence. No free paraphrase.",
+        "properties": {
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/Evidence"
+            },
+            "minItems": 1,
+            "title": "Evidence",
+            "type": "array"
+          },
+          "params": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Params",
+            "type": "object"
+          },
+          "template": {
+            "$ref": "#/components/schemas/SummaryClaimTemplate"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "template",
+          "params",
+          "text",
+          "evidence"
+        ],
+        "title": "SummaryClaim",
+        "type": "object"
+      },
+      "SummaryClaimTemplate": {
+        "enum": [
+          "open_priority",
+          "decision_record",
+          "top_question"
+        ],
+        "title": "SummaryClaimTemplate",
+        "type": "string"
+      },
+      "TeamRole": {
+        "enum": [
+          "responsible_clinician",
+          "attending",
+          "member"
+        ],
+        "title": "TeamRole",
+        "type": "string"
+      },
+      "Tier": {
+        "enum": [
+          1,
+          2,
+          3
+        ],
+        "title": "Tier",
+        "type": "integer"
+      },
+      "TimelineEntry": {
+        "additionalProperties": false,
+        "properties": {
+          "author_staff_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Author Staff Id",
+            "type": "string"
+          },
+          "discipline": {
+            "$ref": "#/components/schemas/Discipline"
+          },
+          "extraction_status": {
+            "$ref": "#/components/schemas/ExtractionStatus"
+          },
+          "note_version_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Note Version Id",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "source_time": {
+            "format": "date-time",
+            "title": "Source Time",
+            "type": "string"
+          },
+          "source_type": {
+            "$ref": "#/components/schemas/SourceType"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "version": {
+            "exclusiveMinimum": 0.0,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "source_id",
+          "note_version_id",
+          "version",
+          "author_staff_id",
+          "discipline",
+          "source_type",
+          "source_time",
+          "extraction_status",
+          "title"
+        ],
+        "title": "TimelineEntry",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "WorkspaceInfo": {
+        "additionalProperties": false,
+        "description": "The workspace token lives only in JS memory (Section 6.3).",
+        "properties": {
+          "encounter_ids": {
+            "items": {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_\\-]+$",
+              "type": "string"
+            },
+            "title": "Encounter Ids",
+            "type": "array"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "single_process_store": {
+            "const": true,
+            "default": true,
+            "title": "Single Process Store",
+            "type": "boolean"
+          },
+          "workspace_token": {
+            "title": "Workspace Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "workspace_token",
+          "encounter_ids",
+          "expires_at"
+        ],
+        "title": "WorkspaceInfo",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "Noteguard API (B0 stub)",
+    "version": "b0-1"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/aggregate/risk": {
+      "get": {
+        "operationId": "aggregate_api_aggregate_risk_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Aggregate"
+      }
+    },
+    "/api/ai/status": {
+      "get": {
+        "operationId": "ai_status_api_ai_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AIStatusView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ai Status"
+      }
+    },
+    "/api/documents/{document_token}": {
+      "get": {
+        "operationId": "get_document_api_documents__document_token__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "document_token",
+            "required": true,
+            "schema": {
+              "title": "Document Token",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Document"
+      }
+    },
+    "/api/encounters": {
+      "get": {
+        "operationId": "list_encounters_api_encounters_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EncounterListItem"
+                  },
+                  "title": "Response List Encounters Api Encounters Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Encounters"
+      }
+    },
+    "/api/encounters/{encounter_id}": {
+      "get": {
+        "operationId": "get_encounter_api_encounters__encounter_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "encounter_id",
+            "required": true,
+            "schema": {
+              "title": "Encounter Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EncounterView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Encounter"
+      }
+    },
+    "/api/encounters/{encounter_id}/bubbles": {
+      "get": {
+        "operationId": "list_bubbles_api_encounters__encounter_id__bubbles_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "encounter_id",
+            "required": true,
+            "schema": {
+              "title": "Encounter Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BubbleList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Bubbles"
+      }
+    },
+    "/api/encounters/{encounter_id}/check-runs": {
+      "post": {
+        "operationId": "run_checks_api_encounters__encounter_id__check_runs_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "encounter_id",
+            "required": true,
+            "schema": {
+              "title": "Encounter Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckRunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckRunView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Checks"
+      }
+    },
+    "/api/encounters/{encounter_id}/check-runs/latest": {
+      "get": {
+        "operationId": "latest_run_api_encounters__encounter_id__check_runs_latest_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "encounter_id",
+            "required": true,
+            "schema": {
+              "title": "Encounter Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckRunView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Latest Run"
+      }
+    },
+    "/api/encounters/{encounter_id}/closure": {
+      "get": {
+        "operationId": "get_closure_api_encounters__encounter_id__closure_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "encounter_id",
+            "required": true,
+            "schema": {
+              "title": "Encounter Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClosureView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Closure"
+      },
+      "post": {
+        "operationId": "attempt_close_api_encounters__encounter_id__closure_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "encounter_id",
+            "required": true,
+            "schema": {
+              "title": "Encounter Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Attempt Close"
+      }
+    },
+    "/api/encounters/{encounter_id}/feedback": {
+      "post": {
+        "operationId": "feedback_api_encounters__encounter_id__feedback_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "encounter_id",
+            "required": true,
+            "schema": {
+              "title": "Encounter Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Feedback"
+      }
+    },
+    "/api/encounters/{encounter_id}/flags": {
+      "get": {
+        "operationId": "list_flags_api_encounters__encounter_id__flags_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "encounter_id",
+            "required": true,
+            "schema": {
+              "title": "Encounter Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Flag"
+                  },
+                  "title": "Response List Flags Api Encounters  Encounter Id  Flags Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Flags"
+      }
+    },
+    "/api/encounters/{encounter_id}/flags/{flag_id}": {
+      "get": {
+        "operationId": "get_flag_api_encounters__encounter_id__flags__flag_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "encounter_id",
+            "required": true,
+            "schema": {
+              "title": "Encounter Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "flag_id",
+            "required": true,
+            "schema": {
+              "title": "Flag Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FlagDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Flag"
+      }
+    },
+    "/api/encounters/{encounter_id}/flags/{flag_id}/decisions": {
+      "post": {
+        "operationId": "decide_api_encounters__encounter_id__flags__flag_id__decisions_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "encounter_id",
+            "required": true,
+            "schema": {
+              "title": "Encounter Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "flag_id",
+            "required": true,
+            "schema": {
+              "title": "Flag Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Decide"
+      }
+    },
+    "/api/encounters/{encounter_id}/glance": {
+      "get": {
+        "operationId": "get_glance_api_encounters__encounter_id__glance_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "encounter_id",
+            "required": true,
+            "schema": {
+              "title": "Encounter Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GlanceView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Glance"
+      }
+    },
+    "/api/encounters/{encounter_id}/source-versions/{source_version_id}/document-token": {
+      "post": {
+        "operationId": "document_token_api_encounters__encounter_id__source_versions__source_version_id__document_token_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "encounter_id",
+            "required": true,
+            "schema": {
+              "title": "Encounter Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "source_version_id",
+            "required": true,
+            "schema": {
+              "title": "Source Version Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Document Token"
+      }
+    },
+    "/api/encounters/{encounter_id}/source-versions/{source_version_id}/text": {
+      "get": {
+        "operationId": "get_source_text_api_encounters__encounter_id__source_versions__source_version_id__text_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "encounter_id",
+            "required": true,
+            "schema": {
+              "title": "Encounter Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "source_version_id",
+            "required": true,
+            "schema": {
+              "title": "Source Version Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceText"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Source Text"
+      }
+    },
+    "/api/encounters/{encounter_id}/sources": {
+      "post": {
+        "operationId": "add_text_source_api_encounters__encounter_id__sources_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "encounter_id",
+            "required": true,
+            "schema": {
+              "title": "Encounter Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Text Source"
+      }
+    },
+    "/api/encounters/{encounter_id}/sources/pdf": {
+      "post": {
+        "operationId": "add_pdf_source_api_encounters__encounter_id__sources_pdf_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "encounter_id",
+            "required": true,
+            "schema": {
+              "title": "Encounter Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Pdf Source"
+      }
+    },
+    "/api/encounters/{encounter_id}/summary": {
+      "get": {
+        "operationId": "get_summary_api_encounters__encounter_id__summary_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "encounter_id",
+            "required": true,
+            "schema": {
+              "title": "Encounter Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Summary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Summary"
+      }
+    },
+    "/api/health": {
+      "get": {
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Health Api Health Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health"
+      }
+    },
+    "/api/session": {
+      "delete": {
+        "operationId": "logout_api_session_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Logout"
+      },
+      "get": {
+        "operationId": "current_session_api_session_get",
+        "parameters": [
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Current Session"
+      },
+      "post": {
+        "operationId": "login_api_session_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Login"
+      }
+    },
+    "/api/workspaces": {
+      "post": {
+        "operationId": "new_workspace_api_workspaces_post",
+        "parameters": [
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "New Workspace"
+      }
+    },
+    "/api/workspaces/current": {
+      "delete": {
+        "operationId": "reset_workspace_api_workspaces_current_delete",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reset Workspace"
+      }
+    }
+  }
+}
