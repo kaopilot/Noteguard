@@ -338,6 +338,14 @@ class BubbleTriggerKind(str, Enum):
     CRITICAL_OBSERVATION = "critical_observation"  # one bubble per critical analyte in scope
 
 
+class BubbleAnswerMode(str, Enum):
+    """How a template is answered. Fixes which statuses a template can return."""
+
+    CONFLICT_STATE = "conflict_state"  # conflicting while the flag is unresolved
+    ABSENCE_SEARCH = "absence_search"  # documented | not_documented | incomplete_extraction
+    HUMAN_REVIEW = "human_review"  # requires_human_review
+
+
 class CheckRunOutcome(str, Enum):
     COMPLETED = "completed"
     COMPLETED_WITH_EXTRACTION_GAPS = "completed_with_extraction_gaps"
@@ -977,6 +985,7 @@ class RuleDefinition(Frozen):
 class BubbleTrigger(Frozen):
     kind: BubbleTriggerKind
     rule_id: RuleId | None = None  # for FLAG_RULE
+    analyte_keys: tuple[SubjectKey, ...] = ()  # CRITICAL_OBSERVATION filter; () = any critical analyte
 
 
 class QuestionTemplate(Frozen):
@@ -984,7 +993,9 @@ class QuestionTemplate(Frozen):
     rank: PositiveInt  # deterministic ordering; lower = shown first
     text: str  # may contain {placeholders} filled from registry display names
     trigger: BubbleTrigger
-    search_term_keys: tuple[SubjectKey, ...] = ()  # absence search terms (registry keys)
+    answer_mode: BubbleAnswerMode
+    #: Absence search terms: registry keys, "cue:<CueKind>" references, or "{subject}".
+    search_term_keys: tuple[str, ...] = ()
 
 
 class Ruleset(Frozen):

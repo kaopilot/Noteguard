@@ -1,0 +1,53 @@
+{
+  "registry_version": "v1",
+  "terms": [
+    {"key": "drug:amlodipine", "kind": "drug", "synonyms": ["amlodipine"], "classes": ["drug_class:calcium_channel_blockers"]},
+    {"key": "drug:metformin", "kind": "drug", "synonyms": ["metformin"], "classes": ["drug_class:biguanides"]},
+    {"key": "drug_class:penicillins", "kind": "drug_class", "synonyms": ["penicillins", "penicillin class"]},
+    {"key": "allergen:penicillin", "kind": "allergen", "synonyms": ["penicillin"], "classes": ["drug_class:penicillins"]},
+    {"key": "analyte:potassium", "kind": "analyte", "synonyms": ["potassium", "k", "k+"], "unit": "mmol/L",
+     "critical_high": 6.0, "critical_low": 2.5, "threshold_status": "placeholder_pending_clinical_governance"},
+    {"key": "analyte:sodium", "kind": "analyte", "synonyms": ["sodium", "na", "na+"], "unit": "mmol/L",
+     "critical_high": 160.0, "critical_low": 120.0, "threshold_status": "placeholder_pending_clinical_governance"},
+    {"key": "analyte:spo2", "kind": "analyte", "synonyms": ["spo2", "sats", "oxygen saturation"], "unit": "%",
+     "deterioration_below": 92.0, "threshold_status": "placeholder_pending_clinical_governance"},
+    {"key": "analyte:respiratory_rate", "kind": "analyte", "synonyms": ["rr", "resp rate", "respiratory rate"], "unit": "/min",
+     "deterioration_at_or_above": 25.0, "threshold_status": "placeholder_pending_clinical_governance"},
+    {"key": "test:blood_culture", "kind": "test", "synonyms": ["blood culture", "blood cultures"]},
+    {"key": "test:ecg", "kind": "test", "synonyms": ["ecg", "ekg", "electrocardiogram", "12-lead"]},
+    {"key": "status:stable", "kind": "status", "synonyms": ["patient stable", "clinically stable"]},
+    {"key": "status:fit_for_discharge", "kind": "status", "synonyms": ["fit for discharge", "medically fit"]}
+  ],
+  "allergy_denials": [
+    {"phrase": "nkda", "scope": "all_drugs"},
+    {"phrase": "no known drug allergies", "scope": "all_drugs"},
+    {"phrase": "no known drug allergy", "scope": "all_drugs"},
+    {"phrase": "no known allergies", "scope": "all_allergies"}
+  ],
+  "frequencies": [
+    {"phrase": "od", "normalised": "once_daily"},
+    {"phrase": "once daily", "normalised": "once_daily"},
+    {"phrase": "bd", "normalised": "twice_daily"},
+    {"phrase": "twice daily", "normalised": "twice_daily"},
+    {"phrase": "tds", "normalised": "three_times_daily"},
+    {"phrase": "three times daily", "normalised": "three_times_daily"},
+    {"phrase": "qds", "normalised": "four_times_daily"},
+    {"phrase": "nocte", "normalised": "at_night"},
+    {"phrase": "prn", "normalised": "as_needed"}
+  ],
+  "dose_units": ["mg", "mcg", "microgram", "micrograms", "g", "ml", "units", "unit", "tablets", "tablet", "tabs", "iu"],
+  "cues": {
+    "negation": ["no", "not", "denies", "without", "nil", "negative for", "not yet"],
+    "uncertainty": ["?", "query", "possible", "possibly", "suspected", "unsure", "unclear"],
+    "change": ["increased to", "reduced to", "decreased to", "changed to", "switched to", "stopped", "held", "withheld", "discontinued"],
+    "pending": ["pending", "awaiting", "sent", "to chase"],
+    "response_review": ["reviewed", "seen by"],
+    "response_repeat": ["repeat", "repeated", "rechecked"],
+    "response_treatment": ["treated", "given", "commenced", "administered"],
+    "response_escalation": ["escalated", "informed", "paged"],
+    "response_transfer": ["transferred"],
+    "timing": ["by \\d{1,2}:\\d{2}", "at \\d{1,2}:\\d{2}", "tomorrow am", "tomorrow pm", "tomorrow \\d{1,2}:\\d{2}", "by end of shift", "within \\d+ ?h"],
+    "owner": ["dr [a-z]+", "nurse [a-z]+", "pharmacist [a-z]+", "physio [a-z]+", "sw [a-z]+", "medical team to", "ward team to", "on-call team to"],
+    "allergy_keyword": ["allergy", "allergic", "allergies", "intolerance"]
+  }
+}
