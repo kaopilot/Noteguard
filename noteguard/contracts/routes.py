@@ -20,6 +20,7 @@ FLAG = "/api/encounters/{encounter_id}/flags/{flag_id}"
 FLAG_DECISIONS = "/api/encounters/{encounter_id}/flags/{flag_id}/decisions"
 BUBBLES = "/api/encounters/{encounter_id}/bubbles"
 CLOSURE = "/api/encounters/{encounter_id}/closure"  # GET view, POST attempt close
+GLANCE = "/api/encounters/{encounter_id}/glance"  # GET top strip (GlanceView)
 SUMMARY = "/api/encounters/{encounter_id}/summary"
 DOCUMENT_TOKEN = "/api/encounters/{encounter_id}/source-versions/{source_version_id}/document-token"
 DOCUMENT = "/api/documents/{document_token}"  # single-use, short-lived, no-store
@@ -30,7 +31,7 @@ AI_STATUS = "/api/ai/status"
 ROUTE_TEMPLATES: frozenset[str] = frozenset({
     HEALTH, SESSION, WORKSPACES, WORKSPACE_CURRENT, ENCOUNTERS, ENCOUNTER, SOURCES, SOURCES_PDF,
     SOURCE_TEXT, CHECK_RUNS, CHECK_RUN_LATEST, FLAGS, FLAG, FLAG_DECISIONS, BUBBLES, CLOSURE,
-    SUMMARY, DOCUMENT_TOKEN, DOCUMENT, FEEDBACK, AGGREGATE, AI_STATUS,
+    GLANCE, SUMMARY, DOCUMENT_TOKEN, DOCUMENT, FEEDBACK, AGGREGATE, AI_STATUS,
 })
 
 #: Header carrying the per-page-load workspace token (JS memory only; never a cookie).

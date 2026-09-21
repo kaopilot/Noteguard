@@ -1,0 +1,106 @@
+{
+  "clinic": {
+    "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1",
+    "display_name": "Synthetic General Hospital, Ward 7"
+  },
+  "staff": [
+    {
+      "staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+      "display_name": "Dr Lim",
+      "discipline": "clinician",
+      "role": "clinician",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "cb72e81b-2e7c-4703-88a8-ef003ea8c801",
+      "display_name": "Nurse Tan",
+      "discipline": "nursing",
+      "role": "nurse",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "38eafae6-b7ce-42a5-8a9d-2a060d421f18",
+      "display_name": "Nurse Ravi",
+      "discipline": "nursing",
+      "role": "nurse",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "dbdfd3c3-83be-4e90-ae1c-7b4221daa51c",
+      "display_name": "Pharmacist Ong",
+      "discipline": "pharmacy",
+      "role": "pharmacist",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "1ef008e1-4cf4-4a38-95e5-32ff7193e8b7",
+      "display_name": "Physio Chen",
+      "discipline": "physiotherapy",
+      "role": "allied_health",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "dac4e71c-daea-4157-b5fd-198cc158229c",
+      "display_name": "SW Goh",
+      "discipline": "counselling_social_work",
+      "role": "allied_health",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "f0c0e2c7-db76-41cf-a7b3-b803eca3ccce",
+      "display_name": "Ward Clerk Lee",
+      "discipline": "other",
+      "role": "clerical_staff",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "04bcd120-abe1-4577-b546-921350e47c00",
+      "display_name": "Dr Wong",
+      "discipline": "clinician",
+      "role": "clinician",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "287b4e59-ae3a-4e09-a934-7d124867b817",
+      "display_name": "Nurse Lau",
+      "discipline": "nursing",
+      "role": "nurse",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "183920f4-1353-4d63-bc85-dd3adf2dc73f",
+      "display_name": "Dr Kaur",
+      "discipline": "clinician",
+      "role": "clinician",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "b223d763-992c-4820-a008-8a06d66a4333",
+      "display_name": "Admin Siti",
+      "discipline": "other",
+      "role": "clinic_admin",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "cc59172a-e787-4e4c-b269-007fcc84c77e",
+      "display_name": "Dr Rao (Medical Director)",
+      "discipline": "clinician",
+      "role": "medical_director",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "54a3b6a2-5215-429b-b852-45eafef20850",
+      "display_name": "Koh (Quality & Risk)",
+      "discipline": "other",
+      "role": "quality_risk",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "0e47c687-8ff1-4517-b2e5-8af59d632651",
+      "display_name": "Menon (Legal)",
+      "discipline": "other",
+      "role": "legal",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    }
+  ]
+}

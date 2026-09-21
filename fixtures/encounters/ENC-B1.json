@@ -1,0 +1,93 @@
+{
+  "clinic": {
+    "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1",
+    "display_name": "Synthetic General Hospital, Ward 7"
+  },
+  "patient": {
+    "patient_id": "1aeb4c55-9533-45c3-b695-3bc9bf678ced",
+    "patient_ref": "fb75b516-b2bd-4b12-ae6e-8f4a1dbd7acf",
+    "display_label": "Synthetic patient B1"
+  },
+  "encounter": {
+    "encounter_id": "a44ae712-a26c-4930-99b5-b2c96bc56dcf",
+    "encounter_ref": "ENC-B1",
+    "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1",
+    "patient_id": "1aeb4c55-9533-45c3-b695-3bc9bf678ced",
+    "setting": "medical ward",
+    "started_at": "2026-09-21T00:20:00Z",
+    "responsible_clinician_id": "04bcd120-abe1-4577-b546-921350e47c00",
+    "attending_clinician_id": "04bcd120-abe1-4577-b546-921350e47c00"
+  },
+  "staff": [
+    {
+      "staff_id": "287b4e59-ae3a-4e09-a934-7d124867b817",
+      "display_name": "Nurse Lau",
+      "discipline": "nursing",
+      "role": "nurse",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "04bcd120-abe1-4577-b546-921350e47c00",
+      "display_name": "Dr Wong",
+      "discipline": "clinician",
+      "role": "clinician",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    }
+  ],
+  "memberships": [
+    {
+      "encounter_id": "a44ae712-a26c-4930-99b5-b2c96bc56dcf",
+      "staff_id": "04bcd120-abe1-4577-b546-921350e47c00",
+      "team_role": "responsible_clinician",
+      "valid_from": "2026-09-21T00:00:00Z",
+      "valid_to": null
+    },
+    {
+      "encounter_id": "a44ae712-a26c-4930-99b5-b2c96bc56dcf",
+      "staff_id": "287b4e59-ae3a-4e09-a934-7d124867b817",
+      "team_role": "member",
+      "valid_from": "2026-09-21T00:00:00Z",
+      "valid_to": null
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "a2a86b78-cbc7-49e1-ac79-aba5bfee45ca",
+      "encounter_id": "a44ae712-a26c-4930-99b5-b2c96bc56dcf",
+      "source_system": "fixture-emr",
+      "identifier_namespace": "urn:synthetic:fixture-emr",
+      "external_id": "ENC-B1-NURSING",
+      "source_type": "pasted_text",
+      "author_staff_id": "287b4e59-ae3a-4e09-a934-7d124867b817",
+      "discipline": "nursing",
+      "title": "Ward nursing note",
+      "source_time": "2026-09-21T01:15:00Z"
+    }
+  ],
+  "versions": [
+    {
+      "source_version_id": "685801f1-ab3d-408f-9dfa-d8517d381863",
+      "source_id": "a2a86b78-cbc7-49e1-ac79-aba5bfee45ca",
+      "version": 1,
+      "version_time": "2026-09-21T01:15:00Z",
+      "received_at": "2026-09-21T01:15:00Z",
+      "sha256": "f7e5f0af9236659eb681db0cef375d74111f80528c202e18123394b857a867a9",
+      "byte_length": 100,
+      "media_type": "text/plain; charset=utf-8",
+      "idempotency_key": "urn:synthetic:fixture-emr|ENC-B1-NURSING|1|f7e5f0af9236659eb681db0cef375d74111f80528c202e18123394b857a867a9",
+      "supersedes_version_id": null
+    }
+  ],
+  "extractions": [
+    {
+      "source_version_id": "685801f1-ab3d-408f-9dfa-d8517d381863",
+      "status": "not_applicable",
+      "text": "Ward nursing note.\nAllergies: NKDA.\nObs within normal limits overnight.\nPlan: continue current care.",
+      "pages": [],
+      "extractor": "paste@1",
+      "note": null
+    }
+  ],
+  "prior_flags": [],
+  "decisions": []
+}

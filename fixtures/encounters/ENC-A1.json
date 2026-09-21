@@ -1,0 +1,485 @@
+{
+  "clinic": {
+    "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1",
+    "display_name": "Synthetic General Hospital, Ward 7"
+  },
+  "patient": {
+    "patient_id": "10b680e0-f705-461b-881d-5f81850b5375",
+    "patient_ref": "aa257b7b-0106-45be-9945-c9455b0fc4bc",
+    "display_label": "Synthetic patient A1"
+  },
+  "encounter": {
+    "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+    "encounter_ref": "ENC-A1",
+    "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1",
+    "patient_id": "10b680e0-f705-461b-881d-5f81850b5375",
+    "setting": "medical ward",
+    "started_at": "2026-09-21T00:20:00Z",
+    "responsible_clinician_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+    "attending_clinician_id": "b86630ca-a475-4a29-b619-1b764a5c0059"
+  },
+  "staff": [
+    {
+      "staff_id": "1ef008e1-4cf4-4a38-95e5-32ff7193e8b7",
+      "display_name": "Physio Chen",
+      "discipline": "physiotherapy",
+      "role": "allied_health",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "dac4e71c-daea-4157-b5fd-198cc158229c",
+      "display_name": "SW Goh",
+      "discipline": "counselling_social_work",
+      "role": "allied_health",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "f0c0e2c7-db76-41cf-a7b3-b803eca3ccce",
+      "display_name": "Ward Clerk Lee",
+      "discipline": "other",
+      "role": "clerical_staff",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+      "display_name": "Dr Lim",
+      "discipline": "clinician",
+      "role": "clinician",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "dbdfd3c3-83be-4e90-ae1c-7b4221daa51c",
+      "display_name": "Pharmacist Ong",
+      "discipline": "pharmacy",
+      "role": "pharmacist",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "38eafae6-b7ce-42a5-8a9d-2a060d421f18",
+      "display_name": "Nurse Ravi",
+      "discipline": "nursing",
+      "role": "nurse",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "cb72e81b-2e7c-4703-88a8-ef003ea8c801",
+      "display_name": "Nurse Tan",
+      "discipline": "nursing",
+      "role": "nurse",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    }
+  ],
+  "memberships": [
+    {
+      "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+      "staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+      "team_role": "responsible_clinician",
+      "valid_from": "2026-09-21T00:00:00Z",
+      "valid_to": null
+    },
+    {
+      "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+      "staff_id": "cb72e81b-2e7c-4703-88a8-ef003ea8c801",
+      "team_role": "member",
+      "valid_from": "2026-09-21T00:00:00Z",
+      "valid_to": null
+    },
+    {
+      "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+      "staff_id": "38eafae6-b7ce-42a5-8a9d-2a060d421f18",
+      "team_role": "member",
+      "valid_from": "2026-09-21T00:00:00Z",
+      "valid_to": null
+    },
+    {
+      "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+      "staff_id": "dbdfd3c3-83be-4e90-ae1c-7b4221daa51c",
+      "team_role": "member",
+      "valid_from": "2026-09-21T00:00:00Z",
+      "valid_to": null
+    },
+    {
+      "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+      "staff_id": "1ef008e1-4cf4-4a38-95e5-32ff7193e8b7",
+      "team_role": "member",
+      "valid_from": "2026-09-21T00:00:00Z",
+      "valid_to": null
+    },
+    {
+      "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+      "staff_id": "dac4e71c-daea-4157-b5fd-198cc158229c",
+      "team_role": "member",
+      "valid_from": "2026-09-21T00:00:00Z",
+      "valid_to": null
+    },
+    {
+      "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+      "staff_id": "f0c0e2c7-db76-41cf-a7b3-b803eca3ccce",
+      "team_role": "member",
+      "valid_from": "2026-09-21T00:00:00Z",
+      "valid_to": null
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "7a76b06c-295c-44e4-9886-394b12330487",
+      "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+      "source_system": "fixture-emr",
+      "identifier_namespace": "urn:synthetic:fixture-emr",
+      "external_id": "ENC-A1-REFERRAL",
+      "source_type": "pdf",
+      "author_staff_id": "f0c0e2c7-db76-41cf-a7b3-b803eca3ccce",
+      "discipline": "other",
+      "title": "Outside referral letter",
+      "source_time": "2026-09-21T00:30:00Z"
+    },
+    {
+      "source_id": "6943756f-9798-4e81-9e3c-712d6c161b7b",
+      "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+      "source_system": "fixture-emr",
+      "identifier_namespace": "urn:synthetic:fixture-emr",
+      "external_id": "ENC-A1-ADM_NURSING",
+      "source_type": "pasted_text",
+      "author_staff_id": "cb72e81b-2e7c-4703-88a8-ef003ea8c801",
+      "discipline": "nursing",
+      "title": "Admission nursing assessment",
+      "source_time": "2026-09-21T00:40:00Z"
+    },
+    {
+      "source_id": "a21b2eed-367c-4a67-8c53-f68ac8d484fb",
+      "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+      "source_system": "fixture-emr",
+      "identifier_namespace": "urn:synthetic:fixture-emr",
+      "external_id": "ENC-A1-WARD_ROUND",
+      "source_type": "pasted_text",
+      "author_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+      "discipline": "clinician",
+      "title": "Ward round",
+      "source_time": "2026-09-21T01:00:00Z"
+    },
+    {
+      "source_id": "6e3e690c-8309-4f85-901d-6844d71575a3",
+      "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+      "source_system": "fixture-emr",
+      "identifier_namespace": "urn:synthetic:fixture-emr",
+      "external_id": "ENC-A1-MEDREC",
+      "source_type": "pasted_text",
+      "author_staff_id": "dbdfd3c3-83be-4e90-ae1c-7b4221daa51c",
+      "discipline": "pharmacy",
+      "title": "Medication reconciliation",
+      "source_time": "2026-09-21T02:30:00Z"
+    },
+    {
+      "source_id": "3bdc9c0f-8f40-4988-9b30-3d7e10ad49e5",
+      "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+      "source_system": "fixture-emr",
+      "identifier_namespace": "urn:synthetic:fixture-emr",
+      "external_id": "ENC-A1-BLOODS",
+      "source_type": "pasted_text",
+      "author_staff_id": "cb72e81b-2e7c-4703-88a8-ef003ea8c801",
+      "discipline": "nursing",
+      "title": "Blood results",
+      "source_time": "2026-09-21T03:15:00Z"
+    },
+    {
+      "source_id": "0759710b-2e34-4b3c-b355-df4b71bfa5d9",
+      "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+      "source_system": "fixture-emr",
+      "identifier_namespace": "urn:synthetic:fixture-emr",
+      "external_id": "ENC-A1-LAB_PDF",
+      "source_type": "pdf",
+      "author_staff_id": "38eafae6-b7ce-42a5-8a9d-2a060d421f18",
+      "discipline": "other",
+      "title": "Scanned outside lab report",
+      "source_time": "2026-09-21T04:10:00Z"
+    },
+    {
+      "source_id": "6dd6c21e-b1f5-49b1-8da0-41ac8578e387",
+      "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+      "source_system": "fixture-emr",
+      "identifier_namespace": "urn:synthetic:fixture-emr",
+      "external_id": "ENC-A1-OBS",
+      "source_type": "pasted_text",
+      "author_staff_id": "38eafae6-b7ce-42a5-8a9d-2a060d421f18",
+      "discipline": "nursing",
+      "title": "Afternoon observations",
+      "source_time": "2026-09-21T05:00:00Z"
+    },
+    {
+      "source_id": "0d21c32b-ac53-4b54-9c46-11cb2a06fdd6",
+      "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+      "source_system": "fixture-emr",
+      "identifier_namespace": "urn:synthetic:fixture-emr",
+      "external_id": "ENC-A1-PHYSIO",
+      "source_type": "pasted_text",
+      "author_staff_id": "1ef008e1-4cf4-4a38-95e5-32ff7193e8b7",
+      "discipline": "physiotherapy",
+      "title": "Physiotherapy mobilisation",
+      "source_time": "2026-09-21T06:00:00Z"
+    },
+    {
+      "source_id": "e43e1f9a-382b-4666-a3a3-06fec0a5b6a5",
+      "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+      "source_system": "fixture-emr",
+      "identifier_namespace": "urn:synthetic:fixture-emr",
+      "external_id": "ENC-A1-CLIN_REVIEW",
+      "source_type": "pasted_text",
+      "author_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+      "discipline": "clinician",
+      "title": "Clinician review",
+      "source_time": "2026-09-21T07:30:00Z"
+    },
+    {
+      "source_id": "8a19df15-93bf-4a68-b4aa-ca6f085a91e9",
+      "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+      "source_system": "fixture-emr",
+      "identifier_namespace": "urn:synthetic:fixture-emr",
+      "external_id": "ENC-A1-SW",
+      "source_type": "pasted_text",
+      "author_staff_id": "dac4e71c-daea-4157-b5fd-198cc158229c",
+      "discipline": "counselling_social_work",
+      "title": "Discharge planning",
+      "source_time": "2026-09-21T08:00:00Z"
+    }
+  ],
+  "versions": [
+    {
+      "source_version_id": "0ccbec28-5240-40a4-b76a-7f7a61125cfb",
+      "source_id": "7a76b06c-295c-44e4-9886-394b12330487",
+      "version": 1,
+      "version_time": "2026-09-21T00:30:00Z",
+      "received_at": "2026-09-21T00:30:00Z",
+      "sha256": "ef4818f4f8b6eb232813f3efc9ff956898a52ed70976dd4e4e1460713417a856",
+      "byte_length": 880,
+      "media_type": "application/pdf",
+      "idempotency_key": "urn:synthetic:fixture-emr|ENC-A1-REFERRAL|1|ef4818f4f8b6eb232813f3efc9ff956898a52ed70976dd4e4e1460713417a856",
+      "supersedes_version_id": null
+    },
+    {
+      "source_version_id": "ce13e97a-14df-4acc-b6a0-fdefd89f1e91",
+      "source_id": "6943756f-9798-4e81-9e3c-712d6c161b7b",
+      "version": 1,
+      "version_time": "2026-09-21T00:40:00Z",
+      "received_at": "2026-09-21T00:40:00Z",
+      "sha256": "8c51f399e08dc4d55818a30eeec1ba0dc47a8584ff77b77f98e8a00a6eaebd7e",
+      "byte_length": 199,
+      "media_type": "text/plain; charset=utf-8",
+      "idempotency_key": "urn:synthetic:fixture-emr|ENC-A1-ADM_NURSING|1|8c51f399e08dc4d55818a30eeec1ba0dc47a8584ff77b77f98e8a00a6eaebd7e",
+      "supersedes_version_id": null
+    },
+    {
+      "source_version_id": "73b79741-05ab-4c7c-a1f9-d4f0699dcd53",
+      "source_id": "a21b2eed-367c-4a67-8c53-f68ac8d484fb",
+      "version": 1,
+      "version_time": "2026-09-21T01:00:00Z",
+      "received_at": "2026-09-21T01:00:00Z",
+      "sha256": "c87f67cf5239cea2eb7b09b3ac8dd3b4005c648a43fcb22c1ccb1a26c2a43ef5",
+      "byte_length": 149,
+      "media_type": "text/plain; charset=utf-8",
+      "idempotency_key": "urn:synthetic:fixture-emr|ENC-A1-WARD_ROUND|1|c87f67cf5239cea2eb7b09b3ac8dd3b4005c648a43fcb22c1ccb1a26c2a43ef5",
+      "supersedes_version_id": null
+    },
+    {
+      "source_version_id": "43233600-d694-49ad-a092-2af63339f313",
+      "source_id": "6e3e690c-8309-4f85-901d-6844d71575a3",
+      "version": 1,
+      "version_time": "2026-09-21T02:30:00Z",
+      "received_at": "2026-09-21T02:30:00Z",
+      "sha256": "74d72a9097e7b32b13ed281a40321d7c5882d0c0afe68bd05df7d85ecf14b0a2",
+      "byte_length": 160,
+      "media_type": "text/plain; charset=utf-8",
+      "idempotency_key": "urn:synthetic:fixture-emr|ENC-A1-MEDREC|1|74d72a9097e7b32b13ed281a40321d7c5882d0c0afe68bd05df7d85ecf14b0a2",
+      "supersedes_version_id": null
+    },
+    {
+      "source_version_id": "d21f4dc4-0ecb-46fb-a082-3304401ca0fb",
+      "source_id": "6e3e690c-8309-4f85-901d-6844d71575a3",
+      "version": 2,
+      "version_time": "2026-09-21T07:45:00Z",
+      "received_at": "2026-09-21T07:45:00Z",
+      "sha256": "357b4e440c1d0a1620ab4910bd41c06a2ee34ad740f9ab26f80fa95ab4b7cffe",
+      "byte_length": 212,
+      "media_type": "text/plain; charset=utf-8",
+      "idempotency_key": "urn:synthetic:fixture-emr|ENC-A1-MEDREC|2|357b4e440c1d0a1620ab4910bd41c06a2ee34ad740f9ab26f80fa95ab4b7cffe",
+      "supersedes_version_id": "43233600-d694-49ad-a092-2af63339f313"
+    },
+    {
+      "source_version_id": "166776b0-0bb5-44f7-89af-6de0a3de9a08",
+      "source_id": "3bdc9c0f-8f40-4988-9b30-3d7e10ad49e5",
+      "version": 1,
+      "version_time": "2026-09-21T03:15:00Z",
+      "received_at": "2026-09-21T03:15:00Z",
+      "sha256": "9cc5e36e53cf90ad726f32e44620e5d4ae818648532352bfc89cc13ff47cecd5",
+      "byte_length": 113,
+      "media_type": "text/plain; charset=utf-8",
+      "idempotency_key": "urn:synthetic:fixture-emr|ENC-A1-BLOODS|1|9cc5e36e53cf90ad726f32e44620e5d4ae818648532352bfc89cc13ff47cecd5",
+      "supersedes_version_id": null
+    },
+    {
+      "source_version_id": "b5fb3381-2ef6-4b64-a360-37036124eeac",
+      "source_id": "0759710b-2e34-4b3c-b355-df4b71bfa5d9",
+      "version": 1,
+      "version_time": "2026-09-21T04:10:00Z",
+      "received_at": "2026-09-21T04:10:00Z",
+      "sha256": "faf468b43b3eae726bbf9acc43242425985c9665489767a7bf180c35d812b195",
+      "byte_length": 22270,
+      "media_type": "application/pdf",
+      "idempotency_key": "urn:synthetic:fixture-emr|ENC-A1-LAB_PDF|1|faf468b43b3eae726bbf9acc43242425985c9665489767a7bf180c35d812b195",
+      "supersedes_version_id": null
+    },
+    {
+      "source_version_id": "7a04f1e9-7b6a-4cb7-93cc-45434ea13c4a",
+      "source_id": "6dd6c21e-b1f5-49b1-8da0-41ac8578e387",
+      "version": 1,
+      "version_time": "2026-09-21T05:00:00Z",
+      "received_at": "2026-09-21T05:00:00Z",
+      "sha256": "8f96649e5c8ecc8d4194ac66946ecebe829228d05cb6e6754f18ab5ec7e37f3e",
+      "byte_length": 82,
+      "media_type": "text/plain; charset=utf-8",
+      "idempotency_key": "urn:synthetic:fixture-emr|ENC-A1-OBS|1|8f96649e5c8ecc8d4194ac66946ecebe829228d05cb6e6754f18ab5ec7e37f3e",
+      "supersedes_version_id": null
+    },
+    {
+      "source_version_id": "b77eab06-f7d1-4310-a2c8-6b28b45237af",
+      "source_id": "0d21c32b-ac53-4b54-9c46-11cb2a06fdd6",
+      "version": 1,
+      "version_time": "2026-09-21T06:00:00Z",
+      "received_at": "2026-09-21T06:00:00Z",
+      "sha256": "881698204bacd2c0a3df8d39bf0f3d944720b9029e9178933e1b8bb2fcb5970d",
+      "byte_length": 175,
+      "media_type": "text/plain; charset=utf-8",
+      "idempotency_key": "urn:synthetic:fixture-emr|ENC-A1-PHYSIO|1|881698204bacd2c0a3df8d39bf0f3d944720b9029e9178933e1b8bb2fcb5970d",
+      "supersedes_version_id": null
+    },
+    {
+      "source_version_id": "d29af523-8355-4add-a75a-279311cdafb3",
+      "source_id": "e43e1f9a-382b-4666-a3a3-06fec0a5b6a5",
+      "version": 1,
+      "version_time": "2026-09-21T07:30:00Z",
+      "received_at": "2026-09-21T07:30:00Z",
+      "sha256": "1d4dd5650a96bd01122927b8ea8df462a6c163215d7e5b08b0d8c29962a03f9f",
+      "byte_length": 144,
+      "media_type": "text/plain; charset=utf-8",
+      "idempotency_key": "urn:synthetic:fixture-emr|ENC-A1-CLIN_REVIEW|1|1d4dd5650a96bd01122927b8ea8df462a6c163215d7e5b08b0d8c29962a03f9f",
+      "supersedes_version_id": null
+    },
+    {
+      "source_version_id": "8abe2021-94e7-4eb1-8668-3bce5204291d",
+      "source_id": "8a19df15-93bf-4a68-b4aa-ca6f085a91e9",
+      "version": 1,
+      "version_time": "2026-09-21T08:00:00Z",
+      "received_at": "2026-09-21T08:00:00Z",
+      "sha256": "f31a1c3951dc3c39343e3976b972b345a781eb52dcce3d14dbeadb148a70ea3a",
+      "byte_length": 253,
+      "media_type": "text/plain; charset=utf-8",
+      "idempotency_key": "urn:synthetic:fixture-emr|ENC-A1-SW|1|f31a1c3951dc3c39343e3976b972b345a781eb52dcce3d14dbeadb148a70ea3a",
+      "supersedes_version_id": null
+    }
+  ],
+  "extractions": [
+    {
+      "source_version_id": "0ccbec28-5240-40a4-b76a-7f7a61125cfb",
+      "status": "complete",
+      "text": "Sunrise Family Clinic (synthetic)\nReferral letter\nRe: 72-year-old patient for admission.\nReason: poorly controlled diabetes and hypertension.\nCurrent medicines as per attached GP list.\nThank you for seeing this patient.",
+      "pages": [
+        {
+          "page": 1,
+          "start": 0,
+          "end": 219,
+          "char_count": 219
+        }
+      ],
+      "extractor": "pdfplumber@0.11.7",
+      "note": null
+    },
+    {
+      "source_version_id": "ce13e97a-14df-4acc-b6a0-fdefd89f1e91",
+      "status": "not_applicable",
+      "text": "Admission nursing assessment.\nAllergies: NKDA (patient reported).\nObs on arrival: BP 132/78, HR 84, RR 16, SpO2 97% on room air, T 36.8.\nPain 2/10. Mobilising with frame. Oriented. Family at bedside.",
+      "pages": [],
+      "extractor": "paste@1",
+      "note": null
+    },
+    {
+      "source_version_id": "73b79741-05ab-4c7c-a1f9-d4f0699dcd53",
+      "status": "not_applicable",
+      "text": "Ward round (Dr Lim).\nPatient stable. Afebrile overnight.\nPlan:\n1. Amlodipine 5 mg OD.\n2. Metformin 500 mg BD.\n3. Blood culture sent, awaiting result.",
+      "pages": [],
+      "extractor": "paste@1",
+      "note": null
+    },
+    {
+      "source_version_id": "43233600-d694-49ad-a092-2af63339f313",
+      "status": "not_applicable",
+      "text": "Medication reconciliation (pharmacy).\nAllergy: Penicillin allergy — rash (per GP records).\nGP list: amlodipine 10 mg once daily; metformin 500 mg twice daily.",
+      "pages": [],
+      "extractor": "paste@1",
+      "note": null
+    },
+    {
+      "source_version_id": "d21f4dc4-0ecb-46fb-a082-3304401ca0fb",
+      "status": "not_applicable",
+      "text": "Medication reconciliation (pharmacy). Amended 15:45: GP list date added.\nAllergy: Penicillin allergy — rash (per GP records).\nGP list dated 01/09/2026: amlodipine 10 mg once daily; metformin 500 mg twice daily.",
+      "pages": [],
+      "extractor": "paste@1",
+      "note": null
+    },
+    {
+      "source_version_id": "166776b0-0bb5-44f7-89af-6de0a3de9a08",
+      "status": "not_applicable",
+      "text": "Blood results (phoned through by lab).\nPotassium 6.4 mmol/L. Sodium 138 mmol/L.\nNot yet reviewed by medical team.",
+      "pages": [],
+      "extractor": "paste@1",
+      "note": null
+    },
+    {
+      "source_version_id": "b5fb3381-2ef6-4b64-a360-37036124eeac",
+      "status": "no_text_layer",
+      "text": "",
+      "pages": [
+        {
+          "page": 1,
+          "start": 0,
+          "end": 0,
+          "char_count": 0
+        }
+      ],
+      "extractor": "pdfplumber@0.11.7",
+      "note": "page 1 has no text layer; manual review or approved OCR required"
+    },
+    {
+      "source_version_id": "7a04f1e9-7b6a-4cb7-93cc-45434ea13c4a",
+      "status": "not_applicable",
+      "text": "Afternoon observations.\nSpO2 89% on room air, RR 26.\nPatient sitting out in chair.",
+      "pages": [],
+      "extractor": "paste@1",
+      "note": null
+    },
+    {
+      "source_version_id": "b77eab06-f7d1-4310-a2c8-6b28b45237af",
+      "status": "not_applicable",
+      "text": "Physiotherapy: mobilisation.\nWalked 20 m with frame, supervision of one. Breathless on exertion, settled with rest.\nNext step: physio review tomorrow AM for stairs assessment.",
+      "pages": [],
+      "extractor": "paste@1",
+      "note": null
+    },
+    {
+      "source_version_id": "d29af523-8355-4add-a75a-279311cdafb3",
+      "status": "not_applicable",
+      "text": "Clinician review (Dr Lim).\nK 6.4 reviewed, treated per protocol.\nRepeat K sent; Dr Lim to review result by 18:00.\nMetformin increased to 1 g BD.",
+      "pages": [],
+      "extractor": "paste@1",
+      "note": null
+    },
+    {
+      "source_version_id": "8abe2021-94e7-4eb1-8668-3bce5204291d",
+      "status": "not_applicable",
+      "text": "Discharge planning (medical social work).\nMet patient and daughter (女儿), who prefers Hokkien: \"Lí hó, chia̍h-pá bē?\" 🙂 Day centre (pusat jagaan harian) options discussed.\nPatient stable.\nNext step: SW Goh to meet family again tomorrow 10:00.",
+      "pages": [],
+      "extractor": "paste@1",
+      "note": null
+    }
+  ],
+  "prior_flags": [],
+  "decisions": []
+}
