@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+*.egg-info/
+dist/
+build/
+.hypothesis/
+.ruff_cache/
+.mypy_cache/
+# Node / frontend
+node_modules/
+frontend/dist/
+playwright-report/
+test-results/
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+# Local env and anything that could hold clinical content
+.env
+.env.*
+*.log
+/tmp/
+/scratch/
