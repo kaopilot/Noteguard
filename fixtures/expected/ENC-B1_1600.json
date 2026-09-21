@@ -1,0 +1,83 @@
+{
+  "scenario": "ENC-B1_1600",
+  "encounter_ref": "ENC-B1",
+  "encounter_id": "a44ae712-a26c-4930-99b5-b2c96bc56dcf",
+  "cutoff": "2026-09-21T08:00:00Z",
+  "evaluated_at": "2026-09-21T08:01:00Z",
+  "run_id": "cc4fa4d3-2af2-4985-a31d-6cc96f32353e",
+  "prior_scenario": null,
+  "comparison": "flags, bubbles and summary claims: EXACT set equality on the fields in fixtures/expected/README.md; required_changes: must be present",
+  "run": {
+    "run_id": "cc4fa4d3-2af2-4985-a31d-6cc96f32353e",
+    "encounter_id": "a44ae712-a26c-4930-99b5-b2c96bc56dcf",
+    "source_cutoff": "2026-09-21T08:00:00Z",
+    "ruleset_version": "v1",
+    "registry_version": "v1",
+    "source_set_hash": "76d5e91ff921dabc372a8b0f87608dcfe82e3a73f763144bcdc34e344776bf49",
+    "started_at": "2026-09-21T08:01:00Z",
+    "completed_at": "2026-09-21T08:01:00Z",
+    "outcome": "completed"
+  },
+  "flags": [],
+  "must_not_flag": [
+    {
+      "rule_id": "ALG-001",
+      "subject_key": "*",
+      "why": "NKDA alone, with no named allergy anywhere in scope, is not a conflict."
+    },
+    {
+      "rule_id": "*",
+      "subject_key": "*",
+      "why": "Benign single note: no rule applies."
+    }
+  ],
+  "must_not_suppress_note": null,
+  "bubbles": [],
+  "required_changes": [],
+  "summary": {
+    "encounter_id": "a44ae712-a26c-4930-99b5-b2c96bc56dcf",
+    "encounter_ref": "ENC-B1",
+    "patient_ref": "fb75b516-b2bd-4b12-ae6e-8f4a1dbd7acf",
+    "generated_at": "2026-09-21T08:01:00Z",
+    "cutoff": "2026-09-21T08:00:00Z",
+    "ruleset_version": "v1",
+    "registry_version": "v1",
+    "closure_status": "clear",
+    "timeline": [
+      {
+        "source_id": "a2a86b78-cbc7-49e1-ac79-aba5bfee45ca",
+        "note_version_id": "685801f1-ab3d-408f-9dfa-d8517d381863",
+        "version": 1,
+        "author_staff_id": "287b4e59-ae3a-4e09-a934-7d124867b817",
+        "discipline": "nursing",
+        "source_type": "pasted_text",
+        "source_time": "2026-09-21T01:15:00Z",
+        "extraction_status": "not_applicable",
+        "title": "Ward nursing note"
+      }
+    ],
+    "claims": [],
+    "human_review_statement": "Requires human review. Not the medical record. Does not diagnose or recommend treatment.",
+    "stale_after_source_change": false
+  },
+  "closure": {
+    "encounter_id": "a44ae712-a26c-4930-99b5-b2c96bc56dcf",
+    "cutoff": "2026-09-21T08:00:00Z",
+    "status": "clear",
+    "tier1_blockers": [],
+    "tier2_open": [],
+    "tier3_open_count": 0,
+    "decisions": []
+  },
+  "glance": {
+    "encounter_id": "a44ae712-a26c-4930-99b5-b2c96bc56dcf",
+    "cutoff": "2026-09-21T08:00:00Z",
+    "closure_status": "clear",
+    "open_tier1": 0,
+    "open_tier2": 0,
+    "open_tier3": 0,
+    "tier1_owner_ids": [],
+    "top_bubble_ids": [],
+    "top_bubble_statuses": []
+  }
+}

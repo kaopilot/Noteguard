@@ -1,0 +1,1182 @@
+{
+  "scenario": "ENC-A1_1600_rerun",
+  "encounter_ref": "ENC-A1",
+  "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+  "cutoff": "2026-09-21T08:00:00Z",
+  "evaluated_at": "2026-09-21T08:01:00Z",
+  "run_id": "20ff9a3b-78e9-4bd5-a75c-17a08775126d",
+  "prior_scenario": "ENC-A1_1130",
+  "comparison": "flags, bubbles and summary claims: EXACT set equality on the fields in fixtures/expected/README.md; required_changes: must be present",
+  "run": {
+    "run_id": "20ff9a3b-78e9-4bd5-a75c-17a08775126d",
+    "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+    "source_cutoff": "2026-09-21T08:00:00Z",
+    "ruleset_version": "v1",
+    "registry_version": "v1",
+    "source_set_hash": "ef31929ca92bc5df2c29bba89dfc591a3bb3aaabdf66e47272f745cd22257bb9",
+    "started_at": "2026-09-21T08:01:00Z",
+    "completed_at": "2026-09-21T08:01:00Z",
+    "outcome": "completed_with_extraction_gaps"
+  },
+  "flags": [
+    {
+      "flag_id": "flg_cddb71a7b6bd3d9b37f6bbe7",
+      "tier": 1,
+      "category": "allergy-conflict",
+      "title": "Conflicting allergy documentation",
+      "reason": "Admission nursing assessment (Nurse Tan, 08:40) states \"Allergies: NKDA (patient reported)\" while Medication reconciliation (Pharmacist Ong, 10:30) names \"Allergy: Penicillin allergy — rash (per GP records)\".",
+      "evidence": [
+        {
+          "note_version_id": "ce13e97a-14df-4acc-b6a0-fdefd89f1e91",
+          "start": 30,
+          "end": 64,
+          "page": null,
+          "quote": "Allergies: NKDA (patient reported)",
+          "quote_sha256": "e7b2b3f9ba7530153c58115a208f940ff22e4bd48c31a822471e718efd18a558",
+          "role_in_flag": "claim",
+          "evidence_revision": 1
+        },
+        {
+          "note_version_id": "43233600-d694-49ad-a092-2af63339f313",
+          "start": 38,
+          "end": 89,
+          "page": null,
+          "quote": "Allergy: Penicillin allergy — rash (per GP records)",
+          "quote_sha256": "ee7ad1035c7536648023bfd1b7e097e37c814cd4d2819e310101a67a5d07ec8d",
+          "role_in_flag": "counter_claim",
+          "evidence_revision": 1
+        }
+      ],
+      "owner_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+      "check_version": "ruleset@v1;rule@ALG-001.1;registry@v1",
+      "created_at": "2026-09-21T03:31:00Z",
+      "rule_id": "ALG-001",
+      "lens": "contradiction",
+      "subject_key": "allergen:penicillin",
+      "state": "open",
+      "revision": 2,
+      "evidence_revision": 1,
+      "affected_contributor_ids": [
+        "cb72e81b-2e7c-4703-88a8-ef003ea8c801",
+        "dbdfd3c3-83be-4e90-ae1c-7b4221daa51c"
+      ],
+      "question": null,
+      "ready_for_clinician": false,
+      "new_evidence_since_decision": false,
+      "source_changed_since_flag": true,
+      "first_run_id": "599fb7af-e782-4054-87f8-ad3e8c644aca",
+      "last_run_id": "20ff9a3b-78e9-4bd5-a75c-17a08775126d"
+    },
+    {
+      "flag_id": "flg_3918a58f644beb7e8fcf597d",
+      "tier": 1,
+      "category": "critical-observation-unacknowledged",
+      "title": "Critical result without documented response",
+      "reason": "Blood results (Nurse Tan, 11:15) records \"Potassium 6.4 mmol/L\". No later review, repeat, treatment, escalation or transfer for this result is documented in the supplied sources up to 11:30.",
+      "evidence": [
+        {
+          "note_version_id": "166776b0-0bb5-44f7-89af-6de0a3de9a08",
+          "start": 39,
+          "end": 59,
+          "page": null,
+          "quote": "Potassium 6.4 mmol/L",
+          "quote_sha256": "3f8a0f49adbe0973052ebdd7f10a0c5e6de719033496e98292ce9c03a1a7fc6e",
+          "role_in_flag": "claim",
+          "evidence_revision": 1
+        },
+        {
+          "note_version_id": "d29af523-8355-4add-a75a-279311cdafb3",
+          "start": 27,
+          "end": 63,
+          "page": null,
+          "quote": "K 6.4 reviewed, treated per protocol",
+          "quote_sha256": "38136ab152451eaa03bae448eeeb3bbb9ce769db37c9781bca01157e4f521334",
+          "role_in_flag": "suppressor",
+          "evidence_revision": 2
+        },
+        {
+          "note_version_id": "d29af523-8355-4add-a75a-279311cdafb3",
+          "start": 65,
+          "end": 112,
+          "page": null,
+          "quote": "Repeat K sent; Dr Lim to review result by 18:00",
+          "quote_sha256": "61633ceb9fffa4f2f7a7ad89ea42d344a5dae229ca88f2201877f78fabad4281",
+          "role_in_flag": "suppressor",
+          "evidence_revision": 2
+        }
+      ],
+      "owner_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+      "check_version": "ruleset@v1;rule@CRIT-001.1;registry@v1",
+      "created_at": "2026-09-21T03:31:00Z",
+      "rule_id": "CRIT-001",
+      "lens": "completeness",
+      "subject_key": "analyte:potassium",
+      "state": "superseded",
+      "revision": 2,
+      "evidence_revision": 2,
+      "affected_contributor_ids": [
+        "cb72e81b-2e7c-4703-88a8-ef003ea8c801"
+      ],
+      "question": null,
+      "ready_for_clinician": false,
+      "new_evidence_since_decision": false,
+      "source_changed_since_flag": false,
+      "first_run_id": "599fb7af-e782-4054-87f8-ad3e8c644aca",
+      "last_run_id": "20ff9a3b-78e9-4bd5-a75c-17a08775126d"
+    },
+    {
+      "flag_id": "flg_85412ce328b999e15e00274e",
+      "tier": 2,
+      "category": "dose-discrepancy",
+      "title": "Dose differs between sources",
+      "reason": "Ward round (Dr Lim, 09:00) records \"Amlodipine 5 mg OD\"; Medication reconciliation (Pharmacist Ong, 10:30) records \"GP list: amlodipine 10 mg once daily; metformin 500 mg twice daily\". No explicit change links them.",
+      "evidence": [
+        {
+          "note_version_id": "73b79741-05ab-4c7c-a1f9-d4f0699dcd53",
+          "start": 66,
+          "end": 84,
+          "page": null,
+          "quote": "Amlodipine 5 mg OD",
+          "quote_sha256": "d5c116f006810bfe3954ef4815c53df925e4d43037c296523ecb1c4cbae1088c",
+          "role_in_flag": "claim",
+          "evidence_revision": 1
+        },
+        {
+          "note_version_id": "43233600-d694-49ad-a092-2af63339f313",
+          "start": 91,
+          "end": 157,
+          "page": null,
+          "quote": "GP list: amlodipine 10 mg once daily; metformin 500 mg twice daily",
+          "quote_sha256": "7a45e13428359fb28b96b4dbb49af2c792d9eae9f1ebd9374c4d062b78b897c0",
+          "role_in_flag": "counter_claim",
+          "evidence_revision": 1
+        }
+      ],
+      "owner_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+      "check_version": "ruleset@v1;rule@DOSE-001.1;registry@v1",
+      "created_at": "2026-09-21T03:31:00Z",
+      "rule_id": "DOSE-001",
+      "lens": "consistency",
+      "subject_key": "drug:amlodipine",
+      "state": "open",
+      "revision": 2,
+      "evidence_revision": 1,
+      "affected_contributor_ids": [
+        "dbdfd3c3-83be-4e90-ae1c-7b4221daa51c"
+      ],
+      "question": null,
+      "ready_for_clinician": false,
+      "new_evidence_since_decision": false,
+      "source_changed_since_flag": true,
+      "first_run_id": "599fb7af-e782-4054-87f8-ad3e8c644aca",
+      "last_run_id": "20ff9a3b-78e9-4bd5-a75c-17a08775126d"
+    },
+    {
+      "flag_id": "flg_d5133a3c16c2c8966ee4d7a4",
+      "tier": 2,
+      "category": "incomplete-extraction",
+      "title": "Document text could not be fully read",
+      "reason": "Scanned outside lab report (Nurse Ravi, 12:10) has extraction status no_text_layer. Its content has not been checked; answers about absent documentation are limited until it is reviewed manually or by approved OCR.",
+      "evidence": [
+        {
+          "note_version_id": "b5fb3381-2ef6-4b64-a360-37036124eeac",
+          "start": 0,
+          "end": 0,
+          "page": 1,
+          "quote": "",
+          "quote_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "role_in_flag": "extraction_gap",
+          "evidence_revision": 1
+        }
+      ],
+      "owner_staff_id": "38eafae6-b7ce-42a5-8a9d-2a060d421f18",
+      "check_version": "ruleset@v1;rule@PDF-001.1;registry@v1",
+      "created_at": "2026-09-21T08:01:00Z",
+      "rule_id": "PDF-001",
+      "lens": "completeness",
+      "subject_key": "source:0759710b-2e34-4b3c-b355-df4b71bfa5d9",
+      "state": "open",
+      "revision": 1,
+      "evidence_revision": 1,
+      "affected_contributor_ids": [],
+      "question": null,
+      "ready_for_clinician": false,
+      "new_evidence_since_decision": false,
+      "source_changed_since_flag": false,
+      "first_run_id": "20ff9a3b-78e9-4bd5-a75c-17a08775126d",
+      "last_run_id": "20ff9a3b-78e9-4bd5-a75c-17a08775126d"
+    },
+    {
+      "flag_id": "flg_e416f7c12a55e19fcf72e588",
+      "tier": 2,
+      "category": "pending-action-owner-timing",
+      "title": "Pending item without owner or timing",
+      "reason": "Ward round (Dr Lim, 09:00) records \"Blood culture sent, awaiting result\" without an explicit owner or timing in the supplied sources.",
+      "evidence": [
+        {
+          "note_version_id": "73b79741-05ab-4c7c-a1f9-d4f0699dcd53",
+          "start": 113,
+          "end": 148,
+          "page": null,
+          "quote": "Blood culture sent, awaiting result",
+          "quote_sha256": "2af00011f022d47071b23a5d45dd251e21eb03c0c59cedf7ef8c8e3205dc9f85",
+          "role_in_flag": "claim",
+          "evidence_revision": 1
+        }
+      ],
+      "owner_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+      "check_version": "ruleset@v1;rule@PEND-001.1;registry@v1",
+      "created_at": "2026-09-21T03:31:00Z",
+      "rule_id": "PEND-001",
+      "lens": "completeness",
+      "subject_key": "test:blood_culture",
+      "state": "open",
+      "revision": 1,
+      "evidence_revision": 1,
+      "affected_contributor_ids": [],
+      "question": null,
+      "ready_for_clinician": false,
+      "new_evidence_since_decision": false,
+      "source_changed_since_flag": false,
+      "first_run_id": "599fb7af-e782-4054-87f8-ad3e8c644aca",
+      "last_run_id": "20ff9a3b-78e9-4bd5-a75c-17a08775126d"
+    },
+    {
+      "flag_id": "flg_370928b3cb0abf0962a0b83b",
+      "tier": 3,
+      "category": "possible-copied-forward-text",
+      "title": "Possibly copied-forward statement",
+      "reason": "Discharge planning (SW Goh, 16:00) repeats \"Patient stable\" from Ward round (Dr Lim, 09:00); Afternoon observations (Nurse Ravi, 13:00) records \"SpO2 89% on room air, RR 26\" in between.",
+      "evidence": [
+        {
+          "note_version_id": "73b79741-05ab-4c7c-a1f9-d4f0699dcd53",
+          "start": 21,
+          "end": 35,
+          "page": null,
+          "quote": "Patient stable",
+          "quote_sha256": "10fe4eebacf38177093a5de24b3b0d2dbd3e8ceb1e6a9c830f789a93e3e9c655",
+          "role_in_flag": "origin",
+          "evidence_revision": 1
+        },
+        {
+          "note_version_id": "7a04f1e9-7b6a-4cb7-93cc-45434ea13c4a",
+          "start": 24,
+          "end": 51,
+          "page": null,
+          "quote": "SpO2 89% on room air, RR 26",
+          "quote_sha256": "8b8c385ef82390e213f2ae4777a29b7e4ffa6120ca6a086a025f67248c2d22c8",
+          "role_in_flag": "counter_claim",
+          "evidence_revision": 1
+        },
+        {
+          "note_version_id": "8abe2021-94e7-4eb1-8668-3bce5204291d",
+          "start": 171,
+          "end": 185,
+          "page": null,
+          "quote": "Patient stable",
+          "quote_sha256": "10fe4eebacf38177093a5de24b3b0d2dbd3e8ceb1e6a9c830f789a93e3e9c655",
+          "role_in_flag": "claim",
+          "evidence_revision": 1
+        }
+      ],
+      "owner_staff_id": "dac4e71c-daea-4157-b5fd-198cc158229c",
+      "check_version": "ruleset@v1;rule@DIFF-001.1;registry@v1",
+      "created_at": "2026-09-21T08:01:00Z",
+      "rule_id": "DIFF-001",
+      "lens": "continuity",
+      "subject_key": "status:stable@source:8a19df15-93bf-4a68-b4aa-ca6f085a91e9",
+      "state": "open",
+      "revision": 1,
+      "evidence_revision": 1,
+      "affected_contributor_ids": [
+        "38eafae6-b7ce-42a5-8a9d-2a060d421f18",
+        "b86630ca-a475-4a29-b619-1b764a5c0059"
+      ],
+      "question": "Is the 16:00 \"Patient stable\" statement current?",
+      "ready_for_clinician": false,
+      "new_evidence_since_decision": false,
+      "source_changed_since_flag": false,
+      "first_run_id": "20ff9a3b-78e9-4bd5-a75c-17a08775126d",
+      "last_run_id": "20ff9a3b-78e9-4bd5-a75c-17a08775126d"
+    }
+  ],
+  "must_not_flag": [
+    {
+      "rule_id": "DOSE-001",
+      "subject_key": "drug:metformin",
+      "why": "Explicit change (L3)."
+    },
+    {
+      "rule_id": "PEND-001",
+      "subject_key": "analyte:potassium",
+      "why": "Owner and time in the same statement."
+    }
+  ],
+  "must_not_suppress_note": "CRIT-001 must be superseded, not resolved or dismissed, and must still block closure.",
+  "bubbles": [
+    {
+      "bubble_id": "bbl_02f75f81c3a8e34201f7d440",
+      "question_template_id": "q_allergy_which_correct",
+      "question": "Which allergy entry is correct?",
+      "subject_key": "allergen:penicillin",
+      "status": "conflicting",
+      "evidence": [
+        {
+          "note_version_id": "ce13e97a-14df-4acc-b6a0-fdefd89f1e91",
+          "start": 30,
+          "end": 64,
+          "page": null,
+          "quote": "Allergies: NKDA (patient reported)",
+          "quote_sha256": "e7b2b3f9ba7530153c58115a208f940ff22e4bd48c31a822471e718efd18a558",
+          "role_in_flag": "claim",
+          "evidence_revision": 1
+        },
+        {
+          "note_version_id": "43233600-d694-49ad-a092-2af63339f313",
+          "start": 38,
+          "end": 89,
+          "page": null,
+          "quote": "Allergy: Penicillin allergy — rash (per GP records)",
+          "quote_sha256": "ee7ad1035c7536648023bfd1b7e097e37c814cd4d2819e310101a67a5d07ec8d",
+          "role_in_flag": "counter_claim",
+          "evidence_revision": 1
+        }
+      ],
+      "cutoff": "2026-09-21T08:00:00Z",
+      "uncertainty_note": "The supplied sources disagree. Only a clinician's decision can settle which entry is correct; the checker does not choose between sources.",
+      "flag_id": "flg_cddb71a7b6bd3d9b37f6bbe7",
+      "absence": null,
+      "rank": 2
+    },
+    {
+      "bubble_id": "bbl_ee40cef403c2a3508911c8bf",
+      "question_template_id": "q_crit_response",
+      "question": "Was the critical potassium reviewed or repeated?",
+      "subject_key": "analyte:potassium",
+      "status": "documented",
+      "evidence": [
+        {
+          "note_version_id": "166776b0-0bb5-44f7-89af-6de0a3de9a08",
+          "start": 39,
+          "end": 59,
+          "page": null,
+          "quote": "Potassium 6.4 mmol/L",
+          "quote_sha256": "3f8a0f49adbe0973052ebdd7f10a0c5e6de719033496e98292ce9c03a1a7fc6e",
+          "role_in_flag": "trigger",
+          "evidence_revision": 1
+        },
+        {
+          "note_version_id": "d29af523-8355-4add-a75a-279311cdafb3",
+          "start": 27,
+          "end": 63,
+          "page": null,
+          "quote": "K 6.4 reviewed, treated per protocol",
+          "quote_sha256": "38136ab152451eaa03bae448eeeb3bbb9ce769db37c9781bca01157e4f521334",
+          "role_in_flag": "suppressor",
+          "evidence_revision": 1
+        },
+        {
+          "note_version_id": "d29af523-8355-4add-a75a-279311cdafb3",
+          "start": 65,
+          "end": 112,
+          "page": null,
+          "quote": "Repeat K sent; Dr Lim to review result by 18:00",
+          "quote_sha256": "61633ceb9fffa4f2f7a7ad89ea42d344a5dae229ca88f2201877f78fabad4281",
+          "role_in_flag": "suppressor",
+          "evidence_revision": 1
+        }
+      ],
+      "cutoff": "2026-09-21T08:00:00Z",
+      "uncertainty_note": "Documented in the cited source. The checker matched wording only and has not verified the clinical content.",
+      "flag_id": "flg_3918a58f644beb7e8fcf597d",
+      "absence": null,
+      "rank": 3
+    },
+    {
+      "bubble_id": "bbl_bd55c3cea26302c07af0856f",
+      "question_template_id": "q_ecg_documented",
+      "question": "Is an ECG documented for this episode?",
+      "subject_key": "analyte:potassium",
+      "status": "incomplete_extraction",
+      "evidence": [
+        {
+          "note_version_id": "166776b0-0bb5-44f7-89af-6de0a3de9a08",
+          "start": 39,
+          "end": 59,
+          "page": null,
+          "quote": "Potassium 6.4 mmol/L",
+          "quote_sha256": "3f8a0f49adbe0973052ebdd7f10a0c5e6de719033496e98292ce9c03a1a7fc6e",
+          "role_in_flag": "trigger",
+          "evidence_revision": 1
+        },
+        {
+          "note_version_id": "b5fb3381-2ef6-4b64-a360-37036124eeac",
+          "start": 0,
+          "end": 0,
+          "page": 1,
+          "quote": "",
+          "quote_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "role_in_flag": "extraction_gap",
+          "evidence_revision": 1
+        }
+      ],
+      "cutoff": "2026-09-21T08:00:00Z",
+      "uncertainty_note": "1 in-scope source could not be read: Scanned outside lab report (Nurse Ravi, 12:10). The answer stays incomplete until it is reviewed manually or by approved OCR.",
+      "flag_id": "flg_3918a58f644beb7e8fcf597d",
+      "absence": {
+        "question_template_id": "q_ecg_documented",
+        "terms_searched": [
+          "test:ecg"
+        ],
+        "registry_version": "v1",
+        "sources_searched": [
+          {
+            "note_version_id": "0ccbec28-5240-40a4-b76a-7f7a61125cfb",
+            "extraction_status": "complete"
+          },
+          {
+            "note_version_id": "ce13e97a-14df-4acc-b6a0-fdefd89f1e91",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "73b79741-05ab-4c7c-a1f9-d4f0699dcd53",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "d21f4dc4-0ecb-46fb-a082-3304401ca0fb",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "166776b0-0bb5-44f7-89af-6de0a3de9a08",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "b5fb3381-2ef6-4b64-a360-37036124eeac",
+            "extraction_status": "no_text_layer"
+          },
+          {
+            "note_version_id": "7a04f1e9-7b6a-4cb7-93cc-45434ea13c4a",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "b77eab06-f7d1-4310-a2c8-6b28b45237af",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "d29af523-8355-4add-a75a-279311cdafb3",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "8abe2021-94e7-4eb1-8668-3bce5204291d",
+            "extraction_status": "not_applicable"
+          }
+        ],
+        "cutoff": "2026-09-21T08:00:00Z",
+        "status": "incomplete_extraction"
+      },
+      "rank": 4
+    },
+    {
+      "bubble_id": "bbl_22bc0779bf7b4807ae5ec038",
+      "question_template_id": "q_dose_current",
+      "question": "Which amlodipine dose is current?",
+      "subject_key": "drug:amlodipine",
+      "status": "conflicting",
+      "evidence": [
+        {
+          "note_version_id": "73b79741-05ab-4c7c-a1f9-d4f0699dcd53",
+          "start": 66,
+          "end": 84,
+          "page": null,
+          "quote": "Amlodipine 5 mg OD",
+          "quote_sha256": "d5c116f006810bfe3954ef4815c53df925e4d43037c296523ecb1c4cbae1088c",
+          "role_in_flag": "claim",
+          "evidence_revision": 1
+        },
+        {
+          "note_version_id": "43233600-d694-49ad-a092-2af63339f313",
+          "start": 91,
+          "end": 157,
+          "page": null,
+          "quote": "GP list: amlodipine 10 mg once daily; metformin 500 mg twice daily",
+          "quote_sha256": "7a45e13428359fb28b96b4dbb49af2c792d9eae9f1ebd9374c4d062b78b897c0",
+          "role_in_flag": "counter_claim",
+          "evidence_revision": 1
+        }
+      ],
+      "cutoff": "2026-09-21T08:00:00Z",
+      "uncertainty_note": "The supplied sources disagree. Only a clinician's decision can settle which entry is correct; the checker does not choose between sources.",
+      "flag_id": "flg_85412ce328b999e15e00274e",
+      "absence": null,
+      "rank": 5
+    },
+    {
+      "bubble_id": "bbl_126d5c110b0d79dfed19f2ec",
+      "question_template_id": "q_pending_owner",
+      "question": "Who owns the pending blood culture result?",
+      "subject_key": "test:blood_culture",
+      "status": "incomplete_extraction",
+      "evidence": [
+        {
+          "note_version_id": "73b79741-05ab-4c7c-a1f9-d4f0699dcd53",
+          "start": 113,
+          "end": 148,
+          "page": null,
+          "quote": "Blood culture sent, awaiting result",
+          "quote_sha256": "2af00011f022d47071b23a5d45dd251e21eb03c0c59cedf7ef8c8e3205dc9f85",
+          "role_in_flag": "trigger",
+          "evidence_revision": 1
+        },
+        {
+          "note_version_id": "b5fb3381-2ef6-4b64-a360-37036124eeac",
+          "start": 0,
+          "end": 0,
+          "page": 1,
+          "quote": "",
+          "quote_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "role_in_flag": "extraction_gap",
+          "evidence_revision": 1
+        }
+      ],
+      "cutoff": "2026-09-21T08:00:00Z",
+      "uncertainty_note": "1 in-scope source could not be read: Scanned outside lab report (Nurse Ravi, 12:10). The answer stays incomplete until it is reviewed manually or by approved OCR.",
+      "flag_id": "flg_e416f7c12a55e19fcf72e588",
+      "absence": {
+        "question_template_id": "q_pending_owner",
+        "terms_searched": [
+          "test:blood_culture",
+          "cue:owner"
+        ],
+        "registry_version": "v1",
+        "sources_searched": [
+          {
+            "note_version_id": "0ccbec28-5240-40a4-b76a-7f7a61125cfb",
+            "extraction_status": "complete"
+          },
+          {
+            "note_version_id": "ce13e97a-14df-4acc-b6a0-fdefd89f1e91",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "73b79741-05ab-4c7c-a1f9-d4f0699dcd53",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "d21f4dc4-0ecb-46fb-a082-3304401ca0fb",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "166776b0-0bb5-44f7-89af-6de0a3de9a08",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "b5fb3381-2ef6-4b64-a360-37036124eeac",
+            "extraction_status": "no_text_layer"
+          },
+          {
+            "note_version_id": "7a04f1e9-7b6a-4cb7-93cc-45434ea13c4a",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "b77eab06-f7d1-4310-a2c8-6b28b45237af",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "d29af523-8355-4add-a75a-279311cdafb3",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "8abe2021-94e7-4eb1-8668-3bce5204291d",
+            "extraction_status": "not_applicable"
+          }
+        ],
+        "cutoff": "2026-09-21T08:00:00Z",
+        "status": "incomplete_extraction"
+      },
+      "rank": 6
+    },
+    {
+      "bubble_id": "bbl_39239dd44f6452dd74924b80",
+      "question_template_id": "q_pdf_manual_review",
+      "question": "Has Scanned outside lab report (Nurse Ravi, 12:10) been reviewed manually or by approved OCR?",
+      "subject_key": "source:0759710b-2e34-4b3c-b355-df4b71bfa5d9",
+      "status": "requires_human_review",
+      "evidence": [
+        {
+          "note_version_id": "b5fb3381-2ef6-4b64-a360-37036124eeac",
+          "start": 0,
+          "end": 0,
+          "page": 1,
+          "quote": "",
+          "quote_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "role_in_flag": "extraction_gap",
+          "evidence_revision": 1
+        }
+      ],
+      "cutoff": "2026-09-21T08:00:00Z",
+      "uncertainty_note": "The checker cannot answer this from the supplied text; a person needs to check the document.",
+      "flag_id": "flg_d5133a3c16c2c8966ee4d7a4",
+      "absence": null,
+      "rank": 7
+    },
+    {
+      "bubble_id": "bbl_5870115190d951e9f22a47f2",
+      "question_template_id": "q_carried_forward_current",
+      "question": "Is the 16:00 \"Patient stable\" statement current?",
+      "subject_key": "status:stable@source:8a19df15-93bf-4a68-b4aa-ca6f085a91e9",
+      "status": "requires_human_review",
+      "evidence": [
+        {
+          "note_version_id": "73b79741-05ab-4c7c-a1f9-d4f0699dcd53",
+          "start": 21,
+          "end": 35,
+          "page": null,
+          "quote": "Patient stable",
+          "quote_sha256": "10fe4eebacf38177093a5de24b3b0d2dbd3e8ceb1e6a9c830f789a93e3e9c655",
+          "role_in_flag": "origin",
+          "evidence_revision": 1
+        },
+        {
+          "note_version_id": "7a04f1e9-7b6a-4cb7-93cc-45434ea13c4a",
+          "start": 24,
+          "end": 51,
+          "page": null,
+          "quote": "SpO2 89% on room air, RR 26",
+          "quote_sha256": "8b8c385ef82390e213f2ae4777a29b7e4ffa6120ca6a086a025f67248c2d22c8",
+          "role_in_flag": "counter_claim",
+          "evidence_revision": 1
+        },
+        {
+          "note_version_id": "8abe2021-94e7-4eb1-8668-3bce5204291d",
+          "start": 171,
+          "end": 185,
+          "page": null,
+          "quote": "Patient stable",
+          "quote_sha256": "10fe4eebacf38177093a5de24b3b0d2dbd3e8ceb1e6a9c830f789a93e3e9c655",
+          "role_in_flag": "claim",
+          "evidence_revision": 1
+        }
+      ],
+      "cutoff": "2026-09-21T08:00:00Z",
+      "uncertainty_note": "The checker cannot tell whether a repeated statement is current; the note's author or the responsible clinician needs to confirm.",
+      "flag_id": "flg_370928b3cb0abf0962a0b83b",
+      "absence": null,
+      "rank": 8
+    }
+  ],
+  "required_changes": [
+    {
+      "kind": "reworded",
+      "subject_key": "drug:metformin",
+      "from_evidence": {
+        "note_version_id": "73b79741-05ab-4c7c-a1f9-d4f0699dcd53",
+        "start": 89,
+        "end": 108,
+        "page": null,
+        "quote": "Metformin 500 mg BD",
+        "quote_sha256": "024b9deebdc6eb35967286f832d52cde140beb3cea5f2698cabc0f5205ffd866",
+        "role_in_flag": "origin",
+        "evidence_revision": 1
+      },
+      "to_evidence": {
+        "note_version_id": "d21f4dc4-0ecb-46fb-a082-3304401ca0fb",
+        "start": 126,
+        "end": 209,
+        "page": null,
+        "quote": "GP list dated 01/09/2026: amlodipine 10 mg once daily; metformin 500 mg twice daily",
+        "quote_sha256": "72893e247ac277c5b7ade92bdc431ce11fa498009855f3dea55812959e48e8a5",
+        "role_in_flag": "claim",
+        "evidence_revision": 1
+      }
+    },
+    {
+      "kind": "explicit_change",
+      "subject_key": "drug:metformin",
+      "from_evidence": {
+        "note_version_id": "d21f4dc4-0ecb-46fb-a082-3304401ca0fb",
+        "start": 126,
+        "end": 209,
+        "page": null,
+        "quote": "GP list dated 01/09/2026: amlodipine 10 mg once daily; metformin 500 mg twice daily",
+        "quote_sha256": "72893e247ac277c5b7ade92bdc431ce11fa498009855f3dea55812959e48e8a5",
+        "role_in_flag": "origin",
+        "evidence_revision": 1
+      },
+      "to_evidence": {
+        "note_version_id": "d29af523-8355-4add-a75a-279311cdafb3",
+        "start": 114,
+        "end": 143,
+        "page": null,
+        "quote": "Metformin increased to 1 g BD",
+        "quote_sha256": "bba152a2deb0b89efc930a78381313d48a366e71f7f9c9bb600d84eefb4f409c",
+        "role_in_flag": "claim",
+        "evidence_revision": 1
+      }
+    },
+    {
+      "kind": "carried_forward",
+      "subject_key": "status:stable",
+      "from_evidence": {
+        "note_version_id": "73b79741-05ab-4c7c-a1f9-d4f0699dcd53",
+        "start": 21,
+        "end": 35,
+        "page": null,
+        "quote": "Patient stable",
+        "quote_sha256": "10fe4eebacf38177093a5de24b3b0d2dbd3e8ceb1e6a9c830f789a93e3e9c655",
+        "role_in_flag": "origin",
+        "evidence_revision": 1
+      },
+      "to_evidence": {
+        "note_version_id": "8abe2021-94e7-4eb1-8668-3bce5204291d",
+        "start": 171,
+        "end": 185,
+        "page": null,
+        "quote": "Patient stable",
+        "quote_sha256": "10fe4eebacf38177093a5de24b3b0d2dbd3e8ceb1e6a9c830f789a93e3e9c655",
+        "role_in_flag": "claim",
+        "evidence_revision": 1
+      }
+    }
+  ],
+  "summary": {
+    "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+    "encounter_ref": "ENC-A1",
+    "patient_ref": "aa257b7b-0106-45be-9945-c9455b0fc4bc",
+    "generated_at": "2026-09-21T08:01:00Z",
+    "cutoff": "2026-09-21T08:00:00Z",
+    "ruleset_version": "v1",
+    "registry_version": "v1",
+    "closure_status": "blocked",
+    "timeline": [
+      {
+        "source_id": "7a76b06c-295c-44e4-9886-394b12330487",
+        "note_version_id": "0ccbec28-5240-40a4-b76a-7f7a61125cfb",
+        "version": 1,
+        "author_staff_id": "f0c0e2c7-db76-41cf-a7b3-b803eca3ccce",
+        "discipline": "other",
+        "source_type": "pdf",
+        "source_time": "2026-09-21T00:30:00Z",
+        "extraction_status": "complete",
+        "title": "Outside referral letter"
+      },
+      {
+        "source_id": "6943756f-9798-4e81-9e3c-712d6c161b7b",
+        "note_version_id": "ce13e97a-14df-4acc-b6a0-fdefd89f1e91",
+        "version": 1,
+        "author_staff_id": "cb72e81b-2e7c-4703-88a8-ef003ea8c801",
+        "discipline": "nursing",
+        "source_type": "pasted_text",
+        "source_time": "2026-09-21T00:40:00Z",
+        "extraction_status": "not_applicable",
+        "title": "Admission nursing assessment"
+      },
+      {
+        "source_id": "a21b2eed-367c-4a67-8c53-f68ac8d484fb",
+        "note_version_id": "73b79741-05ab-4c7c-a1f9-d4f0699dcd53",
+        "version": 1,
+        "author_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+        "discipline": "clinician",
+        "source_type": "pasted_text",
+        "source_time": "2026-09-21T01:00:00Z",
+        "extraction_status": "not_applicable",
+        "title": "Ward round"
+      },
+      {
+        "source_id": "6e3e690c-8309-4f85-901d-6844d71575a3",
+        "note_version_id": "d21f4dc4-0ecb-46fb-a082-3304401ca0fb",
+        "version": 2,
+        "author_staff_id": "dbdfd3c3-83be-4e90-ae1c-7b4221daa51c",
+        "discipline": "pharmacy",
+        "source_type": "pasted_text",
+        "source_time": "2026-09-21T02:30:00Z",
+        "extraction_status": "not_applicable",
+        "title": "Medication reconciliation"
+      },
+      {
+        "source_id": "3bdc9c0f-8f40-4988-9b30-3d7e10ad49e5",
+        "note_version_id": "166776b0-0bb5-44f7-89af-6de0a3de9a08",
+        "version": 1,
+        "author_staff_id": "cb72e81b-2e7c-4703-88a8-ef003ea8c801",
+        "discipline": "nursing",
+        "source_type": "pasted_text",
+        "source_time": "2026-09-21T03:15:00Z",
+        "extraction_status": "not_applicable",
+        "title": "Blood results"
+      },
+      {
+        "source_id": "0759710b-2e34-4b3c-b355-df4b71bfa5d9",
+        "note_version_id": "b5fb3381-2ef6-4b64-a360-37036124eeac",
+        "version": 1,
+        "author_staff_id": "38eafae6-b7ce-42a5-8a9d-2a060d421f18",
+        "discipline": "other",
+        "source_type": "pdf",
+        "source_time": "2026-09-21T04:10:00Z",
+        "extraction_status": "no_text_layer",
+        "title": "Scanned outside lab report"
+      },
+      {
+        "source_id": "6dd6c21e-b1f5-49b1-8da0-41ac8578e387",
+        "note_version_id": "7a04f1e9-7b6a-4cb7-93cc-45434ea13c4a",
+        "version": 1,
+        "author_staff_id": "38eafae6-b7ce-42a5-8a9d-2a060d421f18",
+        "discipline": "nursing",
+        "source_type": "pasted_text",
+        "source_time": "2026-09-21T05:00:00Z",
+        "extraction_status": "not_applicable",
+        "title": "Afternoon observations"
+      },
+      {
+        "source_id": "0d21c32b-ac53-4b54-9c46-11cb2a06fdd6",
+        "note_version_id": "b77eab06-f7d1-4310-a2c8-6b28b45237af",
+        "version": 1,
+        "author_staff_id": "1ef008e1-4cf4-4a38-95e5-32ff7193e8b7",
+        "discipline": "physiotherapy",
+        "source_type": "pasted_text",
+        "source_time": "2026-09-21T06:00:00Z",
+        "extraction_status": "not_applicable",
+        "title": "Physiotherapy mobilisation"
+      },
+      {
+        "source_id": "e43e1f9a-382b-4666-a3a3-06fec0a5b6a5",
+        "note_version_id": "d29af523-8355-4add-a75a-279311cdafb3",
+        "version": 1,
+        "author_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+        "discipline": "clinician",
+        "source_type": "pasted_text",
+        "source_time": "2026-09-21T07:30:00Z",
+        "extraction_status": "not_applicable",
+        "title": "Clinician review"
+      },
+      {
+        "source_id": "8a19df15-93bf-4a68-b4aa-ca6f085a91e9",
+        "note_version_id": "8abe2021-94e7-4eb1-8668-3bce5204291d",
+        "version": 1,
+        "author_staff_id": "dac4e71c-daea-4157-b5fd-198cc158229c",
+        "discipline": "counselling_social_work",
+        "source_type": "pasted_text",
+        "source_time": "2026-09-21T08:00:00Z",
+        "extraction_status": "not_applicable",
+        "title": "Discharge planning"
+      }
+    ],
+    "claims": [
+      {
+        "template": "open_priority",
+        "params": {
+          "flag_id": "flg_3918a58f644beb7e8fcf597d",
+          "rule_id": "CRIT-001",
+          "tier": 1,
+          "state": "superseded",
+          "owner_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059"
+        },
+        "text": "Tier 1 · Critical result without documented response · owner Dr Lim · superseded",
+        "evidence": [
+          {
+            "note_version_id": "166776b0-0bb5-44f7-89af-6de0a3de9a08",
+            "start": 39,
+            "end": 59,
+            "page": null,
+            "quote": "Potassium 6.4 mmol/L",
+            "quote_sha256": "3f8a0f49adbe0973052ebdd7f10a0c5e6de719033496e98292ce9c03a1a7fc6e",
+            "role_in_flag": "claim",
+            "evidence_revision": 1
+          },
+          {
+            "note_version_id": "d29af523-8355-4add-a75a-279311cdafb3",
+            "start": 27,
+            "end": 63,
+            "page": null,
+            "quote": "K 6.4 reviewed, treated per protocol",
+            "quote_sha256": "38136ab152451eaa03bae448eeeb3bbb9ce769db37c9781bca01157e4f521334",
+            "role_in_flag": "suppressor",
+            "evidence_revision": 2
+          },
+          {
+            "note_version_id": "d29af523-8355-4add-a75a-279311cdafb3",
+            "start": 65,
+            "end": 112,
+            "page": null,
+            "quote": "Repeat K sent; Dr Lim to review result by 18:00",
+            "quote_sha256": "61633ceb9fffa4f2f7a7ad89ea42d344a5dae229ca88f2201877f78fabad4281",
+            "role_in_flag": "suppressor",
+            "evidence_revision": 2
+          }
+        ]
+      },
+      {
+        "template": "open_priority",
+        "params": {
+          "flag_id": "flg_cddb71a7b6bd3d9b37f6bbe7",
+          "rule_id": "ALG-001",
+          "tier": 1,
+          "state": "open",
+          "owner_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059"
+        },
+        "text": "Tier 1 · Conflicting allergy documentation · owner Dr Lim · open",
+        "evidence": [
+          {
+            "note_version_id": "ce13e97a-14df-4acc-b6a0-fdefd89f1e91",
+            "start": 30,
+            "end": 64,
+            "page": null,
+            "quote": "Allergies: NKDA (patient reported)",
+            "quote_sha256": "e7b2b3f9ba7530153c58115a208f940ff22e4bd48c31a822471e718efd18a558",
+            "role_in_flag": "claim",
+            "evidence_revision": 1
+          },
+          {
+            "note_version_id": "43233600-d694-49ad-a092-2af63339f313",
+            "start": 38,
+            "end": 89,
+            "page": null,
+            "quote": "Allergy: Penicillin allergy — rash (per GP records)",
+            "quote_sha256": "ee7ad1035c7536648023bfd1b7e097e37c814cd4d2819e310101a67a5d07ec8d",
+            "role_in_flag": "counter_claim",
+            "evidence_revision": 1
+          }
+        ]
+      },
+      {
+        "template": "open_priority",
+        "params": {
+          "flag_id": "flg_85412ce328b999e15e00274e",
+          "rule_id": "DOSE-001",
+          "tier": 2,
+          "state": "open",
+          "owner_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059"
+        },
+        "text": "Tier 2 · Dose differs between sources · owner Dr Lim · open",
+        "evidence": [
+          {
+            "note_version_id": "73b79741-05ab-4c7c-a1f9-d4f0699dcd53",
+            "start": 66,
+            "end": 84,
+            "page": null,
+            "quote": "Amlodipine 5 mg OD",
+            "quote_sha256": "d5c116f006810bfe3954ef4815c53df925e4d43037c296523ecb1c4cbae1088c",
+            "role_in_flag": "claim",
+            "evidence_revision": 1
+          },
+          {
+            "note_version_id": "43233600-d694-49ad-a092-2af63339f313",
+            "start": 91,
+            "end": 157,
+            "page": null,
+            "quote": "GP list: amlodipine 10 mg once daily; metformin 500 mg twice daily",
+            "quote_sha256": "7a45e13428359fb28b96b4dbb49af2c792d9eae9f1ebd9374c4d062b78b897c0",
+            "role_in_flag": "counter_claim",
+            "evidence_revision": 1
+          }
+        ]
+      },
+      {
+        "template": "open_priority",
+        "params": {
+          "flag_id": "flg_e416f7c12a55e19fcf72e588",
+          "rule_id": "PEND-001",
+          "tier": 2,
+          "state": "open",
+          "owner_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059"
+        },
+        "text": "Tier 2 · Pending item without owner or timing · owner Dr Lim · open",
+        "evidence": [
+          {
+            "note_version_id": "73b79741-05ab-4c7c-a1f9-d4f0699dcd53",
+            "start": 113,
+            "end": 148,
+            "page": null,
+            "quote": "Blood culture sent, awaiting result",
+            "quote_sha256": "2af00011f022d47071b23a5d45dd251e21eb03c0c59cedf7ef8c8e3205dc9f85",
+            "role_in_flag": "claim",
+            "evidence_revision": 1
+          }
+        ]
+      },
+      {
+        "template": "open_priority",
+        "params": {
+          "flag_id": "flg_d5133a3c16c2c8966ee4d7a4",
+          "rule_id": "PDF-001",
+          "tier": 2,
+          "state": "open",
+          "owner_staff_id": "38eafae6-b7ce-42a5-8a9d-2a060d421f18"
+        },
+        "text": "Tier 2 · Document text could not be fully read · owner Nurse Ravi · open",
+        "evidence": [
+          {
+            "note_version_id": "b5fb3381-2ef6-4b64-a360-37036124eeac",
+            "start": 0,
+            "end": 0,
+            "page": 1,
+            "quote": "",
+            "quote_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "role_in_flag": "extraction_gap",
+            "evidence_revision": 1
+          }
+        ]
+      },
+      {
+        "template": "top_question",
+        "params": {
+          "bubble_id": "bbl_02f75f81c3a8e34201f7d440",
+          "question_template_id": "q_allergy_which_correct",
+          "status": "conflicting"
+        },
+        "text": "Which allergy entry is correct? — conflicting",
+        "evidence": [
+          {
+            "note_version_id": "ce13e97a-14df-4acc-b6a0-fdefd89f1e91",
+            "start": 30,
+            "end": 64,
+            "page": null,
+            "quote": "Allergies: NKDA (patient reported)",
+            "quote_sha256": "e7b2b3f9ba7530153c58115a208f940ff22e4bd48c31a822471e718efd18a558",
+            "role_in_flag": "claim",
+            "evidence_revision": 1
+          },
+          {
+            "note_version_id": "43233600-d694-49ad-a092-2af63339f313",
+            "start": 38,
+            "end": 89,
+            "page": null,
+            "quote": "Allergy: Penicillin allergy — rash (per GP records)",
+            "quote_sha256": "ee7ad1035c7536648023bfd1b7e097e37c814cd4d2819e310101a67a5d07ec8d",
+            "role_in_flag": "counter_claim",
+            "evidence_revision": 1
+          }
+        ]
+      },
+      {
+        "template": "top_question",
+        "params": {
+          "bubble_id": "bbl_bd55c3cea26302c07af0856f",
+          "question_template_id": "q_ecg_documented",
+          "status": "incomplete_extraction"
+        },
+        "text": "Is an ECG documented for this episode? — incomplete extraction",
+        "evidence": [
+          {
+            "note_version_id": "166776b0-0bb5-44f7-89af-6de0a3de9a08",
+            "start": 39,
+            "end": 59,
+            "page": null,
+            "quote": "Potassium 6.4 mmol/L",
+            "quote_sha256": "3f8a0f49adbe0973052ebdd7f10a0c5e6de719033496e98292ce9c03a1a7fc6e",
+            "role_in_flag": "trigger",
+            "evidence_revision": 1
+          },
+          {
+            "note_version_id": "b5fb3381-2ef6-4b64-a360-37036124eeac",
+            "start": 0,
+            "end": 0,
+            "page": 1,
+            "quote": "",
+            "quote_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "role_in_flag": "extraction_gap",
+            "evidence_revision": 1
+          }
+        ]
+      },
+      {
+        "template": "top_question",
+        "params": {
+          "bubble_id": "bbl_22bc0779bf7b4807ae5ec038",
+          "question_template_id": "q_dose_current",
+          "status": "conflicting"
+        },
+        "text": "Which amlodipine dose is current? — conflicting",
+        "evidence": [
+          {
+            "note_version_id": "73b79741-05ab-4c7c-a1f9-d4f0699dcd53",
+            "start": 66,
+            "end": 84,
+            "page": null,
+            "quote": "Amlodipine 5 mg OD",
+            "quote_sha256": "d5c116f006810bfe3954ef4815c53df925e4d43037c296523ecb1c4cbae1088c",
+            "role_in_flag": "claim",
+            "evidence_revision": 1
+          },
+          {
+            "note_version_id": "43233600-d694-49ad-a092-2af63339f313",
+            "start": 91,
+            "end": 157,
+            "page": null,
+            "quote": "GP list: amlodipine 10 mg once daily; metformin 500 mg twice daily",
+            "quote_sha256": "7a45e13428359fb28b96b4dbb49af2c792d9eae9f1ebd9374c4d062b78b897c0",
+            "role_in_flag": "counter_claim",
+            "evidence_revision": 1
+          }
+        ]
+      }
+    ],
+    "human_review_statement": "Requires human review. Not the medical record. Does not diagnose or recommend treatment.",
+    "stale_after_source_change": false
+  },
+  "closure": {
+    "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+    "cutoff": "2026-09-21T08:00:00Z",
+    "status": "blocked",
+    "tier1_blockers": [
+      {
+        "flag_id": "flg_3918a58f644beb7e8fcf597d",
+        "tier": 1,
+        "state": "superseded",
+        "owner_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+        "opened_at": "2026-09-21T03:31:00Z"
+      },
+      {
+        "flag_id": "flg_cddb71a7b6bd3d9b37f6bbe7",
+        "tier": 1,
+        "state": "open",
+        "owner_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+        "opened_at": "2026-09-21T03:31:00Z"
+      }
+    ],
+    "tier2_open": [
+      {
+        "flag_id": "flg_85412ce328b999e15e00274e",
+        "tier": 2,
+        "state": "open",
+        "owner_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+        "opened_at": "2026-09-21T03:31:00Z"
+      },
+      {
+        "flag_id": "flg_e416f7c12a55e19fcf72e588",
+        "tier": 2,
+        "state": "open",
+        "owner_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+        "opened_at": "2026-09-21T03:31:00Z"
+      },
+      {
+        "flag_id": "flg_d5133a3c16c2c8966ee4d7a4",
+        "tier": 2,
+        "state": "open",
+        "owner_staff_id": "38eafae6-b7ce-42a5-8a9d-2a060d421f18",
+        "opened_at": "2026-09-21T08:01:00Z"
+      }
+    ],
+    "tier3_open_count": 1,
+    "decisions": []
+  },
+  "glance": {
+    "encounter_id": "dd46f548-b849-4825-bbd4-c3f3f3296f6d",
+    "cutoff": "2026-09-21T08:00:00Z",
+    "closure_status": "blocked",
+    "open_tier1": 2,
+    "open_tier2": 3,
+    "open_tier3": 1,
+    "tier1_owner_ids": [
+      "b86630ca-a475-4a29-b619-1b764a5c0059"
+    ],
+    "top_bubble_ids": [
+      "bbl_02f75f81c3a8e34201f7d440",
+      "bbl_bd55c3cea26302c07af0856f",
+      "bbl_22bc0779bf7b4807ae5ec038"
+    ],
+    "top_bubble_statuses": [
+      "conflicting",
+      "incomplete_extraction",
+      "conflicting"
+    ]
+  }
+}
