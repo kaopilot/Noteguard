@@ -26,4 +26,6 @@ Lanes affected and what each must do:
 
 Golden fixture impact: none (no flag, bubble or claim changes; verified by the B1 golden run).
 
-Status: proposed
+Status: approved (@k, 22 Sep 2026, chat B1.2). Landing prepared by B1 on branch `ccr-01-02` (session B1.3):
+  contract commit "[B1.3] CCR-01 contract" (types.py field + validator; `make types` output unchanged) and
+  content commit "[B1.3] CCR-01 B1 content" (registry table; engine/units.py removed). Awaiting @k merge.

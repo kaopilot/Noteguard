@@ -67,7 +67,7 @@ session B1.1 (see `docs/handoffs/B1.md`); "inspected" = read in code, no test.
 | Owner | responsible clinician; pharmacists affected |
 | Evidence | `claim` = the first regimen in the comparison epoch, `counter_claim` = every differing regimen |
 
-**Raises when** the same drug has a different dose, unit or frequency in at least two sources with no explicit change linking them. Doses are compared after unit canonicalisation (`0.5 g` = `500 mg`) and frequency normalisation (`BD` = `twice daily`); a missing frequency is "not stated", not different.
+**Raises when** the same drug has a different dose, unit or frequency in at least two sources with no explicit change linking them. Doses are compared after unit canonicalisation from the registry's `dose_unit_canonical` table (CCR-01; `0.5 g` = `500 mg`) and frequency normalisation (`BD` = `twice daily`); a missing frequency is "not stated", not different.
 
 **Not raised:** identical regimen after normalisation; an explicit change (L3) starts a new comparison epoch, so "Metformin increased to 1 g BD" by a clinician or pharmacist, later in time, is recorded as `explicit_change`. The same words from a nurse, or at the same time, stay a conflict.
 
@@ -152,12 +152,12 @@ session B1.1 (see `docs/handoffs/B1.md`); "inspected" = read in code, no test.
 
 **Fixtures:** ENC-C1_1000 (golden pending @k review). Test: `test_golden_engine[ENC-C1_1000]`. Executed.
 
-## DET-001 — Reassurance recorded after a deterioration marker (stretch; built B1.2, DISABLED in v1)
+## DET-001 — Reassurance recorded after a deterioration marker (enabled in v1 by CCR-02)
 
 | Field | Value |
 |---|---|
 | Lens / tier | continuity / 1 (protected floor) |
-| Status | built in `rules/deterioration.py`; `enabled: false` in `rulesets/v1.json` until **CCR-02** (goldens) is approved by @k |
+| Status | enabled in `rulesets/v1.json` by **CCR-02** (approved by @k, 22 Sep 2026, defaults) |
 | Registry terms | `status` terms; `analyte` terms with `deterioration_*` thresholds (placeholders) |
 | Subject key | the status term key, e.g. `status:stable` (one flag per reassurance kind) |
 | Owner | responsible clinician (else attending); evidence authors affected |
@@ -166,9 +166,9 @@ session B1.1 (see `docs/handoffs/B1.md`); "inspected" = read in code, no test.
 
 **Raises when** a live, non-queried reassuring or discharge-readiness statement sits in a source with a later `source_time` than a deterioration marker, and no clinician review of that marker intervenes. Unlike DIFF-001 the reassurance need not be copied.
 
-**Answered only by** a statement in a clinician-authored source with a live response cue in the same clause as the same analyte, not carried forward, at or after the marker's source and at or before the reassurance. A nurse's review or escalation, a review of another analyte, a review written after the reassurance, and a later normal value do not answer it (conservative; CCR-02 questions 1 and 3).
+**Answered only by** a statement in a clinician-authored source with a live response cue in the same clause as the same analyte, not carried forward, at or after the marker's source and at or before the reassurance. A nurse's review or escalation, a review of another analyte, a review written after the reassurance, and a later normal value do not answer it (CCR-02 questions 1 and 3, defaults approved).
 
-**Fixtures:** none in v1 (disabled). Tests: `tests/engine/test_det_001.py` (9 cases + shape/supersede + proposed-golden cross-check), run with DET enabled in an in-memory bundle only. Executed; 6 mutations, all caught.
+**Fixtures:** goldens ENC-A1_1600 and ENC-A1_1600_rerun (raised on the 16:00 "Patient stable" after the 13:00 SpO2 89% / RR 26; the 15:30 clinician review concerns potassium); ENC-A1_1130 must-not-flag. Tests: `tests/engine/test_det_001.py` (9 cases, shape/supersede, enabled-and-protected), variant encounter in `test_engine_edges.py`. Executed; 7 mutations, all caught.
 
 **Known false positives:** a clinician's review written in general terms ("obs reviewed") names no analyte and does not count; a recovered observation does not clear it. The ENC-A1 16:00 statement would carry both DET-001 (Tier 1) and DIFF-001 (Tier 3) (CCR-02 question 2).
 
