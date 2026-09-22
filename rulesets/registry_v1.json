@@ -15,6 +15,12 @@
      "deterioration_at_or_above": 25.0, "threshold_status": "placeholder_pending_clinical_governance"},
     {"key": "test:blood_culture", "kind": "test", "synonyms": ["blood culture", "blood cultures"]},
     {"key": "test:ecg", "kind": "test", "synonyms": ["ecg", "ekg", "electrocardiogram", "12-lead"]},
+    {"key": "drug:bisoprolol", "kind": "drug", "synonyms": ["bisoprolol"], "classes": ["drug_class:beta_blockers"]},
+    {"key": "drug:atorvastatin", "kind": "drug", "synonyms": ["atorvastatin"], "classes": ["drug_class:statins"]},
+    {"key": "drug_class:sulfonamides", "kind": "drug_class", "synonyms": ["sulfonamides", "sulphonamides"]},
+    {"key": "allergen:sulfonamide", "kind": "allergen", "synonyms": ["sulfonamide", "sulphonamide", "sulfa", "sulpha"], "classes": ["drug_class:sulfonamides"]},
+    {"key": "test:urine_culture", "kind": "test", "synonyms": ["urine culture", "msu"]},
+    {"key": "test:chest_xray", "kind": "test", "synonyms": ["chest x-ray", "chest xray", "cxr"]},
     {"key": "status:stable", "kind": "status", "synonyms": ["patient stable", "clinically stable"]},
     {"key": "status:fit_for_discharge", "kind": "status", "synonyms": ["fit for discharge", "medically fit"]}
   ],

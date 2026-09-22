@@ -19,7 +19,7 @@ validates against `noteguard.contracts.types.ApprovalRecord`.
   "ruleset_version": "v1",
   "ruleset_sha256": "4668c53693d70c0a1c505ee3350e1623a8ec0700b65e72268ea1197d6f792888",
   "registry_version": "v1",
-  "registry_sha256": "d292f197c580bbf2fd42965a5daeb1f8d193345fe85ee2a8e963478b2661c0c0",
+  "registry_sha256": "2fcf71c54366d848f914a314640dae10dc181eb1a19e277027bf4b7d0e5f7cd6",
   "evaluation_report_sha256": null,
   "approver_role": "clinical_governance",
   "approver_label": "Synthetic demo approver (pending @k sign-off)",

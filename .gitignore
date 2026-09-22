@@ -28,3 +28,7 @@ Thumbs.db
 *.log
 /tmp/
 /scratch/
+
+# Held-out ENC-A2: never committed before I1 (docs/decisions/B0.md)
+fixtures/heldout/*
+!fixtures/heldout/README.md

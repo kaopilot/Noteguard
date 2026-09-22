@@ -409,7 +409,29 @@ def review_sheet(built: dict[str, dict]) -> str:
     return "\n".join(lines)
 
 
-def main() -> None:
+def configure(decl: Path | None = None, author: Path | None = None, encounters: Path | None = None,
+              out: Path | None = None) -> None:
+    """Point the materializer at another package (used for the held-out ENC-A2 outside the repo)."""
+    global DECL, AUTHOR, ENCOUNTERS, EXPECTED
+    if author:
+        AUTHOR = _load_module("heldout_author", author)
+    if decl:
+        DECL = _load_module("heldout_declarations", decl)
+    if encounters:
+        ENCOUNTERS = encounters
+    if out:
+        EXPECTED = out
+
+
+def main(argv: list[str] | None = None) -> None:
+    import argparse
+
+    ap = argparse.ArgumentParser()
+    for flag in ("--decl", "--author", "--encounters", "--out"):
+        ap.add_argument(flag, type=Path)
+    a = ap.parse_args(argv)
+    configure(a.decl, a.author, a.encounters, a.out)
+    EXPECTED.mkdir(parents=True, exist_ok=True)
     built = build_all()
     for name, g in built.items():
         (EXPECTED / f"{name}.json").write_text(json.dumps(g, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
