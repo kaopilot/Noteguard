@@ -249,6 +249,13 @@ class EvidenceRole(str, Enum):
     TRIGGER = "trigger"  # the assertion that triggered a question bubble
     EXTRACTION_GAP = "extraction_gap"  # page with no/partial text (start == end)
     MISSING_RESPONSE_WINDOW = "missing_response_window"  # reserved; unused in v1 goldens
+    ENCOUNTER_RECORD = "encounter_record"  # grounded in a structured encounter field, not a note (OWN-001)
+
+
+class RecordField(str, Enum):
+    """Structured encounter fields an ``encounter_record`` evidence item may name."""
+
+    ENCOUNTER_RESPONSIBLE_CLINICIAN = "encounter.responsible_clinician_id"
 
 
 class DecisionAction(str, Enum):
@@ -653,9 +660,13 @@ class CheckRun(Frozen):
 
 
 class Evidence(Frozen):
-    """Version-bound anchor. Wire name of source_version_id is note_version_id."""
+    """Version-bound anchor. Wire name of source_version_id is note_version_id.
 
-    source_version_id: OpaqueId = Field(alias="note_version_id")
+    Span evidence cites a SourceVersion. ``encounter_record`` evidence (OWN-001 only) cites a
+    structured encounter field instead: no source version, no span, no quote. It is never a
+    fake anchor on some note."""
+
+    source_version_id: OpaqueId | None = Field(alias="note_version_id")
     start: NonNegativeInt
     end: NonNegativeInt
     page: PositiveInt | None = None
@@ -663,6 +674,17 @@ class Evidence(Frozen):
     quote_sha256: Sha256Hex
     role_in_flag: EvidenceRole
     evidence_revision: PositiveInt = 1
+    record_field: RecordField | None = None
+
+    @model_validator(mode="after")
+    def _grounding_kind(self) -> "Evidence":
+        if self.role_in_flag is EvidenceRole.ENCOUNTER_RECORD:
+            if (self.record_field is None or self.source_version_id is not None or self.start or self.end
+                    or self.page is not None or self.quote):
+                raise ValueError("encounter_record evidence names a record field and carries no span")
+        elif self.source_version_id is None or self.record_field is not None:
+            raise ValueError("span evidence must cite a source version and no record field")
+        return self
 
 
 class Flag(Frozen):

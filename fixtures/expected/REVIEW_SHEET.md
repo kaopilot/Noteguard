@@ -5,6 +5,8 @@ Read this, not the JSON. Sign off by adding your initials and time at the bottom
 
 ## ENC-A1_1130
 
+Sign-off: @k, 22 Sep 2026 (review sheet read in chat B0.1)
+
 Cutoff 11:30 SGT; fresh run; outcome `completed`; closure **blocked**.
 
 | Rule | Tier | Subject | Owner | Also affected | State (rev/ev) | Evidence |
@@ -36,6 +38,8 @@ Cutoff 11:30 SGT; fresh run; outcome `completed`; closure **blocked**.
 
 ## ENC-A1_1600
 
+Sign-off: @k, 22 Sep 2026 (review sheet read in chat B0.1)
+
 Cutoff 16:00 SGT; fresh run; outcome `completed_with_extraction_gaps`; closure **blocked**.
 
 | Rule | Tier | Subject | Owner | Also affected | State (rev/ev) | Evidence |
@@ -51,7 +55,7 @@ Cutoff 16:00 SGT; fresh run; outcome `completed_with_extraction_gaps`; closure *
 - `CRIT-001` on `analyte:potassium` — Suppressed at evaluation time: 15:30 "K 6.4 reviewed, treated per protocol" is later, new (not carried forward), non-negated and names the same analyte (Section 8.5).
 - `DOSE-001` on `drug:metformin` — 15:30 "Metformin increased to 1 g BD" is an explicit change by the responsible clinician (L3), not a contradiction.
 - `PEND-001` on `analyte:potassium` — "Repeat K sent; Dr Lim to review result by 18:00" names an owner AND a time in the same statement.
-- `CRIT-001` on `analyte:spo2` — SpO2 89% is a deterioration marker in registry v1 (feeds DIFF-001/DET-001), not a critical threshold. Governance question recorded in docs/decisions/B0.md.
+- `CRIT-001` on `analyte:spo2` — SpO2 89% is a deterioration marker in registry v1 (feeds DIFF-001), not a critical threshold. Decided by @k on 22 Sep: keep for v1; DET-001 is the first stretch rule if time allows.
 - `CRIT-001` on `analyte:respiratory_rate` — RR 26 is a deterioration marker in registry v1, not a critical threshold.
 - `PDF-001` on `source:7a76b06c-295c-44e4-9886-394b12330` — The referral PDF has a complete text layer.
 - `OWN-001` on `encounter` — A responsible clinician (Dr Lim) is recorded.
@@ -71,6 +75,8 @@ Cutoff 16:00 SGT; fresh run; outcome `completed_with_extraction_gaps`; closure *
 **Required changes:** `reworded` drug:metformin: “Metformin 500 mg BD” → “GP list dated 01/09/2026: amlodipine 10 mg once daily; metformin 500 mg twice daily”; `explicit_change` drug:metformin: “GP list dated 01/09/2026: amlodipine 10 mg once daily; metformin 500 mg twice daily” → “Metformin increased to 1 g BD”; `carried_forward` status:stable: “Patient stable” → “Patient stable”
 
 ## ENC-A1_1600_rerun
+
+Sign-off: @k, 22 Sep 2026 (review sheet read in chat B0.1)
 
 Cutoff 16:00 SGT; rerun after ENC-A1_1130 (prior flags supplied); outcome `completed_with_extraction_gaps`; closure **blocked**.
 
@@ -103,6 +109,8 @@ Cutoff 16:00 SGT; rerun after ENC-A1_1130 (prior flags supplied); outcome `compl
 
 ## ENC-B1_1600
 
+Sign-off: @k, 22 Sep 2026 (review sheet read in chat B0.1)
+
 Cutoff 16:00 SGT; fresh run; outcome `completed`; closure **clear**.
 
 | Rule | Tier | Subject | Owner | Also affected | State (rev/ev) | Evidence |
@@ -120,6 +128,31 @@ Cutoff 16:00 SGT; fresh run; outcome `completed`; closure **clear**.
 
 **Required changes:** none
 
+## ENC-C1_1000
+
+Sign-off: **PENDING (@k)**
+
+Cutoff 10:00 SGT; fresh run; outcome `completed`; closure **blocked**.
+
+| Rule | Tier | Subject | Owner | Also affected | State (rev/ev) | Evidence |
+|---|---|---|---|---|---|---|
+| CRIT-001 | 1 | `analyte:potassium` | Dr Lim | Nurse Ravi | open (1/1) | claim: Nursing note (Nurse Ravi, 09:00) v1 “Potassium 6.2 mmol/L” |
+| OWN-001 | 1 | `encounter:responsible_clinician` | Dr Lim | — | open (1/1) | encounter_record: care-team record “[no text layer, p.None]” |
+
+**Must not flag:**
+
+- `PEND-001` on `*` — No pending cue in scope.
+- `DIFF-001` on `*` — Nothing is repeated.
+- The 09:30 attending note names no analyte and carries no response cue, so it does not suppress CRIT-001.
+
+**Bubbles** (rank order):
+
+- 1. Who is the responsible clinician for this encounter? → `requires_human_review`
+- 3. Was the critical potassium reviewed or repeated? → `not_documented_in_supplied_sources` (searched 2 sources for analyte:potassium, cue:response_review, cue:response_repeat, cue:response_treatment, cue:response_escalation, cue:response_transfer)
+- 4. Is an ECG documented for this episode? → `not_documented_in_supplied_sources` (searched 2 sources for test:ecg)
+
+**Required changes:** none
+
 ---
 
-Signed off (CP0): ________  date/time SGT: ________
+Sign-off is recorded per scenario above (from `SIGNOFF` in declarations.py). A new or changed scenario needs @k's review before it merges.

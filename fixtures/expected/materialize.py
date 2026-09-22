@@ -122,6 +122,9 @@ class Enc:
         return [(k, n) for *_, k, n in sorted(rows)]
 
     def evidence(self, d: dict) -> Evidence:
+        if d["role"] == "encounter_record":
+            return Evidence(note_version_id=None, start=0, end=0, page=None, quote="", quote_sha256=ids.quote_sha256(""),
+                            role_in_flag="encounter_record", record_field=d["record_field"], evidence_revision=d["rev"])
         v = self.version(d["src"], d["ver"])
         ext = self.ext[v.source_version_id]
         if d["role"] == "extraction_gap":
@@ -150,9 +153,11 @@ class Enc:
 
 
 def _order_key(enc: Enc, ev: Evidence):
+    if ev.source_version_id is None:  # encounter_record evidence sorts first
+        return (0, "", "", "", 0, ev.role_in_flag.value)
     v = next(v for v in enc.snapshot.versions if v.source_version_id == ev.source_version_id)
     s = next(s for s in enc.snapshot.sources if s.source_id == v.source_id)
-    return (s.source_time, v.received_at, v.source_version_id, ev.start, ev.role_in_flag.value)
+    return (1, s.source_time.isoformat(), v.received_at.isoformat(), v.source_version_id, ev.start, ev.role_in_flag.value)
 
 
 def build(name: str, built: dict[str, dict]) -> dict:
@@ -186,12 +191,13 @@ def build(name: str, built: dict[str, dict]) -> dict:
         # cross-check the affected-contributor convention
         authors = {next(s.author_staff_id for s in enc.snapshot.sources
                         if any(v.source_id == s.source_id and v.source_version_id == ev.source_version_id
-                               for v in enc.snapshot.versions)) for ev in evidence}
+                               for v in enc.snapshot.versions)) for ev in evidence if ev.source_version_id}
         if rule.owner_routing.value == "responsible_clinician_plus_pharmacy":
             authors |= pharmacists
         _check(set(affected) == authors - {owner}, f"{name}: {f['rule']} affected contributors != convention")
         if int(rule.default_tier) == 1 or rule.owner_routing.value.startswith("responsible_clinician"):
-            _check(owner == enc.snapshot.encounter.responsible_clinician_id, f"{name}: {f['rule']} owner must be RC")
+            e = enc.snapshot.encounter  # Tier 1 is never unassigned: RC, else the attending (8.6)
+            _check(owner == (e.responsible_clinician_id or e.attending_clinician_id), f"{name}: {f['rule']} owner")
         _check(f["tier"] == int(rule.default_tier), f"{name}: {f['rule']} tier != rule default")
         first = f.get("first_run", name)
         created = _time(DECL.SCENARIOS[first]["evaluated_at"])
@@ -377,12 +383,14 @@ def review_sheet(built: dict[str, dict]) -> str:
             for v in enc.snapshot.versions:
                 if v.source_id == s.source_id:
                     vlabel[v.source_version_id] = f"{enc.label(key)} v{v.version}"
-        lines += [f"## {name}", "",
+        signed = getattr(DECL, "SIGNOFF", {}).get(name)
+        lines += [f"## {name}", "", f"Sign-off: {signed}" if signed else "Sign-off: **PENDING (@k)**", "",
                   f"Cutoff {name.split('_')[1][:2]}:{name.split('_')[1][2:4]} SGT"
                   + (f"; rerun after {g['prior_scenario']} (prior flags supplied)" if g["prior_scenario"] else "; fresh run")
                   + f"; outcome `{g['run']['outcome']}`; closure **{g['closure']['status']}**.", "",
                   "| Rule | Tier | Subject | Owner | Also affected | State (rev/ev) | Evidence |", "|---|---|---|---|---|---|---|"]
         for f in g["flags"]:
+            vlabel[None] = "care-team record"
             ev = "<br>".join(f"{e['role_in_flag']}: {vlabel[e['note_version_id']]} \u201c{e['quote'] or '[no text layer, p.' + str(e['page']) + ']'}\u201d"
                              for e in f["evidence"])
             extra = " \u00b7 source changed" if f["source_changed_since_flag"] else ""
@@ -405,7 +413,8 @@ def review_sheet(built: dict[str, dict]) -> str:
         lines += ["", "**Required changes:** " + ("; ".join(
             f"`{c['kind']}` {c['subject_key']}: \u201c{c['from_evidence']['quote']}\u201d \u2192 \u201c{c['to_evidence']['quote']}\u201d"
             for c in g["required_changes"]) or "none"), ""]
-    lines += ["---", "", "Signed off (CP0): ________  date/time SGT: ________", ""]
+    lines += ["---", "", "Sign-off is recorded per scenario above (from `SIGNOFF` in declarations.py). A new or "
+              "changed scenario needs @k's review before it merges.", ""]
     return "\n".join(lines)
 
 

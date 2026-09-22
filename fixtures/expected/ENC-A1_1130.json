@@ -34,7 +34,8 @@
           "quote": "Allergies: NKDA (patient reported)",
           "quote_sha256": "e7b2b3f9ba7530153c58115a208f940ff22e4bd48c31a822471e718efd18a558",
           "role_in_flag": "claim",
-          "evidence_revision": 1
+          "evidence_revision": 1,
+          "record_field": null
         },
         {
           "note_version_id": "43233600-d694-49ad-a092-2af63339f313",
@@ -44,7 +45,8 @@
           "quote": "Allergy: Penicillin allergy — rash (per GP records)",
           "quote_sha256": "ee7ad1035c7536648023bfd1b7e097e37c814cd4d2819e310101a67a5d07ec8d",
           "role_in_flag": "counter_claim",
-          "evidence_revision": 1
+          "evidence_revision": 1,
+          "record_field": null
         }
       ],
       "owner_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
@@ -82,7 +84,8 @@
           "quote": "Potassium 6.4 mmol/L",
           "quote_sha256": "3f8a0f49adbe0973052ebdd7f10a0c5e6de719033496e98292ce9c03a1a7fc6e",
           "role_in_flag": "claim",
-          "evidence_revision": 1
+          "evidence_revision": 1,
+          "record_field": null
         }
       ],
       "owner_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
@@ -119,7 +122,8 @@
           "quote": "Amlodipine 5 mg OD",
           "quote_sha256": "d5c116f006810bfe3954ef4815c53df925e4d43037c296523ecb1c4cbae1088c",
           "role_in_flag": "claim",
-          "evidence_revision": 1
+          "evidence_revision": 1,
+          "record_field": null
         },
         {
           "note_version_id": "43233600-d694-49ad-a092-2af63339f313",
@@ -129,7 +133,8 @@
           "quote": "GP list: amlodipine 10 mg once daily; metformin 500 mg twice daily",
           "quote_sha256": "7a45e13428359fb28b96b4dbb49af2c792d9eae9f1ebd9374c4d062b78b897c0",
           "role_in_flag": "counter_claim",
-          "evidence_revision": 1
+          "evidence_revision": 1,
+          "record_field": null
         }
       ],
       "owner_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
@@ -166,7 +171,8 @@
           "quote": "Blood culture sent, awaiting result",
           "quote_sha256": "2af00011f022d47071b23a5d45dd251e21eb03c0c59cedf7ef8c8e3205dc9f85",
           "role_in_flag": "claim",
-          "evidence_revision": 1
+          "evidence_revision": 1,
+          "record_field": null
         }
       ],
       "owner_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
@@ -236,7 +242,8 @@
           "quote": "Allergies: NKDA (patient reported)",
           "quote_sha256": "e7b2b3f9ba7530153c58115a208f940ff22e4bd48c31a822471e718efd18a558",
           "role_in_flag": "claim",
-          "evidence_revision": 1
+          "evidence_revision": 1,
+          "record_field": null
         },
         {
           "note_version_id": "43233600-d694-49ad-a092-2af63339f313",
@@ -246,7 +253,8 @@
           "quote": "Allergy: Penicillin allergy — rash (per GP records)",
           "quote_sha256": "ee7ad1035c7536648023bfd1b7e097e37c814cd4d2819e310101a67a5d07ec8d",
           "role_in_flag": "counter_claim",
-          "evidence_revision": 1
+          "evidence_revision": 1,
+          "record_field": null
         }
       ],
       "cutoff": "2026-09-21T03:30:00Z",
@@ -270,7 +278,8 @@
           "quote": "Potassium 6.4 mmol/L",
           "quote_sha256": "3f8a0f49adbe0973052ebdd7f10a0c5e6de719033496e98292ce9c03a1a7fc6e",
           "role_in_flag": "trigger",
-          "evidence_revision": 1
+          "evidence_revision": 1,
+          "record_field": null
         }
       ],
       "cutoff": "2026-09-21T03:30:00Z",
@@ -329,7 +338,8 @@
           "quote": "Potassium 6.4 mmol/L",
           "quote_sha256": "3f8a0f49adbe0973052ebdd7f10a0c5e6de719033496e98292ce9c03a1a7fc6e",
           "role_in_flag": "trigger",
-          "evidence_revision": 1
+          "evidence_revision": 1,
+          "record_field": null
         }
       ],
       "cutoff": "2026-09-21T03:30:00Z",
@@ -383,7 +393,8 @@
           "quote": "Amlodipine 5 mg OD",
           "quote_sha256": "d5c116f006810bfe3954ef4815c53df925e4d43037c296523ecb1c4cbae1088c",
           "role_in_flag": "claim",
-          "evidence_revision": 1
+          "evidence_revision": 1,
+          "record_field": null
         },
         {
           "note_version_id": "43233600-d694-49ad-a092-2af63339f313",
@@ -393,7 +404,8 @@
           "quote": "GP list: amlodipine 10 mg once daily; metformin 500 mg twice daily",
           "quote_sha256": "7a45e13428359fb28b96b4dbb49af2c792d9eae9f1ebd9374c4d062b78b897c0",
           "role_in_flag": "counter_claim",
-          "evidence_revision": 1
+          "evidence_revision": 1,
+          "record_field": null
         }
       ],
       "cutoff": "2026-09-21T03:30:00Z",
@@ -417,7 +429,8 @@
           "quote": "Blood culture sent, awaiting result",
           "quote_sha256": "2af00011f022d47071b23a5d45dd251e21eb03c0c59cedf7ef8c8e3205dc9f85",
           "role_in_flag": "trigger",
-          "evidence_revision": 1
+          "evidence_revision": 1,
+          "record_field": null
         }
       ],
       "cutoff": "2026-09-21T03:30:00Z",
@@ -470,7 +483,8 @@
         "quote": "Metformin 500 mg BD",
         "quote_sha256": "024b9deebdc6eb35967286f832d52cde140beb3cea5f2698cabc0f5205ffd866",
         "role_in_flag": "origin",
-        "evidence_revision": 1
+        "evidence_revision": 1,
+        "record_field": null
       },
       "to_evidence": {
         "note_version_id": "43233600-d694-49ad-a092-2af63339f313",
@@ -480,7 +494,8 @@
         "quote": "GP list: amlodipine 10 mg once daily; metformin 500 mg twice daily",
         "quote_sha256": "7a45e13428359fb28b96b4dbb49af2c792d9eae9f1ebd9374c4d062b78b897c0",
         "role_in_flag": "claim",
-        "evidence_revision": 1
+        "evidence_revision": 1,
+        "record_field": null
       }
     }
   ],
@@ -570,7 +585,8 @@
             "quote": "Potassium 6.4 mmol/L",
             "quote_sha256": "3f8a0f49adbe0973052ebdd7f10a0c5e6de719033496e98292ce9c03a1a7fc6e",
             "role_in_flag": "claim",
-            "evidence_revision": 1
+            "evidence_revision": 1,
+            "record_field": null
           }
         ]
       },
@@ -593,7 +609,8 @@
             "quote": "Allergies: NKDA (patient reported)",
             "quote_sha256": "e7b2b3f9ba7530153c58115a208f940ff22e4bd48c31a822471e718efd18a558",
             "role_in_flag": "claim",
-            "evidence_revision": 1
+            "evidence_revision": 1,
+            "record_field": null
           },
           {
             "note_version_id": "43233600-d694-49ad-a092-2af63339f313",
@@ -603,7 +620,8 @@
             "quote": "Allergy: Penicillin allergy — rash (per GP records)",
             "quote_sha256": "ee7ad1035c7536648023bfd1b7e097e37c814cd4d2819e310101a67a5d07ec8d",
             "role_in_flag": "counter_claim",
-            "evidence_revision": 1
+            "evidence_revision": 1,
+            "record_field": null
           }
         ]
       },
@@ -626,7 +644,8 @@
             "quote": "Amlodipine 5 mg OD",
             "quote_sha256": "d5c116f006810bfe3954ef4815c53df925e4d43037c296523ecb1c4cbae1088c",
             "role_in_flag": "claim",
-            "evidence_revision": 1
+            "evidence_revision": 1,
+            "record_field": null
           },
           {
             "note_version_id": "43233600-d694-49ad-a092-2af63339f313",
@@ -636,7 +655,8 @@
             "quote": "GP list: amlodipine 10 mg once daily; metformin 500 mg twice daily",
             "quote_sha256": "7a45e13428359fb28b96b4dbb49af2c792d9eae9f1ebd9374c4d062b78b897c0",
             "role_in_flag": "counter_claim",
-            "evidence_revision": 1
+            "evidence_revision": 1,
+            "record_field": null
           }
         ]
       },
@@ -659,7 +679,8 @@
             "quote": "Blood culture sent, awaiting result",
             "quote_sha256": "2af00011f022d47071b23a5d45dd251e21eb03c0c59cedf7ef8c8e3205dc9f85",
             "role_in_flag": "claim",
-            "evidence_revision": 1
+            "evidence_revision": 1,
+            "record_field": null
           }
         ]
       },
@@ -680,7 +701,8 @@
             "quote": "Allergies: NKDA (patient reported)",
             "quote_sha256": "e7b2b3f9ba7530153c58115a208f940ff22e4bd48c31a822471e718efd18a558",
             "role_in_flag": "claim",
-            "evidence_revision": 1
+            "evidence_revision": 1,
+            "record_field": null
           },
           {
             "note_version_id": "43233600-d694-49ad-a092-2af63339f313",
@@ -690,7 +712,8 @@
             "quote": "Allergy: Penicillin allergy — rash (per GP records)",
             "quote_sha256": "ee7ad1035c7536648023bfd1b7e097e37c814cd4d2819e310101a67a5d07ec8d",
             "role_in_flag": "counter_claim",
-            "evidence_revision": 1
+            "evidence_revision": 1,
+            "record_field": null
           }
         ]
       },
@@ -711,7 +734,8 @@
             "quote": "Potassium 6.4 mmol/L",
             "quote_sha256": "3f8a0f49adbe0973052ebdd7f10a0c5e6de719033496e98292ce9c03a1a7fc6e",
             "role_in_flag": "trigger",
-            "evidence_revision": 1
+            "evidence_revision": 1,
+            "record_field": null
           }
         ]
       },
@@ -732,7 +756,8 @@
             "quote": "Potassium 6.4 mmol/L",
             "quote_sha256": "3f8a0f49adbe0973052ebdd7f10a0c5e6de719033496e98292ce9c03a1a7fc6e",
             "role_in_flag": "trigger",
-            "evidence_revision": 1
+            "evidence_revision": 1,
+            "record_field": null
           }
         ]
       }

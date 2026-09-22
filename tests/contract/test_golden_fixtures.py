@@ -41,8 +41,9 @@ def test_golden_invariants():
         for f in map(Flag.model_validate, g["flags"]):
             assert f.state not in states.ENGINE_FORBIDDEN_TARGETS
             assert f.flag_id == ids.flag_id(f.rule_id.value, snap.encounter.encounter_id, f.subject_key)
-            if int(f.tier) == 1:
-                assert f.owner_staff_id == snap.encounter.responsible_clinician_id
+            if int(f.tier) == 1:  # never unassigned: RC, else the attending (8.6)
+                e = snap.encounter
+                assert f.owner_staff_id == (e.responsible_clinician_id or e.attending_clinician_id)
         for b in map(QuestionBubble.model_validate, g["bubbles"]):
             assert b.status in set(BubbleStatus)
         Summary.model_validate(g["summary"])

@@ -29,6 +29,11 @@ def E(src: str, ver: int, role: str, quote: str, rev: int = 1) -> dict:
     return {"src": src, "ver": ver, "role": role, "quote": quote, "rev": rev}
 
 
+def REC(field: str, rev: int = 1) -> dict:
+    """Evidence naming a structured encounter field (OWN-001); no note span."""
+    return {"role": "encounter_record", "record_field": field, "rev": rev}
+
+
 def GAP(src: str, ver: int = 1, page: int = 1) -> dict:
     return {"src": src, "ver": ver, "role": "extraction_gap", "quote": "", "page": page, "rev": 1}
 
@@ -177,7 +182,7 @@ ENC_A1_1600 = {
         ("CRIT-001", "analyte:potassium", 'Suppressed at evaluation time: 15:30 "K 6.4 reviewed, treated per protocol" is later, new (not carried forward), non-negated and names the same analyte (Section 8.5).'),
         ("DOSE-001", "drug:metformin", '15:30 "Metformin increased to 1 g BD" is an explicit change by the responsible clinician (L3), not a contradiction.'),
         ("PEND-001", "analyte:potassium", '"Repeat K sent; Dr Lim to review result by 18:00" names an owner AND a time in the same statement.'),
-        ("CRIT-001", "analyte:spo2", "SpO2 89% is a deterioration marker in registry v1 (feeds DIFF-001/DET-001), not a critical threshold. Governance question recorded in docs/decisions/B0.md."),
+        ("CRIT-001", "analyte:spo2", "SpO2 89% is a deterioration marker in registry v1 (feeds DIFF-001), not a critical threshold. Decided by @k on 22 Sep: keep for v1; DET-001 is the first stretch rule if time allows."),
         ("CRIT-001", "analyte:respiratory_rate", "RR 26 is a deterioration marker in registry v1, not a critical threshold."),
         ("PDF-001", "source:{src:referral}", "The referral PDF has a complete text layer."),
         ("OWN-001", "encounter", "A responsible clinician (Dr Lim) is recorded."),
@@ -297,9 +302,60 @@ ENC_B1_1600 = {
     "closure": {"status": "clear", "tier1": [], "tier2": [], "tier3_count": 0},
 }
 
+ENC_C1_1000 = {
+    "encounter": "ENC-C1", "cutoff": "10:00", "evaluated_at": "10:01", "prior": None,
+    "scope": [("nursing", 1), ("attending", 1)], "outcome": "completed",
+    "flags": [
+        # No responsible clinician: every Tier 1 flag routes to the attending (Dr Lim), never unassigned.
+        {"rule": "CRIT-001", "subject": "analyte:potassium", "tier": 1, "owner": "lim", "affected": ["ravi"],
+         "evidence": [E("nursing", 1, "claim", "Potassium 6.2 mmol/L")],
+         "reason": ('Nursing note (Nurse Ravi, 09:00) records "Potassium 6.2 mmol/L". No later review, repeat, treatment, '
+                    "escalation or transfer for this result is documented in the supplied sources up to 10:00.")},
+        {"rule": "OWN-001", "subject": "encounter:responsible_clinician", "tier": 1, "owner": "lim", "affected": [],
+         "evidence": [REC("encounter.responsible_clinician_id")],
+         "reason": ("No responsible clinician is recorded on the care team for this encounter; Tier 1 items are routed "
+                    "to the attending clinician, Dr Lim, until one is recorded.")},
+    ],
+    "must_not_flag": [
+        ("PEND-001", "*", "No pending cue in scope."),
+        ("DIFF-001", "*", "Nothing is repeated."),
+    ],
+    "must_not_suppress_note": ('The 09:30 attending note names no analyte and carries no response cue, so it does not '
+                               "suppress CRIT-001."),
+    "bubbles": [
+        {"template": "q_responsible_clinician", "subject": "encounter:responsible_clinician",
+         "status": "requires_human_review", "flag": ("OWN-001", "encounter:responsible_clinician"), "evidence": "flag",
+         "question": "Who is the responsible clinician for this encounter?",
+         "uncertainty": "The care-team record names no responsible clinician; only a person can assign one."},
+        {"template": "q_crit_response", "subject": "analyte:potassium", "status": "not_documented_in_supplied_sources",
+         "flag": ("CRIT-001", "analyte:potassium"), "evidence": [E("nursing", 1, "trigger", "Potassium 6.2 mmol/L")],
+         "terms": CRIT_TERMS, "question": "Was the critical potassium reviewed or repeated?",
+         "uncertainty": U_ABSENT(2, "10:00")},
+        {"template": "q_ecg_documented", "subject": "analyte:potassium", "status": "not_documented_in_supplied_sources",
+         "flag": ("CRIT-001", "analyte:potassium"), "evidence": [E("nursing", 1, "trigger", "Potassium 6.2 mmol/L")],
+         "terms": ["test:ecg"], "question": "Is an ECG documented for this episode?", "uncertainty": U_ABSENT(2, "10:00")},
+    ],
+    "required_changes": [],
+    "summary_open_priorities": [("CRIT-001", "analyte:potassium"), ("OWN-001", "encounter:responsible_clinician")],
+    "summary_top_questions": [("q_responsible_clinician", "encounter:responsible_clinician"),
+                              ("q_crit_response", "analyte:potassium"), ("q_ecg_documented", "analyte:potassium")],
+    "closure": {"status": "blocked", "tier1": [("CRIT-001", "analyte:potassium"),
+                                               ("OWN-001", "encounter:responsible_clinician")],
+                "tier2": [], "tier3_count": 0},
+}
+
+#: CP0 sign-off, recorded per scenario. A changed or new scenario needs @k's review again.
+SIGNOFF = {
+    "ENC-A1_1130": "@k, 22 Sep 2026 (review sheet read in chat B0.1)",
+    "ENC-A1_1600": "@k, 22 Sep 2026 (review sheet read in chat B0.1)",
+    "ENC-A1_1600_rerun": "@k, 22 Sep 2026 (review sheet read in chat B0.1)",
+    "ENC-B1_1600": "@k, 22 Sep 2026 (review sheet read in chat B0.1)",
+}
+
 SCENARIOS: dict[str, dict] = {
     "ENC-A1_1130": ENC_A1_1130,
     "ENC-A1_1600": ENC_A1_1600,
     "ENC-A1_1600_rerun": ENC_A1_1600_RERUN,
     "ENC-B1_1600": ENC_B1_1600,
+    "ENC-C1_1000": ENC_C1_1000,
 }

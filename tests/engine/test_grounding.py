@@ -24,6 +24,9 @@ def test_grounding(name):
              + [(f"claim {c.template.value}", e) for c in summary.claims for e in c.evidence])
     assert items or not g["flags"]
     for label, e in items:
+        if e.role_in_flag.value == "encounter_record":  # OWN-001: names a record field, never a fake span
+            assert e.source_version_id is None and e.record_field is not None, label
+            continue
         assert e.source_version_id in ext, f"{label}: cites an unknown SourceVersion"
         x = ext[e.source_version_id]
         assert x.text[e.start:e.end] == e.quote, f"{label}: quote does not match the cited span"

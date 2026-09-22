@@ -1,0 +1,482 @@
+{
+  "contract_version": "b0-1",
+  "decisions": {
+    "adjudication_reasons": [
+      "allergy_entry_confirmed",
+      "dose_entry_current",
+      "intolerance_not_allergy"
+    ],
+    "max_flags_per_decision": 1,
+    "rationale_required": [
+      "edit",
+      "reassign"
+    ],
+    "reason_required": [
+      "dismiss",
+      "resolve"
+    ],
+    "reasons_by_action": {
+      "dismiss": [
+        "already_addressed_in_source",
+        "duplicate_of",
+        "extraction_error",
+        "not_clinically_relevant",
+        "wrong_encounter"
+      ],
+      "resolve": [
+        "allergy_entry_confirmed",
+        "dose_entry_current",
+        "intolerance_not_allergy",
+        "manual_review_completed",
+        "ocr_completed",
+        "owner_and_timing_documented",
+        "response_documented_confirmed",
+        "statement_confirmed_current",
+        "statement_corrected_in_source",
+        "work_completed_documented"
+      ]
+    },
+    "reassign_target_roles": {
+      "1": [
+        "clinician"
+      ],
+      "2": [
+        "allied_health",
+        "clinician",
+        "nurse",
+        "pharmacist"
+      ],
+      "3": [
+        "allied_health",
+        "clinician",
+        "nurse",
+        "pharmacist"
+      ]
+    },
+    "resolve_reasons_by_rule": {
+      "ALG-001": [
+        "allergy_entry_confirmed",
+        "intolerance_not_allergy"
+      ],
+      "CRIT-001": [
+        "response_documented_confirmed",
+        "work_completed_documented"
+      ],
+      "DET-001": [
+        "response_documented_confirmed",
+        "statement_corrected_in_source"
+      ],
+      "DIFF-001": [
+        "statement_confirmed_current",
+        "statement_corrected_in_source"
+      ],
+      "DOSE-001": [
+        "dose_entry_current"
+      ],
+      "DOSE-002": [
+        "statement_corrected_in_source",
+        "work_completed_documented"
+      ],
+      "LAT-001": [
+        "statement_corrected_in_source",
+        "work_completed_documented"
+      ],
+      "META-001": [
+        "statement_corrected_in_source"
+      ],
+      "NEXT-001": [
+        "statement_corrected_in_source",
+        "work_completed_documented"
+      ],
+      "OWN-001": [
+        "work_completed_documented"
+      ],
+      "PDF-001": [
+        "manual_review_completed",
+        "ocr_completed"
+      ],
+      "PEND-001": [
+        "owner_and_timing_documented",
+        "work_completed_documented"
+      ]
+    },
+    "transitions": {
+      "accept": {
+        "edited": "accepted",
+        "open": "accepted"
+      },
+      "dismiss": {
+        "accepted": "dismissed",
+        "edited": "dismissed",
+        "open": "dismissed",
+        "superseded": "dismissed"
+      },
+      "edit": {
+        "accepted": "edited",
+        "edited": "edited",
+        "open": "edited"
+      },
+      "mark_ready_for_clinician": {
+        "accepted": "accepted",
+        "edited": "edited",
+        "open": "open"
+      },
+      "reassign": {
+        "accepted": "edited",
+        "edited": "edited",
+        "open": "edited"
+      },
+      "resolve": {
+        "accepted": "resolved",
+        "edited": "resolved",
+        "open": "resolved",
+        "superseded": "resolved"
+      }
+    }
+  },
+  "error_http_status": {
+    "adjudication_required": 422,
+    "ai_disabled": 409,
+    "ai_unavailable": 503,
+    "bulk_not_supported": 422,
+    "closure_blocked": 409,
+    "document_token_invalid": 404,
+    "forbidden_role": 403,
+    "idempotency_conflict": 409,
+    "internal_error": 500,
+    "invalid_transition": 409,
+    "not_found": 404,
+    "not_implemented": 501,
+    "pdf_extraction_timeout": 422,
+    "pdf_not_a_pdf": 415,
+    "pdf_too_large": 413,
+    "pdf_too_many_pages": 422,
+    "rate_limited": 429,
+    "rationale_required": 422,
+    "reason_code_not_allowed": 422,
+    "reason_code_required": 422,
+    "reassign_target_invalid": 422,
+    "ruleset_unapproved": 503,
+    "stale_revision": 409,
+    "tier1_cannot_be_deferred": 422,
+    "unauthenticated": 401,
+    "validation_failed": 422,
+    "workspace_expired": 410,
+    "workspace_required": 401
+  },
+  "human_review_statement": "Requires human review. Not the medical record. Does not diagnose or recommend treatment.",
+  "permissions": [
+    {
+      "action": "read_encounter",
+      "relations_any": [
+        "care_team_member"
+      ],
+      "roles": [
+        "allied_health",
+        "clerical_staff",
+        "clinician",
+        "nurse",
+        "pharmacist"
+      ],
+      "tiers": null
+    },
+    {
+      "action": "add_source",
+      "relations_any": [
+        "care_team_member"
+      ],
+      "roles": [
+        "allied_health",
+        "clerical_staff",
+        "clinician",
+        "nurse",
+        "pharmacist"
+      ],
+      "tiers": null
+    },
+    {
+      "action": "run_checks",
+      "relations_any": [
+        "care_team_member"
+      ],
+      "roles": [
+        "allied_health",
+        "clerical_staff",
+        "clinician",
+        "nurse",
+        "pharmacist"
+      ],
+      "tiers": null
+    },
+    {
+      "action": "view_summary",
+      "relations_any": [
+        "care_team_member"
+      ],
+      "roles": [
+        "allied_health",
+        "clerical_staff",
+        "clinician",
+        "nurse",
+        "pharmacist"
+      ],
+      "tiers": null
+    },
+    {
+      "action": "view_document",
+      "relations_any": [
+        "care_team_member"
+      ],
+      "roles": [
+        "allied_health",
+        "clerical_staff",
+        "clinician",
+        "nurse",
+        "pharmacist"
+      ],
+      "tiers": null
+    },
+    {
+      "action": "record_feedback",
+      "relations_any": [
+        "care_team_member"
+      ],
+      "roles": [
+        "allied_health",
+        "clerical_staff",
+        "clinician",
+        "nurse",
+        "pharmacist"
+      ],
+      "tiers": null
+    },
+    {
+      "action": "reset_workspace",
+      "relations_any": [
+        "care_team_member"
+      ],
+      "roles": [
+        "allied_health",
+        "clerical_staff",
+        "clinician",
+        "nurse",
+        "pharmacist"
+      ],
+      "tiers": null
+    },
+    {
+      "action": "close_encounter",
+      "relations_any": [
+        "responsible_clinician"
+      ],
+      "roles": [
+        "clinician"
+      ],
+      "tiers": null
+    },
+    {
+      "action": "view_aggregate",
+      "relations_any": [],
+      "roles": [
+        "legal",
+        "medical_director",
+        "quality_risk"
+      ],
+      "tiers": null
+    },
+    {
+      "action": "decide_accept",
+      "relations_any": [
+        "flag_owner",
+        "responsible_clinician"
+      ],
+      "roles": [
+        "clinician"
+      ],
+      "tiers": [
+        1
+      ]
+    },
+    {
+      "action": "decide_accept",
+      "relations_any": [
+        "flag_owner",
+        "responsible_clinician"
+      ],
+      "roles": [
+        "allied_health",
+        "clinician",
+        "nurse",
+        "pharmacist"
+      ],
+      "tiers": [
+        2,
+        3
+      ]
+    },
+    {
+      "action": "decide_edit",
+      "relations_any": [
+        "flag_owner",
+        "responsible_clinician"
+      ],
+      "roles": [
+        "clinician"
+      ],
+      "tiers": [
+        1
+      ]
+    },
+    {
+      "action": "decide_edit",
+      "relations_any": [
+        "flag_owner",
+        "responsible_clinician"
+      ],
+      "roles": [
+        "allied_health",
+        "clinician",
+        "nurse",
+        "pharmacist"
+      ],
+      "tiers": [
+        2,
+        3
+      ]
+    },
+    {
+      "action": "decide_reassign",
+      "relations_any": [
+        "flag_owner",
+        "responsible_clinician"
+      ],
+      "roles": [
+        "clinician"
+      ],
+      "tiers": [
+        1
+      ]
+    },
+    {
+      "action": "decide_reassign",
+      "relations_any": [
+        "flag_owner",
+        "responsible_clinician"
+      ],
+      "roles": [
+        "allied_health",
+        "clinician",
+        "nurse",
+        "pharmacist"
+      ],
+      "tiers": [
+        2,
+        3
+      ]
+    },
+    {
+      "action": "decide_mark_ready_for_clinician",
+      "relations_any": [
+        "care_team_member"
+      ],
+      "roles": [
+        "allied_health",
+        "clerical_staff",
+        "clinician",
+        "nurse",
+        "pharmacist"
+      ],
+      "tiers": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "action": "decide_dismiss",
+      "relations_any": [
+        "responsible_clinician"
+      ],
+      "roles": [
+        "clinician"
+      ],
+      "tiers": [
+        1
+      ]
+    },
+    {
+      "action": "decide_dismiss",
+      "relations_any": [
+        "flag_owner",
+        "responsible_clinician"
+      ],
+      "roles": [
+        "allied_health",
+        "clinician",
+        "nurse",
+        "pharmacist"
+      ],
+      "tiers": [
+        2,
+        3
+      ]
+    },
+    {
+      "action": "decide_resolve",
+      "relations_any": [
+        "responsible_clinician"
+      ],
+      "roles": [
+        "clinician"
+      ],
+      "tiers": [
+        1
+      ]
+    },
+    {
+      "action": "decide_resolve",
+      "relations_any": [
+        "flag_owner",
+        "responsible_clinician"
+      ],
+      "roles": [
+        "allied_health",
+        "clinician",
+        "nurse",
+        "pharmacist"
+      ],
+      "tiers": [
+        2,
+        3
+      ]
+    }
+  ],
+  "routes": {
+    "AGGREGATE": "/api/aggregate/risk",
+    "AI_STATUS": "/api/ai/status",
+    "BUBBLES": "/api/encounters/{encounter_id}/bubbles",
+    "CHECK_RUNS": "/api/encounters/{encounter_id}/check-runs",
+    "CHECK_RUN_LATEST": "/api/encounters/{encounter_id}/check-runs/latest",
+    "CLOSURE": "/api/encounters/{encounter_id}/closure",
+    "DOCUMENT": "/api/documents/{document_token}",
+    "DOCUMENT_TOKEN": "/api/encounters/{encounter_id}/source-versions/{source_version_id}/document-token",
+    "ENCOUNTER": "/api/encounters/{encounter_id}",
+    "ENCOUNTERS": "/api/encounters",
+    "FEEDBACK": "/api/encounters/{encounter_id}/feedback",
+    "FLAG": "/api/encounters/{encounter_id}/flags/{flag_id}",
+    "FLAGS": "/api/encounters/{encounter_id}/flags",
+    "FLAG_DECISIONS": "/api/encounters/{encounter_id}/flags/{flag_id}/decisions",
+    "GLANCE": "/api/encounters/{encounter_id}/glance",
+    "HEALTH": "/api/health",
+    "SESSION": "/api/session",
+    "SOURCES": "/api/encounters/{encounter_id}/sources",
+    "SOURCES_PDF": "/api/encounters/{encounter_id}/sources/pdf",
+    "SOURCE_TEXT": "/api/encounters/{encounter_id}/source-versions/{source_version_id}/text",
+    "SUMMARY": "/api/encounters/{encounter_id}/summary",
+    "WORKSPACES": "/api/workspaces",
+    "WORKSPACE_CURRENT": "/api/workspaces/current"
+  },
+  "session_cookie": "ng_session",
+  "stub_header": "X-Noteguard-Stub",
+  "workspace_header": "X-Workspace-Token"
+}

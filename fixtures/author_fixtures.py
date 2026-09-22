@@ -249,14 +249,27 @@ ENC_B1_SOURCES = [
 ]
 ENC_B1_TEAM = [("wong", "responsible_clinician"), ("lau", "member")]
 
+# ---------------------------------------------------------------------------
+# ENC-C1 — NO responsible clinician recorded (OWN-001; Tier 1 routes to the attending)
+# ---------------------------------------------------------------------------
 
-def build_encounter(ref: str, setting: str, rc: str, team, sources) -> dict:
+ENC_C1_SOURCES = [
+    ("nursing", "Nursing note", "nursing", "ravi", "pasted_text", "09:00",
+     [("09:00", "Nursing note.\nPotassium 6.2 mmol/L.")]),
+    ("attending", "Attending note", "clinician", "lim", "pasted_text", "09:30",
+     [("09:30", "Attending note (Dr Lim).\nChest clear.\nPlan: continue current care.")]),
+]
+ENC_C1_TEAM = [("lim", "attending"), ("ravi", "member")]
+
+
+def build_encounter(ref: str, setting: str, rc: str | None, team, sources, attending: str | None = None) -> dict:
     enc_id = fid(f"encounter/{ref}")
     patient = {"patient_id": fid(f"patient/{ref}"), "patient_ref": fid(f"patient_ref/{ref}"),
                "display_label": f"Synthetic patient {ref[-2:]}"}
     encounter = {"encounter_id": enc_id, "encounter_ref": ref, "clinic_id": CLINIC["clinic_id"],
                  "patient_id": patient["patient_id"], "setting": setting, "started_at": sgt("08:20"),
-                 "responsible_clinician_id": staff_id(rc), "attending_clinician_id": staff_id(rc)}
+                 "responsible_clinician_id": staff_id(rc) if rc else None,
+                 "attending_clinician_id": staff_id(attending or rc)}
     memberships = [{"encounter_id": enc_id, "staff_id": staff_id(k), "team_role": r,
                     "valid_from": sgt("08:00"), "valid_to": None} for k, r in team]
     src_rows, ver_rows, ext_rows = [], [], []
@@ -306,8 +319,9 @@ def main() -> None:
     for ref, setting, rc, team, sources in (
         ("ENC-A1", "medical ward", "lim", ENC_A1_TEAM, ENC_A1_SOURCES),
         ("ENC-B1", "medical ward", "wong", ENC_B1_TEAM, ENC_B1_SOURCES),
+        ("ENC-C1", "medical ward", None, ENC_C1_TEAM, ENC_C1_SOURCES),
     ):
-        snap = build_encounter(ref, setting, rc, team, sources)
+        snap = build_encounter(ref, setting, rc, team, sources, attending="lim" if rc is None else None)
         (ENC_DIR / f"{ref}.json").write_text(json.dumps(snap, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         print(ref, len(snap["sources"]), "sources,", len(snap["versions"]), "versions")
 

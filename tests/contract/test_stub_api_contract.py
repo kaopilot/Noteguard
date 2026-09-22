@@ -7,7 +7,7 @@ import pytest
 
 from noteguard.contracts import routes as R
 from tests.support import golden
-from tests.support.api import A1, B1, login, run_cutoff, url
+from tests.support.api import A1, B1, C1, login, run_cutoff, url
 from tests.support.golden import ROOT
 from tests.support.lanes import any_app, client
 
@@ -59,5 +59,6 @@ def test_stub_serves_goldens():
     _check_views(c, h, A1, "ENC-A1_1600_rerun")  # same workspace: prior flags present
     _check_views(c, login(c, "lim"), A1, "ENC-A1_1600")  # fresh workspace
     _check_views(c, login(c, "wong"), B1, "ENC-B1_1600")
+    _check_views(c, login(c, "lim"), C1, "ENC-C1_1000")  # no RC: Tier 1 routed to the attending
     r = c.post(url(R.FLAG_DECISIONS, encounter_id=A1, flag_id="flg_" + "0" * 24), headers=h, json={})
     assert r.status_code == 501 and r.json() == {"error_code": "not_implemented"}

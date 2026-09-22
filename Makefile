@@ -1,5 +1,5 @@
 # Noteguard make targets (B0). Python via uv (pinned 3.12, uv.lock); Node 22 for frontend/ (B3).
-.PHONY: setup test test-contracts test-engine test-api test-governance test-ui e2e run goldens fixtures openapi
+.PHONY: types setup test test-contracts test-engine test-api test-governance test-ui e2e run goldens fixtures openapi
 
 setup:
 	uv sync --frozen
@@ -37,3 +37,8 @@ fixtures:
 
 openapi:
 	uv run python scripts/export_openapi.py
+
+types:
+	uv run python scripts/export_openapi.py
+	uv run python scripts/export_contract_data.py
+	uv run python scripts/gen_ts_types.py

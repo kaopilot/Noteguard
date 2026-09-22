@@ -63,7 +63,8 @@ def test_forbidden_phrase_lint():
         d = ROOT / "frontend" / sub
         if d.is_dir():
             for p in d.rglob("*"):
-                if p.suffix in {".ts", ".tsx", ".js", ".jsx", ".html", ".json"} and ".test." not in p.name:
+                if (p.suffix in {".ts", ".tsx", ".js", ".jsx", ".html", ".json"} and ".test." not in p.name
+                        and not p.name.endswith(".gen.ts")):  # generated from linted backend sources
                     for m in re.finditer(r"""(["'`])((?:(?!\1).)+)\1""", p.read_text(encoding="utf-8")):
                         if (hit := find_forbidden(m.group(2))):
                             bad.append(f"{p.relative_to(ROOT)} {hit!r}")

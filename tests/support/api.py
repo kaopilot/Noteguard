@@ -9,6 +9,7 @@ from .golden import load
 
 A1 = load("ENC-A1_1130")["encounter_id"]
 B1 = load("ENC-B1_1600")["encounter_id"]
+C1 = load("ENC-C1_1000")["encounter_id"]
 
 
 def login(c, staff_key: str) -> dict:

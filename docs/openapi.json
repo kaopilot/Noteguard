@@ -774,7 +774,7 @@
       },
       "Evidence": {
         "additionalProperties": false,
-        "description": "Version-bound anchor. Wire name of source_version_id is note_version_id.",
+        "description": "Version-bound anchor. Wire name of source_version_id is note_version_id.\n\nSpan evidence cites a SourceVersion. ``encounter_record`` evidence (OWN-001 only) cites a\nstructured encounter field instead: no source version, no span, no quote. It is never a\nfake anchor on some note.",
         "properties": {
           "end": {
             "minimum": 0.0,
@@ -788,11 +788,18 @@
             "type": "integer"
           },
           "note_version_id": {
-            "maxLength": 64,
-            "minLength": 1,
-            "pattern": "^[A-Za-z0-9_\\-]+$",
-            "title": "Note Version Id",
-            "type": "string"
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_\\-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note Version Id"
           },
           "page": {
             "anyOf": [
@@ -814,6 +821,16 @@
             "pattern": "^[0-9a-f]{64}$",
             "title": "Quote Sha256",
             "type": "string"
+          },
+          "record_field": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RecordField"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "role_in_flag": {
             "$ref": "#/components/schemas/EvidenceRole"
@@ -873,7 +890,8 @@
           "suppressor",
           "trigger",
           "extraction_gap",
-          "missing_response_window"
+          "missing_response_window",
+          "encounter_record"
         ],
         "title": "EvidenceRole",
         "type": "string"
@@ -1437,6 +1455,14 @@
           "work_completed_documented"
         ],
         "title": "ReasonCode",
+        "type": "string"
+      },
+      "RecordField": {
+        "description": "Structured encounter fields an ``encounter_record`` evidence item may name.",
+        "enum": [
+          "encounter.responsible_clinician_id"
+        ],
+        "title": "RecordField",
         "type": "string"
       },
       "Role": {

@@ -1,0 +1,125 @@
+{
+  "clinic": {
+    "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1",
+    "display_name": "Synthetic General Hospital, Ward 7"
+  },
+  "patient": {
+    "patient_id": "9960284c-a9f8-4033-aaf3-823472ebd487",
+    "patient_ref": "8c9a3d69-4aa9-44d9-8309-730755745410",
+    "display_label": "Synthetic patient C1"
+  },
+  "encounter": {
+    "encounter_id": "90f91738-42c0-4b2c-a133-cb972b5d965f",
+    "encounter_ref": "ENC-C1",
+    "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1",
+    "patient_id": "9960284c-a9f8-4033-aaf3-823472ebd487",
+    "setting": "medical ward",
+    "started_at": "2026-09-21T00:20:00Z",
+    "responsible_clinician_id": null,
+    "attending_clinician_id": "b86630ca-a475-4a29-b619-1b764a5c0059"
+  },
+  "staff": [
+    {
+      "staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+      "display_name": "Dr Lim",
+      "discipline": "clinician",
+      "role": "clinician",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    },
+    {
+      "staff_id": "38eafae6-b7ce-42a5-8a9d-2a060d421f18",
+      "display_name": "Nurse Ravi",
+      "discipline": "nursing",
+      "role": "nurse",
+      "clinic_id": "4043fe97-5d45-4c3f-9d56-aba748a1ddf1"
+    }
+  ],
+  "memberships": [
+    {
+      "encounter_id": "90f91738-42c0-4b2c-a133-cb972b5d965f",
+      "staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+      "team_role": "attending",
+      "valid_from": "2026-09-21T00:00:00Z",
+      "valid_to": null
+    },
+    {
+      "encounter_id": "90f91738-42c0-4b2c-a133-cb972b5d965f",
+      "staff_id": "38eafae6-b7ce-42a5-8a9d-2a060d421f18",
+      "team_role": "member",
+      "valid_from": "2026-09-21T00:00:00Z",
+      "valid_to": null
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "9047f0b0-32ba-4d64-8d3f-204bb3be43e5",
+      "encounter_id": "90f91738-42c0-4b2c-a133-cb972b5d965f",
+      "source_system": "fixture-emr",
+      "identifier_namespace": "urn:synthetic:fixture-emr",
+      "external_id": "ENC-C1-NURSING",
+      "source_type": "pasted_text",
+      "author_staff_id": "38eafae6-b7ce-42a5-8a9d-2a060d421f18",
+      "discipline": "nursing",
+      "title": "Nursing note",
+      "source_time": "2026-09-21T01:00:00Z"
+    },
+    {
+      "source_id": "23e9e906-9e99-4ca0-a76d-1717e2e5ed20",
+      "encounter_id": "90f91738-42c0-4b2c-a133-cb972b5d965f",
+      "source_system": "fixture-emr",
+      "identifier_namespace": "urn:synthetic:fixture-emr",
+      "external_id": "ENC-C1-ATTENDING",
+      "source_type": "pasted_text",
+      "author_staff_id": "b86630ca-a475-4a29-b619-1b764a5c0059",
+      "discipline": "clinician",
+      "title": "Attending note",
+      "source_time": "2026-09-21T01:30:00Z"
+    }
+  ],
+  "versions": [
+    {
+      "source_version_id": "41a03498-0505-442c-9a13-996763919e0d",
+      "source_id": "9047f0b0-32ba-4d64-8d3f-204bb3be43e5",
+      "version": 1,
+      "version_time": "2026-09-21T01:00:00Z",
+      "received_at": "2026-09-21T01:00:00Z",
+      "sha256": "58e1293a89e7662ca344e5c1c5eda8d261656d72bd05ac8ecb50427c0ea1c436",
+      "byte_length": 35,
+      "media_type": "text/plain; charset=utf-8",
+      "idempotency_key": "urn:synthetic:fixture-emr|ENC-C1-NURSING|1|58e1293a89e7662ca344e5c1c5eda8d261656d72bd05ac8ecb50427c0ea1c436",
+      "supersedes_version_id": null
+    },
+    {
+      "source_version_id": "05ff86ff-3fab-4e63-9877-c7f6ff149496",
+      "source_id": "23e9e906-9e99-4ca0-a76d-1717e2e5ed20",
+      "version": 1,
+      "version_time": "2026-09-21T01:30:00Z",
+      "received_at": "2026-09-21T01:30:00Z",
+      "sha256": "72e87f2d1e62b5cb249a4274ee289999deb918412658b986e998f2e23b890b71",
+      "byte_length": 66,
+      "media_type": "text/plain; charset=utf-8",
+      "idempotency_key": "urn:synthetic:fixture-emr|ENC-C1-ATTENDING|1|72e87f2d1e62b5cb249a4274ee289999deb918412658b986e998f2e23b890b71",
+      "supersedes_version_id": null
+    }
+  ],
+  "extractions": [
+    {
+      "source_version_id": "41a03498-0505-442c-9a13-996763919e0d",
+      "status": "not_applicable",
+      "text": "Nursing note.\nPotassium 6.2 mmol/L.",
+      "pages": [],
+      "extractor": "paste@1",
+      "note": null
+    },
+    {
+      "source_version_id": "05ff86ff-3fab-4e63-9877-c7f6ff149496",
+      "status": "not_applicable",
+      "text": "Attending note (Dr Lim).\nChest clear.\nPlan: continue current care.",
+      "pages": [],
+      "extractor": "paste@1",
+      "note": null
+    }
+  ],
+  "prior_flags": [],
+  "decisions": []
+}

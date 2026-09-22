@@ -6,11 +6,12 @@ import pytest
 from noteguard.contracts import routes as R
 from noteguard.contracts import states
 from noteguard.contracts.types import FlagState
-from tests.support.api import A1, B1, login, run_cutoff, url
+from tests.support.api import A1, B1, C1, login, run_cutoff, url
 from tests.support.lanes import any_app, client
 
 pytestmark = [pytest.mark.owner("B0"), pytest.mark.contract, pytest.mark.api]
-SEQUENCES = [("lim", A1, ["ENC-A1_1130", "ENC-A1_1600_rerun"]), ("lim", A1, ["ENC-A1_1600"]), ("wong", B1, ["ENC-B1_1600"])]
+SEQUENCES = [("lim", A1, ["ENC-A1_1130", "ENC-A1_1600_rerun"]), ("lim", A1, ["ENC-A1_1600"]), ("wong", B1, ["ENC-B1_1600"]),
+             ("lim", C1, ["ENC-C1_1000"])]
 
 
 def test_open_count_integrity():

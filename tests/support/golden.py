@@ -25,7 +25,7 @@ ENCOUNTERS = ROOT / "fixtures" / "encounters"
 #: Held-out ENC-A2 (never in the repo before I1). Directory with encounters/ and expected/.
 HELDOUT = Path(os.environ.get("NOTEGUARD_HELDOUT_DIR", ROOT / "fixtures" / "heldout"))
 
-SCENARIOS = ("ENC-A1_1130", "ENC-A1_1600", "ENC-A1_1600_rerun", "ENC-B1_1600")
+SCENARIOS = ("ENC-A1_1130", "ENC-A1_1600", "ENC-A1_1600_rerun", "ENC-B1_1600", "ENC-C1_1000")
 
 
 def _dirs(heldout: bool) -> tuple[Path, Path]:
@@ -93,7 +93,7 @@ def _d(obj) -> dict:
 def evidence_key(e) -> tuple:
     e = _d(e)
     return (e["note_version_id"], e["start"], e["end"], e["page"], e["quote"], e["quote_sha256"],
-            e["role_in_flag"], e["evidence_revision"])
+            e["role_in_flag"], e["evidence_revision"], e.get("record_field"))
 
 
 FLAG_FIELDS = ("flag_id", "rule_id", "tier", "category", "lens", "title", "subject_key", "owner_staff_id", "state",
