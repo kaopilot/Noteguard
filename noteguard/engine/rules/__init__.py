@@ -20,7 +20,7 @@ BUILT: dict[RuleId, Callable[[Context], list[Candidate]]] = {
     RuleId.PDF_001: completeness.unreadable,
     RuleId.DIFF_001: copied.evaluate,
     RuleId.OWN_001: completeness.no_responsible_clinician,
-    RuleId.DET_001: deterioration.evaluate,  # built B1.2; disabled in v1 until CCR-02
+    RuleId.DET_001: deterioration.evaluate,  # enabled in v1 by CCR-02
 }
 
 

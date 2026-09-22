@@ -83,6 +83,12 @@ R_PDF = ("Scanned outside lab report (Nurse Ravi, 12:10) has extraction status n
 R_DIFF = ('Discharge planning (SW Goh, 16:00) repeats "Patient stable" from Ward round (Dr Lim, 09:00); Afternoon '
           'observations (Nurse Ravi, 13:00) records "SpO2 89% on room air, RR 26" in between.')
 Q_DIFF = 'Is the 16:00 "Patient stable" statement current?'
+# CCR-02 (approved @k, 22 Sep 2026, defaults): DET-001 reassurance after deterioration.
+R_DET = ('Discharge planning (SW Goh, 16:00) records "Patient stable" after Afternoon observations (Nurse Ravi, 13:00) '
+         'recorded "SpO2 89% on room air, RR 26", with no clinician review documented in between.')
+DET_STABLE = {"rule": "DET-001", "subject": "status:stable", "tier": 1, "owner": "lim", "affected": ["goh", "ravi"],
+              "evidence": [E("sw", 1, "claim", "Patient stable"), E("obs", 1, "counter_claim", "SpO2 89% on room air, RR 26")],
+              "reason": R_DET, "question": Q_DIFF}
 
 U_CONFLICT = ("The supplied sources disagree. Only a clinician's decision can settle which entry is correct; the "
               "checker does not choose between sources.")
@@ -132,6 +138,8 @@ ENC_A1_1130 = {
         ("OWN-001", "encounter", "A responsible clinician (Dr Lim) is recorded."),
         ("DOSE-002", "*", "Every number + dose unit in scope is attached to a parsed regimen."),
         ("DIFF-001", "*", '"Patient stable" occurs once in scope; nothing is carried forward yet.'),
+        ("DET-001", "*", 'The only reassurance (09:00 "Patient stable") precedes every deterioration marker; the 08:40 '
+                         "observations are inside the placeholder ranges (CCR-02)."),
     ],
     "must_not_suppress_note": '"Not yet reviewed by medical team" (11:15) is a NEGATED response and must not suppress CRIT-001.',
     "bubbles": [
@@ -177,13 +185,15 @@ ENC_A1_1600 = {
          "evidence": [GAP("lab_pdf")], "reason": R_PDF},
         {"rule": "DIFF-001", "subject": "status:stable@source:{src:sw}", "tier": 3, "owner": "goh",
          "affected": ["lim", "ravi"], "evidence": STABLE_EVIDENCE, "reason": R_DIFF, "question": Q_DIFF},
+        DET_STABLE,  # CCR-02: the 15:30 clinician review concerns potassium, not SpO2/RR
     ],
     "must_not_flag": [
         ("CRIT-001", "analyte:potassium", 'Suppressed at evaluation time: 15:30 "K 6.4 reviewed, treated per protocol" is later, new (not carried forward), non-negated and names the same analyte (Section 8.5).'),
         ("DOSE-001", "drug:metformin", '15:30 "Metformin increased to 1 g BD" is an explicit change by the responsible clinician (L3), not a contradiction.'),
         ("PEND-001", "analyte:potassium", '"Repeat K sent; Dr Lim to review result by 18:00" names an owner AND a time in the same statement.'),
-        ("CRIT-001", "analyte:spo2", "SpO2 89% is a deterioration marker in registry v1 (feeds DIFF-001), not a critical threshold. Decided by @k on 22 Sep: keep for v1; DET-001 is the first stretch rule if time allows."),
+        ("CRIT-001", "analyte:spo2", "SpO2 89% is a deterioration marker in registry v1 (feeds DIFF-001 and DET-001), not a critical threshold (@k, 22 Sep; DET-001 enabled by CCR-02)."),
         ("CRIT-001", "analyte:respiratory_rate", "RR 26 is a deterioration marker in registry v1, not a critical threshold."),
+        ("DET-001", "status:fit_for_discharge", "No discharge-readiness statement in scope (CCR-02)."),
         ("PDF-001", "source:{src:referral}", "The referral PDF has a complete text layer."),
         ("OWN-001", "encounter", "A responsible clinician (Dr Lim) is recorded."),
         ("DOSE-002", "*", "Every number + dose unit in scope is attached to a parsed regimen (1 g BD included)."),
@@ -223,11 +233,12 @@ ENC_A1_1600 = {
         ("explicit_change", "drug:metformin", ("medrec", 2, GP_LIST_V2), ("clin_review", 1, "Metformin increased to 1 g BD")),
         ("carried_forward", "status:stable", ("ward_round", 1, "Patient stable"), ("sw", 1, "Patient stable")),
     ],
-    "summary_open_priorities": [("ALG-001", "allergen:penicillin"), ("DOSE-001", "drug:amlodipine"),
-                                ("PEND-001", "test:blood_culture"), ("PDF-001", "source:{src:lab_pdf}")],
+    "summary_open_priorities": [("ALG-001", "allergen:penicillin"), ("DET-001", "status:stable"),
+                                ("DOSE-001", "drug:amlodipine"), ("PEND-001", "test:blood_culture"),
+                                ("PDF-001", "source:{src:lab_pdf}")],
     "summary_top_questions": [("q_allergy_which_correct", "allergen:penicillin"),
                               ("q_ecg_documented", "analyte:potassium"), ("q_dose_current", "drug:amlodipine")],
-    "closure": {"status": "blocked", "tier1": [("ALG-001", "allergen:penicillin")],
+    "closure": {"status": "blocked", "tier1": [("ALG-001", "allergen:penicillin"), ("DET-001", "status:stable")],
                 "tier2": [("DOSE-001", "drug:amlodipine"), ("PEND-001", "test:blood_culture"),
                           ("PDF-001", "source:{src:lab_pdf}")], "tier3_count": 1},
 }
@@ -260,6 +271,7 @@ ENC_A1_1600_RERUN = {
          "evidence": [GAP("lab_pdf")], "reason": R_PDF},
         {"rule": "DIFF-001", "subject": "status:stable@source:{src:sw}", "tier": 3, "owner": "goh",
          "affected": ["lim", "ravi"], "evidence": STABLE_EVIDENCE, "reason": R_DIFF, "question": Q_DIFF},
+        DET_STABLE,  # CCR-02: the 15:30 clinician review concerns potassium, not SpO2/RR
     ],
     "must_not_flag": [
         ("DOSE-001", "drug:metformin", "Explicit change (L3)."),
@@ -277,11 +289,12 @@ ENC_A1_1600_RERUN = {
     },
     "required_changes": "same_as:ENC-A1_1600",
     "summary_open_priorities": [("CRIT-001", "analyte:potassium"), ("ALG-001", "allergen:penicillin"),
-                                ("DOSE-001", "drug:amlodipine"), ("PEND-001", "test:blood_culture"),
-                                ("PDF-001", "source:{src:lab_pdf}")],
+                                ("DET-001", "status:stable"), ("DOSE-001", "drug:amlodipine"),
+                                ("PEND-001", "test:blood_culture"), ("PDF-001", "source:{src:lab_pdf}")],
     "summary_top_questions": [("q_allergy_which_correct", "allergen:penicillin"),
                               ("q_ecg_documented", "analyte:potassium"), ("q_dose_current", "drug:amlodipine")],
-    "closure": {"status": "blocked", "tier1": [("CRIT-001", "analyte:potassium"), ("ALG-001", "allergen:penicillin")],
+    "closure": {"status": "blocked", "tier1": [("CRIT-001", "analyte:potassium"), ("ALG-001", "allergen:penicillin"),
+                                               ("DET-001", "status:stable")],
                 "tier2": [("DOSE-001", "drug:amlodipine"), ("PEND-001", "test:blood_culture"),
                           ("PDF-001", "source:{src:lab_pdf}")], "tier3_count": 1},
 }
@@ -345,10 +358,9 @@ ENC_C1_1000 = {
 }
 
 #: CP0 sign-off, recorded per scenario. A changed or new scenario needs @k's review again.
+#: ENC-A1_1130, ENC-A1_1600 and ENC-A1_1600_rerun were signed at CP0 (@k, 22 Sep, chat B0.1) and changed
+#: under CCR-02 (DET-001), so they are PENDING again until @k reads the regenerated review sheet.
 SIGNOFF = {
-    "ENC-A1_1130": "@k, 22 Sep 2026 (review sheet read in chat B0.1)",
-    "ENC-A1_1600": "@k, 22 Sep 2026 (review sheet read in chat B0.1)",
-    "ENC-A1_1600_rerun": "@k, 22 Sep 2026 (review sheet read in chat B0.1)",
     "ENC-B1_1600": "@k, 22 Sep 2026 (review sheet read in chat B0.1)",
 }
 

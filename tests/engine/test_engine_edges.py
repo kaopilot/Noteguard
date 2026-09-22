@@ -66,8 +66,10 @@ def test_variant_encounter_generalises():
     snap = build_snapshot(notes, ref="ENC-T-VARIANT")
     r = run_synthetic(eng, snap, "16:00")
     got = {(f.rule_id.value, f.subject_key.split("@")[0]) for f in r.flags}
+    # DET-001 (enabled by CCR-02): "Clinically stable" at 15:00 follows RR 28 at 12:00, and the only clinician
+    # review in between (13:10) concerns sodium, not RR.
     assert got == {("ALG-001", "allergen:sulfonamide"), ("DOSE-001", "drug:bisoprolol"),
-                   ("PEND-001", "test:urine_culture"), ("DIFF-001", "status:stable")}
+                   ("PEND-001", "test:urine_culture"), ("DIFF-001", "status:stable"), ("DET-001", "status:stable")}
     assert any(c.kind.value == "explicit_change" and c.subject_key == "drug:atorvastatin" for c in r.changes)
     crit = [b for b in eng.answer_bubbles(snap, r, bundle(), r.run.source_cutoff) if b.question_template_id == "q_crit_response"]
     assert [(b.subject_key, b.status.value) for b in crit] == [("analyte:sodium", "documented")]

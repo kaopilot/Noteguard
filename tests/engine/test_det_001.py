@@ -1,8 +1,8 @@
 """DET-001 reassurance after deterioration (stretch; B1.2). owner: B1.
 
-DET-001 is DISABLED in rulesets/v1.json until CCR-02 is approved, so these tests enable it in an
-in-memory bundle only (the ruleset file and the goldens are untouched). Written by the engine's
-own lane: a regression guard, not independent evidence.
+DET-001 is enabled in rulesets/v1.json by CCR-02 (approved @k, 22 Sep 2026, defaults); its ENC-A1 behaviour
+is pinned by the goldens. ``det_bundle()`` still forces it on, so these cases keep testing the rule even if
+a later ruleset disables it. Written by the engine's own lane: a regression guard, not independent evidence.
 """
 
 from datetime import timedelta
@@ -77,19 +77,8 @@ def test_det_001_shape_owner_and_supersede():
     assert "suppressor" in {e.role_in_flag.value for e in g.evidence}
 
 
-def test_det_001_disabled_in_v1_and_proposed_golden():
-    """v1 keeps DET-001 disabled (goldens unchanged). With it enabled, ENC-A1 at 16:00 gives exactly the
-    flag hand-declared in CCR-02: the 16:00 "Patient stable" after the 13:00 SpO2 89% / RR 26, which no
-    clinician-authored statement reviews (the 15:30 review concerns potassium)."""
-    eng = engine()
-    _, _, _, r = golden.run(eng, "ENC-A1_1600")
-    assert flags_by_rule(r, "DET-001") == []
-    g = golden.load("ENC-A1_1600")
-    snap = golden.snapshot("ENC-A1_1600")
-    r = eng.run_checks(snap, det_bundle(), golden.cutoff(g), run_id=g["run_id"], evaluated_at=golden.evaluated_at(g))
-    (f,) = flags_by_rule(r, "DET-001")
-    assert {(e.role_in_flag.value, e.quote) for e in f.evidence} == {("claim", "Patient stable"),
-                                                                    ("counter_claim", "SpO2 89% on room air, RR 26")}
-    claim = next(e for e in f.evidence if e.role_in_flag.value == "claim")
-    src = {v.source_version_id: v.source_id for v in snap.versions}[claim.source_version_id]
-    assert next(s.source_time for s in snap.sources if s.source_id == src) == golden.cutoff(g)  # the 16:00 line, not 09:00
+def test_det_001_enabled_and_protected_in_v1():
+    """CCR-02: DET-001 is enabled, Tier 1 and on the protected floor in ruleset v1 (it cannot be lowered or
+    switched off without a new approved ruleset). Mutation: set "enabled": false -> fails here and in the goldens."""
+    (rule,) = [r for r in golden.bundle().ruleset.rules if r.rule_id is RuleId.DET_001]
+    assert rule.enabled and rule.protected_floor and int(rule.default_tier) == 1

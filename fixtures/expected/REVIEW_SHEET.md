@@ -5,7 +5,7 @@ Read this, not the JSON. Sign off by adding your initials and time at the bottom
 
 ## ENC-A1_1130
 
-Sign-off: @k, 22 Sep 2026 (review sheet read in chat B0.1)
+Sign-off: **PENDING (@k)**
 
 Cutoff 11:30 SGT; fresh run; outcome `completed`; closure **blocked**.
 
@@ -24,6 +24,7 @@ Cutoff 11:30 SGT; fresh run; outcome `completed`; closure **blocked**.
 - `OWN-001` on `encounter` — A responsible clinician (Dr Lim) is recorded.
 - `DOSE-002` on `*` — Every number + dose unit in scope is attached to a parsed regimen.
 - `DIFF-001` on `*` — "Patient stable" occurs once in scope; nothing is carried forward yet.
+- `DET-001` on `*` — The only reassurance (09:00 "Patient stable") precedes every deterioration marker; the 08:40 observations are inside the placeholder ranges (CCR-02).
 - "Not yet reviewed by medical team" (11:15) is a NEGATED response and must not suppress CRIT-001.
 
 **Bubbles** (rank order):
@@ -38,13 +39,14 @@ Cutoff 11:30 SGT; fresh run; outcome `completed`; closure **blocked**.
 
 ## ENC-A1_1600
 
-Sign-off: @k, 22 Sep 2026 (review sheet read in chat B0.1)
+Sign-off: **PENDING (@k)**
 
 Cutoff 16:00 SGT; fresh run; outcome `completed_with_extraction_gaps`; closure **blocked**.
 
 | Rule | Tier | Subject | Owner | Also affected | State (rev/ev) | Evidence |
 |---|---|---|---|---|---|---|
 | ALG-001 | 1 | `allergen:penicillin` | Dr Lim | Nurse Tan, Pharmacist Ong | open (1/1) | claim: Admission nursing assessment (Nurse Tan, 08:40) v1 “Allergies: NKDA (patient reported)”<br>counter_claim: Medication reconciliation (Pharmacist Ong, 10:30) v2 “Allergy: Penicillin allergy — rash (per GP records)” |
+| DET-001 | 1 | `status:stable` | Dr Lim | Nurse Ravi, SW Goh | open (1/1) | counter_claim: Afternoon observations (Nurse Ravi, 13:00) v1 “SpO2 89% on room air, RR 26”<br>claim: Discharge planning (SW Goh, 16:00) v1 “Patient stable” |
 | DOSE-001 | 2 | `drug:amlodipine` | Dr Lim | Pharmacist Ong | open (1/1) | claim: Ward round (Dr Lim, 09:00) v1 “Amlodipine 5 mg OD”<br>counter_claim: Medication reconciliation (Pharmacist Ong, 10:30) v2 “GP list dated 01/09/2026: amlodipine 10 mg once daily; metformin 500 mg twice daily” |
 | PDF-001 | 2 | `source:0759710b-2e34-4b3c-b355-df4b71bfa` | Nurse Ravi | — | open (1/1) | extraction_gap: Scanned outside lab report (Nurse Ravi, 12:10) v1 “[no text layer, p.1]” |
 | PEND-001 | 2 | `test:blood_culture` | Dr Lim | — | open (1/1) | claim: Ward round (Dr Lim, 09:00) v1 “Blood culture sent, awaiting result” |
@@ -55,8 +57,9 @@ Cutoff 16:00 SGT; fresh run; outcome `completed_with_extraction_gaps`; closure *
 - `CRIT-001` on `analyte:potassium` — Suppressed at evaluation time: 15:30 "K 6.4 reviewed, treated per protocol" is later, new (not carried forward), non-negated and names the same analyte (Section 8.5).
 - `DOSE-001` on `drug:metformin` — 15:30 "Metformin increased to 1 g BD" is an explicit change by the responsible clinician (L3), not a contradiction.
 - `PEND-001` on `analyte:potassium` — "Repeat K sent; Dr Lim to review result by 18:00" names an owner AND a time in the same statement.
-- `CRIT-001` on `analyte:spo2` — SpO2 89% is a deterioration marker in registry v1 (feeds DIFF-001), not a critical threshold. Decided by @k on 22 Sep: keep for v1; DET-001 is the first stretch rule if time allows.
+- `CRIT-001` on `analyte:spo2` — SpO2 89% is a deterioration marker in registry v1 (feeds DIFF-001 and DET-001), not a critical threshold (@k, 22 Sep; DET-001 enabled by CCR-02).
 - `CRIT-001` on `analyte:respiratory_rate` — RR 26 is a deterioration marker in registry v1, not a critical threshold.
+- `DET-001` on `status:fit_for_discharge` — No discharge-readiness statement in scope (CCR-02).
 - `PDF-001` on `source:7a76b06c-295c-44e4-9886-394b12330` — The referral PDF has a complete text layer.
 - `OWN-001` on `encounter` — A responsible clinician (Dr Lim) is recorded.
 - `DOSE-002` on `*` — Every number + dose unit in scope is attached to a parsed regimen (1 g BD included).
@@ -76,7 +79,7 @@ Cutoff 16:00 SGT; fresh run; outcome `completed_with_extraction_gaps`; closure *
 
 ## ENC-A1_1600_rerun
 
-Sign-off: @k, 22 Sep 2026 (review sheet read in chat B0.1)
+Sign-off: **PENDING (@k)**
 
 Cutoff 16:00 SGT; rerun after ENC-A1_1130 (prior flags supplied); outcome `completed_with_extraction_gaps`; closure **blocked**.
 
@@ -84,6 +87,7 @@ Cutoff 16:00 SGT; rerun after ENC-A1_1130 (prior flags supplied); outcome `compl
 |---|---|---|---|---|---|---|
 | ALG-001 | 1 | `allergen:penicillin` | Dr Lim | Nurse Tan, Pharmacist Ong | open (2/1) · source changed | claim: Admission nursing assessment (Nurse Tan, 08:40) v1 “Allergies: NKDA (patient reported)”<br>counter_claim: Medication reconciliation (Pharmacist Ong, 10:30) v1 “Allergy: Penicillin allergy — rash (per GP records)” |
 | CRIT-001 | 1 | `analyte:potassium` | Dr Lim | Nurse Tan | superseded (2/2) | claim: Blood results (Nurse Tan, 11:15) v1 “Potassium 6.4 mmol/L”<br>suppressor: Clinician review (Dr Lim, 15:30) v1 “K 6.4 reviewed, treated per protocol”<br>suppressor: Clinician review (Dr Lim, 15:30) v1 “Repeat K sent; Dr Lim to review result by 18:00” |
+| DET-001 | 1 | `status:stable` | Dr Lim | Nurse Ravi, SW Goh | open (1/1) | counter_claim: Afternoon observations (Nurse Ravi, 13:00) v1 “SpO2 89% on room air, RR 26”<br>claim: Discharge planning (SW Goh, 16:00) v1 “Patient stable” |
 | DOSE-001 | 2 | `drug:amlodipine` | Dr Lim | Pharmacist Ong | open (2/1) · source changed | claim: Ward round (Dr Lim, 09:00) v1 “Amlodipine 5 mg OD”<br>counter_claim: Medication reconciliation (Pharmacist Ong, 10:30) v1 “GP list: amlodipine 10 mg once daily; metformin 500 mg twice daily” |
 | PDF-001 | 2 | `source:0759710b-2e34-4b3c-b355-df4b71bfa` | Nurse Ravi | — | open (1/1) | extraction_gap: Scanned outside lab report (Nurse Ravi, 12:10) v1 “[no text layer, p.1]” |
 | PEND-001 | 2 | `test:blood_culture` | Dr Lim | — | open (1/1) | claim: Ward round (Dr Lim, 09:00) v1 “Blood culture sent, awaiting result” |
