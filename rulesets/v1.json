@@ -44,7 +44,7 @@
      "question_template": "Who is the responsible clinician for this encounter?"},
     {"rule_id": "DET-001", "version": 1, "title": "Reassurance recorded after a deterioration marker",
      "category": "reassurance-after-deterioration", "lens": "continuity", "default_tier": 1,
-     "owner_routing": "responsible_clinician", "enabled": false, "protected_floor": true, "registry_term_kinds": ["status", "analyte"],
+     "owner_routing": "responsible_clinician", "enabled": true, "protected_floor": true, "registry_term_kinds": ["status", "analyte"],
      "reason_template": "{source_label} records {claim_quote} after {counter_source_label} recorded {counter_quote}, with no clinician review documented in between.",
      "question_template": "Is the {source_time_label} {claim_quote} statement current?"},
     {"rule_id": "LAT-001", "version": 1, "title": "Left and right differ between sources",

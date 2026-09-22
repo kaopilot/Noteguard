@@ -996,6 +996,20 @@ class TermRegistry(Frozen):
     frequencies: tuple[FrequencyTerm, ...]
     dose_units: tuple[str, ...]  # L4 broad catch: mg, mcg, g, ml, units, tablets, iu
     cues: dict[CueKind, tuple[str, ...]]
+    # CCR-01 (approved @k, 22 Sep 2026): dose unit -> (canonical unit, factor), so dose
+    # comparison needs no unit knowledge outside the registry. 1 <unit> = factor <canonical>,
+    # e.g. "g": ("mg", 1000). A unit not listed compares as written (can flag, never pass).
+    dose_unit_canonical: dict[str, tuple[str, float]] = {}
+
+    @model_validator(mode="after")
+    def _canonical_units_are_registered(self) -> "TermRegistry":
+        known = {u.lower() for u in self.dose_units}
+        for unit, (canonical, factor) in self.dose_unit_canonical.items():
+            if unit.lower() not in known or canonical.lower() not in known:
+                raise ValueError(f"dose_unit_canonical: '{unit}' -> '{canonical}' names a unit not in dose_units")
+            if factor <= 0:
+                raise ValueError(f"dose_unit_canonical: factor for '{unit}' must be > 0")
+        return self
 
 
 class RuleDefinition(Frozen):

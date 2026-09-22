@@ -42,6 +42,7 @@
     {"phrase": "prn", "normalised": "as_needed"}
   ],
   "dose_units": ["mg", "mcg", "microgram", "micrograms", "g", "ml", "units", "unit", "tablets", "tablet", "tabs", "iu"],
+  "dose_unit_canonical": {"g": ["mg", 1000], "mcg": ["mg", 0.001], "microgram": ["mg", 0.001], "micrograms": ["mg", 0.001], "units": ["unit", 1], "tablets": ["tablet", 1], "tabs": ["tablet", 1]},
   "cues": {
     "negation": ["no", "not", "denies", "without", "nil", "negative for", "not yet"],
     "uncertainty": ["?", "query", "possible", "possibly", "suspected", "unsure", "unclear"],

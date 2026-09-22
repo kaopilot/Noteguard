@@ -223,6 +223,11 @@
       "rule_id": "DIFF-001",
       "subject_key": "*",
       "why": "\"Patient stable\" occurs once in scope; nothing is carried forward yet."
+    },
+    {
+      "rule_id": "DET-001",
+      "subject_key": "*",
+      "why": "The only reassurance (09:00 \"Patient stable\") precedes every deterioration marker; the 08:40 observations are inside the placeholder ranges (CCR-02)."
     }
   ],
   "must_not_suppress_note": "\"Not yet reviewed by medical team\" (11:15) is a NEGATED response and must not suppress CRIT-001.",
