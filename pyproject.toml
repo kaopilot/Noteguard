@@ -36,4 +36,7 @@ markers = [
   "engine: engine-level test (make test-engine)",
   "api: API-level test (make test-api)",
   "contract: B0 contract/seam test",
+  "governance: B4 governance / AI gate test (make test-governance)",
+  "ui: B3 UI test placeholder (real UI tests live in frontend/)",
+  "e2e: end-to-end smoke (I1)",
 ]

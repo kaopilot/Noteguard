@@ -756,6 +756,15 @@ class QuestionBubble(Frozen):
 # ---------------------------------------------------------------------------
 
 
+class EvidenceRef(Frozen):
+    """Points at one cited span, e.g. the allergy entry a clinician confirms as correct.
+    Clients hold evidence, never assertion ids; the engine maps a ref to its assertion(s)."""
+
+    source_version_id: OpaqueId = Field(alias="note_version_id")
+    start: NonNegativeInt
+    end: NonNegativeInt
+
+
 class DecisionRequest(Frozen):
     """What a client sends. Rationale text is held in memory only, never logged."""
 
@@ -766,7 +775,7 @@ class DecisionRequest(Frozen):
     new_owner_staff_id: OpaqueId | None = None  # reassign
     edit_field: EditField | None = None  # edit
     prepared_check: PreparedCheck | None = None  # mark_ready_for_clinician
-    adjudicated_assertion_ids: tuple[OpaqueId, ...] = ()  # resolve by adjudication (L2)
+    adjudicated_evidence: tuple["EvidenceRef", ...] = ()  # resolve by adjudication (L2): the entry confirmed correct
     duplicate_of_flag_id: FlagIdStr | None = None  # dismiss duplicate_of
 
 
@@ -786,7 +795,7 @@ class Decision(Frozen):
     new_owner_staff_id: OpaqueId | None = None
     edit_field: EditField | None = None
     prepared_check: PreparedCheck | None = None
-    adjudicated_assertion_ids: tuple[OpaqueId, ...] = ()
+    adjudicated_evidence: tuple["EvidenceRef", ...] = ()
     from_state: FlagState
     to_state: FlagState
     at: UtcDatetime

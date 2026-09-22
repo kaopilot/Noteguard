@@ -99,6 +99,23 @@ class AddTextSourceRequest(Frozen):
     idempotency_key: str | None = None
 
 
+class AddPdfSourceForm(Frozen):
+    """multipart/form-data fields of POST SOURCES_PDF (the file part is named "file").
+    Declared here so the form shape is frozen; B2 maps it with fastapi.Form/File."""
+
+    title: str = Field(max_length=200)
+    discipline: Discipline
+    author_staff_id: OpaqueId  # uploader = accountable owner of the external document
+    source_time: UtcDatetime
+    source_id: OpaqueId | None = None  # set to add a NEW VERSION of an existing source
+    identifier_namespace: str = "noteguard-upload"
+    external_id: str | None = None
+    idempotency_key: str | None = None
+
+
+PDF_FILE_FIELD = "file"
+
+
 class CheckRunRequest(Frozen):
     cutoff: UtcDatetime
 

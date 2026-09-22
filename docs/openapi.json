@@ -458,15 +458,12 @@
             "title": "Actor Staff Id",
             "type": "string"
           },
-          "adjudicated_assertion_ids": {
+          "adjudicated_evidence": {
             "default": [],
             "items": {
-              "maxLength": 64,
-              "minLength": 1,
-              "pattern": "^[A-Za-z0-9_\\-]+$",
-              "type": "string"
+              "$ref": "#/components/schemas/EvidenceRef"
             },
-            "title": "Adjudicated Assertion Ids",
+            "title": "Adjudicated Evidence",
             "type": "array"
           },
           "at": {
@@ -836,6 +833,36 @@
           "role_in_flag"
         ],
         "title": "Evidence",
+        "type": "object"
+      },
+      "EvidenceRef": {
+        "additionalProperties": false,
+        "description": "Points at one cited span, e.g. the allergy entry a clinician confirms as correct.\nClients hold evidence, never assertion ids; the engine maps a ref to its assertion(s).",
+        "properties": {
+          "end": {
+            "minimum": 0.0,
+            "title": "End",
+            "type": "integer"
+          },
+          "note_version_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Note Version Id",
+            "type": "string"
+          },
+          "start": {
+            "minimum": 0.0,
+            "title": "Start",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "note_version_id",
+          "start",
+          "end"
+        ],
+        "title": "EvidenceRef",
         "type": "object"
       },
       "EvidenceRole": {

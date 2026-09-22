@@ -45,18 +45,22 @@ class InvalidTransition(ValueError):
     """Raised for a transition not in the tables above."""
 
 
-def decision_target(action: DecisionAction, current: FlagState) -> FlagState:
+def decision_target(action: DecisionAction | str, current: FlagState | str) -> FlagState:
+    """Accepts enum members or wire strings; anything not in the table -> InvalidTransition."""
     try:
+        action, current = DecisionAction(action), FlagState(current)
         return DECISION_TRANSITIONS[action][current]
-    except KeyError as exc:
-        raise InvalidTransition(f"{action.value} not allowed from {current.value}") from exc
+    except (KeyError, ValueError) as exc:
+        raise InvalidTransition(f"decision {action} not allowed from {current}") from exc
 
 
-def engine_target(transition: EngineTransition, current: FlagState | None) -> FlagState:
+def engine_target(transition: EngineTransition | str, current: FlagState | str | None) -> FlagState:
     try:
+        transition = EngineTransition(transition)
+        current = None if current is None else FlagState(current)
         return ENGINE_TRANSITIONS[transition][current]
-    except KeyError as exc:
-        raise InvalidTransition(f"engine {transition.value} not allowed from {current}") from exc
+    except (KeyError, ValueError) as exc:
+        raise InvalidTransition(f"engine {transition} not allowed from {current}") from exc
 
 
 def blocks_closure(tier: Tier | int, state: FlagState) -> bool:

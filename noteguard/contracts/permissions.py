@@ -116,7 +116,7 @@ REASONS_BY_ACTION: dict[DecisionAction, frozenset[ReasonCode]] = {
     DecisionAction.DISMISS: DISMISS_REASONS,
     DecisionAction.RESOLVE: RESOLVE_REASONS,
 }
-#: Resolutions that adjudicate between assertions: adjudicated_assertion_ids required (L2).
+#: Resolutions that adjudicate between assertions: adjudicated_evidence required (L2).
 ADJUDICATION_REASONS = frozenset({
     ReasonCode.ALLERGY_ENTRY_CONFIRMED,
     ReasonCode.INTOLERANCE_NOT_ALLERGY,
