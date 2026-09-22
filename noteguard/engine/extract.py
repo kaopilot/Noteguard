@@ -34,7 +34,6 @@ from noteguard.contracts.types import (
     TextExtraction,
 )
 
-from . import units
 from .normalise import Norm, comparable, normalise
 from .registry import Hit, Lexicon
 
@@ -330,11 +329,11 @@ class Extractor:
                         certainty=self._certainty(m.uncertain), review_required=m.uncertain,
                         change_language=any(norm.clause(h.start) == m.clause for h in change_hits))
             if dose:
-                amount, unit = units.canonical(dose[2], dose[3])
+                amount, unit = self.lex.canonical_dose(dose[2], dose[3])
                 consumed.append((dose[0], dose[1]))
                 freq = next((h for h in self.lex.find_frequencies(text) if dose[1] <= h.start < window_end), None)
                 fact.amount, fact.unit = amount, unit
-                fact.value = f"{units.fmt(amount)} {unit}"
+                fact.value = f"{amount:g} {unit}"
                 fact.frequency = freq.value if freq else None
             out.append(fact)
         return out

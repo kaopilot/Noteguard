@@ -62,6 +62,8 @@ class Lexicon:
         self._freq_re = _alternation([_literal(f.phrase.lower()) for f in freqs])
         units = sorted({u.lower() for u in registry.dose_units}, key=lambda u: (-len(u), u))
         self.dose_units = tuple(units)
+        # CCR-01: canonical unit and factor per dose unit come from the registry, like every term.
+        self._canonical = {u.lower(): (c.lower(), float(f)) for u, (c, f) in registry.dose_unit_canonical.items()}
         # number (thousands commas already removed by normalise) + optional space + dose unit;
         # a following "/" means a concentration (g/L), which is not a dose.
         self._dose_re = re.compile(r"(?<![\w.])(\d+(?:\.\d+)?)\s?(" + "|".join(re.escape(u) for u in units)
@@ -131,6 +133,12 @@ class Lexicon:
         if self._dose_re is None:
             return []
         return [(m.start(), m.end(), float(m.group(1)), m.group(2)) for m in self._dose_re.finditer(text)]
+
+    def canonical_dose(self, amount: float, unit: str) -> tuple[float, str]:
+        """(amount, unit) in the registry's canonical unit ("0.5 g" -> (500.0, "mg")). A unit the
+        registry does not map compares as written, so it can make two regimens differ, never match."""
+        canonical, factor = self._canonical.get(unit.lower(), (unit.lower(), 1.0))
+        return round(amount * factor, 6), canonical
 
     def find_cues(self, kind: CueKind, text: str) -> list[Hit]:
         rx = self._cue_re.get(kind)
