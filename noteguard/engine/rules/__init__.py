@@ -9,7 +9,7 @@ from collections.abc import Callable
 from noteguard.contracts.types import RuleId
 
 from ..context import Candidate, Context
-from . import completeness, conflicts, copied, crit
+from . import completeness, conflicts, copied, crit, deterioration
 
 BUILT: dict[RuleId, Callable[[Context], list[Candidate]]] = {
     RuleId.CRIT_001: crit.evaluate,
@@ -20,6 +20,7 @@ BUILT: dict[RuleId, Callable[[Context], list[Candidate]]] = {
     RuleId.PDF_001: completeness.unreadable,
     RuleId.DIFF_001: copied.evaluate,
     RuleId.OWN_001: completeness.no_responsible_clinician,
+    RuleId.DET_001: deterioration.evaluate,  # built B1.2; disabled in v1 until CCR-02
 }
 
 

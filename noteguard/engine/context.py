@@ -39,6 +39,7 @@ _RULE_FACTS: dict[RuleId, tuple[frozenset[FactType], bool]] = {
     RuleId.DOSE_002: (frozenset({FactType.UNPARSED_DOSE}), False),
     RuleId.PEND_001: (frozenset({FactType.PENDING_ACTION}), True),
     RuleId.DIFF_001: (frozenset({FactType.CLINICAL_STATUS, FactType.OBSERVATION}), False),
+    RuleId.DET_001: (frozenset({FactType.CLINICAL_STATUS, FactType.OBSERVATION, FactType.RESPONSE}), False),
 }
 
 

@@ -203,7 +203,9 @@ class Extractor:
         self.allergen_kinds = frozenset(kinds.get(RuleId.ALG_001, ()))
         self.drug_kinds = frozenset(kinds.get(RuleId.DOSE_001, ()))
         self.pending_kinds = frozenset(kinds.get(RuleId.PEND_001, ()))
-        self.status_kinds = frozenset(k for k in kinds.get(RuleId.DIFF_001, ()))
+        # status terms feed DIFF-001 and DET-001 (DET also lists analytes, which CRIT-001 already covers)
+        self.status_kinds = frozenset(kinds.get(RuleId.DIFF_001, ())) | (frozenset(kinds.get(RuleId.DET_001, ()))
+                                                                         & {TermKind.STATUS})
         self.analyte_kinds = frozenset(kinds.get(RuleId.CRIT_001, ()))
 
     # --- documents ---------------------------------------------------------------------
