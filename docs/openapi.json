@@ -82,6 +82,165 @@
         "title": "AbsenceFinding",
         "type": "object"
       },
+      "AddTextSourceRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "author_staff_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Author Staff Id",
+            "type": "string"
+          },
+          "discipline": {
+            "$ref": "#/components/schemas/Discipline"
+          },
+          "external_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Id"
+          },
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idempotency Key"
+          },
+          "identifier_namespace": {
+            "default": "noteguard-paste",
+            "title": "Identifier Namespace",
+            "type": "string"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_\\-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "source_time": {
+            "format": "date-time",
+            "title": "Source Time",
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 200000,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 200,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "discipline",
+          "author_staff_id",
+          "source_time",
+          "text"
+        ],
+        "title": "AddTextSourceRequest",
+        "type": "object"
+      },
+      "Body_add_pdf_source_api_encounters__encounter_id__sources_pdf_post": {
+        "properties": {
+          "author_staff_id": {
+            "title": "Author Staff Id",
+            "type": "string"
+          },
+          "discipline": {
+            "title": "Discipline",
+            "type": "string"
+          },
+          "external_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Id"
+          },
+          "file": {
+            "format": "binary",
+            "title": "File",
+            "type": "string"
+          },
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idempotency Key"
+          },
+          "identifier_namespace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identifier Namespace"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "source_time": {
+            "title": "Source Time",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file",
+          "title",
+          "discipline",
+          "author_staff_id",
+          "source_time"
+        ],
+        "title": "Body_add_pdf_source_api_encounters__encounter_id__sources_pdf_post",
+        "type": "object"
+      },
       "BubbleList": {
         "additionalProperties": false,
         "properties": {
@@ -590,6 +749,102 @@
         "title": "DecisionAction",
         "type": "string"
       },
+      "DecisionRequest": {
+        "additionalProperties": false,
+        "description": "What a client sends. Rationale text is held in memory only, never logged.",
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/DecisionAction"
+          },
+          "adjudicated_evidence": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/EvidenceRef"
+            },
+            "title": "Adjudicated Evidence",
+            "type": "array"
+          },
+          "duplicate_of_flag_id": {
+            "anyOf": [
+              {
+                "pattern": "^flg_[0-9a-f]{24}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duplicate Of Flag Id"
+          },
+          "edit_field": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EditField"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "expected_revision": {
+            "exclusiveMinimum": 0.0,
+            "title": "Expected Revision",
+            "type": "integer"
+          },
+          "new_owner_staff_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_\\-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "New Owner Staff Id"
+          },
+          "prepared_check": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PreparedCheck"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rationale_text": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rationale Text"
+          },
+          "reason_code": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReasonCode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "action",
+          "expected_revision"
+        ],
+        "title": "DecisionRequest",
+        "type": "object"
+      },
       "Discipline": {
         "enum": [
           "clinician",
@@ -601,6 +856,31 @@
         ],
         "title": "Discipline",
         "type": "string"
+      },
+      "DocumentTokenView": {
+        "additionalProperties": false,
+        "properties": {
+          "document_token": {
+            "title": "Document Token",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "single_use": {
+            "default": true,
+            "title": "Single Use",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "document_token",
+          "expires_at"
+        ],
+        "title": "DocumentTokenView",
+        "type": "object"
       },
       "EditField": {
         "enum": [
@@ -906,6 +1186,149 @@
         ],
         "title": "ExtractionStatus",
         "type": "string"
+      },
+      "FeedbackEvent": {
+        "additionalProperties": false,
+        "description": "Append-only. No clinical content.",
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/DecisionAction"
+          },
+          "actor_role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "corrected_owner_staff_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_\\-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corrected Owner Staff Id"
+          },
+          "feedback_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Feedback Id",
+            "type": "string"
+          },
+          "flag_id": {
+            "pattern": "^flg_[0-9a-f]{24}$",
+            "title": "Flag Id",
+            "type": "string"
+          },
+          "reason_code": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReasonCode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rule_id": {
+            "$ref": "#/components/schemas/RuleId"
+          },
+          "rule_version": {
+            "exclusiveMinimum": 0.0,
+            "title": "Rule Version",
+            "type": "integer"
+          },
+          "ruleset_version": {
+            "title": "Ruleset Version",
+            "type": "string"
+          },
+          "time_on_screen_ms": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time On Screen Ms"
+          },
+          "usefulness": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Usefulness"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "feedback_id",
+          "flag_id",
+          "rule_id",
+          "rule_version",
+          "ruleset_version",
+          "action",
+          "actor_role",
+          "at"
+        ],
+        "title": "FeedbackEvent",
+        "type": "object"
+      },
+      "FeedbackRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "corrected_owner_staff_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_\\-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corrected Owner Staff Id"
+          },
+          "flag_id": {
+            "title": "Flag Id",
+            "type": "string"
+          },
+          "time_on_screen_ms": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time On Screen Ms"
+          },
+          "usefulness": {
+            "$ref": "#/components/schemas/Usefulness"
+          }
+        },
+        "required": [
+          "flag_id",
+          "usefulness"
+        ],
+        "title": "FeedbackRequest",
+        "type": "object"
       },
       "Flag": {
         "additionalProperties": false,
@@ -1962,6 +2385,17 @@
         "title": "TimelineEntry",
         "type": "object"
       },
+      "Usefulness": {
+        "enum": [
+          "useful",
+          "not_useful",
+          "wrong_owner",
+          "stale_wording",
+          "missing_rule"
+        ],
+        "title": "Usefulness",
+        "type": "string"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -2036,7 +2470,7 @@
     }
   },
   "info": {
-    "title": "Noteguard API (B0 stub)",
+    "title": "Noteguard API",
     "version": "b0-1"
   },
   "openapi": "3.1.0",
@@ -2044,6 +2478,24 @@
     "/api/aggregate/risk": {
       "get": {
         "operationId": "aggregate_api_aggregate_risk_get",
+        "parameters": [
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -2052,6 +2504,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Aggregate"
@@ -2077,6 +2539,7 @@
     },
     "/api/documents/{document_token}": {
       "get": {
+        "description": "Needs the session cookie but not the workspace header (opened in a new tab); the token\nis bound to the issuing staff member and workspace and re-checked against the care team.",
         "operationId": "get_document_api_documents__document_token__get",
         "parameters": [
           {
@@ -2086,6 +2549,22 @@
             "schema": {
               "title": "Document Token",
               "type": "string"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
             }
           }
         ],
@@ -2553,13 +3032,47 @@
               "title": "Encounter Id",
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
           }
         ],
         "responses": {
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/ClosureView"
+                }
               }
             },
             "description": "Successful Response"
@@ -2590,13 +3103,57 @@
               "title": "Encounter Id",
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
-          "200": {
+          "201": {
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackEvent"
+                }
               }
             },
             "description": "Successful Response"
@@ -2791,13 +3348,57 @@
               "title": "Flag Id",
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/FlagDetail"
+                }
               }
             },
             "description": "Successful Response"
@@ -2908,13 +3509,47 @@
               "title": "Source Version Id",
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
           }
         ],
         "responses": {
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentTokenView"
+                }
               }
             },
             "description": "Successful Response"
@@ -3025,13 +3660,57 @@
               "title": "Encounter Id",
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddTextSourceRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
-          "200": {
+          "201": {
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/SourceView"
+                }
               }
             },
             "description": "Successful Response"
@@ -3062,13 +3741,57 @@
               "title": "Encounter Id",
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
           }
         ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_add_pdf_source_api_encounters__encounter_id__sources_pdf_post"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
-          "200": {
+          "201": {
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/SourceView"
+                }
               }
             },
             "description": "Successful Response"
@@ -3181,9 +3904,37 @@
     "/api/session": {
       "delete": {
         "operationId": "logout_api_session_delete",
+        "parameters": [
+          {
+            "in": "cookie",
+            "name": "ng_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ng Session"
+            }
+          }
+        ],
         "responses": {
           "204": {
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Logout"
