@@ -160,7 +160,7 @@ class Context:
 
     # --- evidence ----------------------------------------------------------------------
 
-    def _page(self, doc: Doc, start: int) -> int | None:
+    def page_of(self, doc: Doc, start: int) -> int | None:
         pages = doc.extraction.pages
         if not pages:
             return None
@@ -176,7 +176,7 @@ class Context:
 
     def span_item(self, rule_id: RuleId, stmt: Stmt, role: EvidenceRole, subject_key: str) -> Item:
         doc = stmt.doc
-        ev = Evidence(note_version_id=doc.svid, start=stmt.start, end=stmt.end, page=self._page(doc, stmt.start),
+        ev = Evidence(note_version_id=doc.svid, start=stmt.start, end=stmt.end, page=self.page_of(doc, stmt.start),
                       quote=stmt.quote, quote_sha256=ids.quote_sha256(stmt.quote), role_in_flag=role)
         return Item(ev=ev, source_id=doc.source_id, sig=self.sig(rule_id, stmt, subject_key), doc=doc, stmt=stmt)
 

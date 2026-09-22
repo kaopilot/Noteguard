@@ -154,8 +154,9 @@ class Fact:
     @property
     def aid(self) -> str:
         s = self.stmt
+        pos = next(i for i, f in enumerate(s.facts) if f is self)
         return "asr_" + ids.sha256_hex(ids.canonical_json(
-            [s.doc.svid, s.start, s.end, self.fact_type.value, self.subject_key]))[:24]
+            [s.doc.svid, s.start, s.end, self.fact_type.value, self.subject_key, pos]))[:24]
 
     def signature(self) -> tuple:
         """Normalised facts, independent of position and wording (rerun matching, 8.4)."""
