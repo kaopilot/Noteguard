@@ -152,6 +152,26 @@ session B1.1 (see `docs/handoffs/B1.md`); "inspected" = read in code, no test.
 
 **Fixtures:** ENC-C1_1000 (golden pending @k review). Test: `test_golden_engine[ENC-C1_1000]`. Executed.
 
+## DET-001 — Reassurance recorded after a deterioration marker (stretch; built B1.2, DISABLED in v1)
+
+| Field | Value |
+|---|---|
+| Lens / tier | continuity / 1 (protected floor) |
+| Status | built in `rules/deterioration.py`; `enabled: false` in `rulesets/v1.json` until **CCR-02** (goldens) is approved by @k |
+| Registry terms | `status` terms; `analyte` terms with `deterioration_*` thresholds (placeholders) |
+| Subject key | the status term key, e.g. `status:stable` (one flag per reassurance kind) |
+| Owner | responsible clinician (else attending); evidence authors affected |
+| Evidence | `claim` = the reassurance(s), `counter_claim` = unreviewed marker statement(s); on supersede also `suppressor` |
+| Question | rendered from the rule's `question_template` |
+
+**Raises when** a live, non-queried reassuring or discharge-readiness statement sits in a source with a later `source_time` than a deterioration marker, and no clinician review of that marker intervenes. Unlike DIFF-001 the reassurance need not be copied.
+
+**Answered only by** a statement in a clinician-authored source with a live response cue in the same clause as the same analyte, not carried forward, at or after the marker's source and at or before the reassurance. A nurse's review or escalation, a review of another analyte, a review written after the reassurance, and a later normal value do not answer it (conservative; CCR-02 questions 1 and 3).
+
+**Fixtures:** none in v1 (disabled). Tests: `tests/engine/test_det_001.py` (9 cases + shape/supersede + proposed-golden cross-check), run with DET enabled in an in-memory bundle only. Executed; 6 mutations, all caught.
+
+**Known false positives:** a clinician's review written in general terms ("obs reviewed") names no analyte and does not count; a recovered observation does not clear it. The ENC-A1 16:00 statement would carry both DET-001 (Tier 1) and DIFF-001 (Tier 3) (CCR-02 question 2).
+
 ## Disabled in v1 and not built
 
-`DET-001` (reassurance after deterioration), `LAT-001` (laterality), `META-001` (metadata) and `NEXT-001` (no next step) are disabled in `rulesets/v1.json` and **not built**; enabling one makes `run_checks` raise `NotImplementedError`. DET-001 is the first stretch rule, only through a CCR adding its goldens (@k, 22 Sep).
+`LAT-001` (laterality), `META-001` (metadata) and `NEXT-001` (no next step) are disabled in `rulesets/v1.json` and **not built**; enabling one makes `run_checks` raise `NotImplementedError`.
