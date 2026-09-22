@@ -38,8 +38,9 @@ def _run(notes, ref, prior=()):
 CASES = [
     ("raised_without_review", [MARKER, REASSURE], 1),
     ("clinician_review_between", [MARKER, Note("dr", "14:00", "lim", "SpO2 88% reviewed, oxygen commenced."), REASSURE], 0),
-    ("nurse_escalation_is_not_clinician_review", [MARKER, Note("rn", "14:00", "tan", "SpO2 88%, escalated to Dr Lim."),
-                                                  REASSURE], 1),
+    # the response cue shares a clause with SpO2, so only the clinician-author requirement keeps the flag
+    ("nurse_review_is_not_clinician_review", [MARKER, Note("rn", "14:00", "tan", "SpO2 88% reviewed and escalated."),
+                                              REASSURE], 1),
     ("review_of_other_analyte", [MARKER, Note("dr", "14:00", "lim", "Potassium reviewed."), REASSURE], 1),
     ("reassurance_before_marker", [Note("wr", "09:00", "lim", "Patient stable."), MARKER], 0),
     ("review_after_reassurance", [MARKER, REASSURE, Note("dr", "17:00", "lim", "SpO2 reviewed, oxygen commenced.")], 1),
@@ -52,7 +53,7 @@ CASES = [
 
 @pytest.mark.parametrize("case", CASES, ids=[c[0] for c in CASES])
 def test_det_001_cases(case):
-    """Mutations: count any author as a clinician review -> nurse_escalation fails; drop the
+    """Mutations: count any author as a clinician review -> nurse_review fails; drop the
     'at or before the reassurance' bound -> review_after_reassurance fails; drop the carried-forward
     check -> carried_review fails; drop 'marker earlier than reassurance' -> reassurance_before_marker fails."""
     name, notes, want = case
