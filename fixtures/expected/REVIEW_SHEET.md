@@ -134,7 +134,7 @@ Cutoff 16:00 SGT; fresh run; outcome `completed`; closure **clear**.
 
 ## ENC-C1_1000
 
-Sign-off: **PENDING (@k)**
+Sign-off: @k, 22 Sep 2026 (approved in chat B1.2)
 
 Cutoff 10:00 SGT; fresh run; outcome `completed`; closure **blocked**.
 
