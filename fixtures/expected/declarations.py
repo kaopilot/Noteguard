@@ -361,6 +361,9 @@ ENC_C1_1000 = {
 #: ENC-A1_1130, ENC-A1_1600 and ENC-A1_1600_rerun were signed at CP0 (@k, 22 Sep, chat B0.1) and changed
 #: under CCR-02 (DET-001), so they are PENDING again until @k reads the regenerated review sheet.
 SIGNOFF = {
+    "ENC-A1_1130": "@k, 22 Sep 2026 (re-signed after CCR-02)",
+    "ENC-A1_1600": "@k, 22 Sep 2026 (re-signed after CCR-02)",
+    "ENC-A1_1600_rerun": "@k, 22 Sep 2026 (re-signed after CCR-02)",
     "ENC-B1_1600": "@k, 22 Sep 2026 (review sheet read in chat B0.1)",
     "ENC-C1_1000": "@k, 22 Sep 2026 (approved in chat B1.2)",
 }

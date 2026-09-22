@@ -5,7 +5,7 @@ Read this, not the JSON. Sign off by adding your initials and time at the bottom
 
 ## ENC-A1_1130
 
-Sign-off: **PENDING (@k)**
+Sign-off: @k, 22 Sep 2026 (re-signed after CCR-02)
 
 Cutoff 11:30 SGT; fresh run; outcome `completed`; closure **blocked**.
 
@@ -39,7 +39,7 @@ Cutoff 11:30 SGT; fresh run; outcome `completed`; closure **blocked**.
 
 ## ENC-A1_1600
 
-Sign-off: **PENDING (@k)**
+Sign-off: @k, 22 Sep 2026 (re-signed after CCR-02)
 
 Cutoff 16:00 SGT; fresh run; outcome `completed_with_extraction_gaps`; closure **blocked**.
 
@@ -79,7 +79,7 @@ Cutoff 16:00 SGT; fresh run; outcome `completed_with_extraction_gaps`; closure *
 
 ## ENC-A1_1600_rerun
 
-Sign-off: **PENDING (@k)**
+Sign-off: @k, 22 Sep 2026 (re-signed after CCR-02)
 
 Cutoff 16:00 SGT; rerun after ENC-A1_1130 (prior flags supplied); outcome `completed_with_extraction_gaps`; closure **blocked**.
 
