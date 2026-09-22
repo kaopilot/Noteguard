@@ -35,7 +35,9 @@ def test_conflict_fanout_one_flag():
 def test_adjudication_converges():
     """L2. A resolved conflict stays resolved on rerun with the same evidence; new contradicting
     evidence from a different source reopens it with a visible marker.
-    Mutation: ignore decisions on rerun -> the flag reopens with no new evidence."""
+    Mutation: ignore decisions on rerun -> the flag reopens with no new evidence.
+    Mutation (added B1.1): ignore the adjudicated entry -> restating the WINNING side from a
+    different source reopens the flag (the P7 failure)."""
     eng = engine()
     notes = [Note("nurse", "08:40", "tan", "Allergies: NKDA."), Note("pharm", "10:30", "ong", "Penicillin allergy - rash."), UNREL]
     r1 = run_synthetic(eng, build_snapshot(notes, ref="ENC-T-L2"))
@@ -51,6 +53,11 @@ def test_adjudication_converges():
     r2 = run_synthetic(eng, build_snapshot(notes, ref="ENC-T-L2", prior_flags=prior, decisions=(decision,)))
     (again,) = flags_by_rule(r2, "ALG-001")
     assert again.state is FlagState.RESOLVED and not again.new_evidence_since_decision
+    restated = notes + [Note("pharm2", "12:30", "lim", "Penicillin allergy - rash.")]
+    r2b = run_synthetic(eng, build_snapshot(restated, ref="ENC-T-L2", prior_flags=prior, decisions=(decision,)))
+    (still,) = flags_by_rule(r2b, "ALG-001")
+    assert still.state is FlagState.RESOLVED and not still.new_evidence_since_decision, \
+        "restating the adjudicated (winning) entry must not reopen (L2)"
     more = notes + [Note("nurse2", "13:00", "ravi", "Allergies: NKDA.")]
     r3 = run_synthetic(eng, build_snapshot(more, ref="ENC-T-L2", prior_flags=prior, decisions=(decision,)))
     (reopened,) = flags_by_rule(r3, "ALG-001")

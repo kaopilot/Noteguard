@@ -4,7 +4,7 @@ Every fact is anchored to a statement span from ``contracts.spans.statement_span
 ORIGINAL extracted text. Matching runs on normalised text (normalise.py) and never
 paraphrases. Negation/uncertainty is a small NegEx-style scope: a negation or uncertainty
 cue from the registry scopes forward over the rest of its clause (split on "," and ";"), up
-to ``SCOPE_TOKENS`` word tokens; a "?" that does not touch a following word makes its whole
+to ``SCOPE_TOKENS`` word tokens and never across a ":" ("No change: amlodipine 10 mg"); a "?" that does not touch a following word makes its whole
 clause uncertain ("allergies: nil?"). Uncertain wording becomes ``review_required`` with a
 lowered certainty, never a negative.
 """
@@ -53,7 +53,8 @@ _RESPONSE_CUES = {
 }
 _SEP = re.compile(r"[\s:=(\-]*")
 _FILLER = re.compile(r"(?:to|at|of|dose)\s+")
-_OBS_VALUE = re.compile(r"\s*(?:[:=]\s*|(?:of|is|was)\s+)?(\d+(?:\.\d+)?)(?!\d)")
+#: analyte term, then ":"/"="/"of"/"is"/"was", then an optional "?"/"~" (queried value), then the number
+_OBS_VALUE = re.compile(r"\s*(?:[:=]\s*|(?:of|is|was)\s+)?([?~]\s*)?(\d+(?:\.\d+)?)(?!\d)")
 _UNIT_TOKEN = re.compile(r"\s?([^\s,;()]+)")
 
 
@@ -234,8 +235,8 @@ class Extractor:
 
         def scoped(pos: int, hits: list[Hit]) -> bool:
             c = norm.clause(pos)
-            return any(h.end <= pos and norm.clause(h.start) == c and norm.tokens_between(h.end, pos) <= SCOPE_TOKENS
-                       for h in hits)
+            return any(h.end <= pos and norm.clause(h.start) == c and ":" not in text[h.end:pos]
+                       and norm.tokens_between(h.end, pos) <= SCOPE_TOKENS for h in hits)
 
         mentions = []
         for h in self.lex.find_terms(text):
@@ -356,7 +357,8 @@ class Extractor:
             term = self.lex.term(m.key)
             mv = _OBS_VALUE.match(text, m.end)
             if mv:
-                value = float(mv.group(1))
+                value = float(mv.group(2))
+                queried = m.uncertain or mv.group(1) is not None
                 unit = None
                 mu = _UNIT_TOKEN.match(text, mv.end())
                 expected = (term.unit or "").lower()
@@ -370,10 +372,12 @@ class Extractor:
                 det = not mismatch and ((term.deterioration_below is not None and value < term.deterioration_below)
                                         or (term.deterioration_at_or_above is not None
                                             and value >= term.deterioration_at_or_above))
+                # A queried value stays critical (it still needs a documented response) and is
+                # marked review_required; an unparseable value is never read as reassurance.
                 out.append(Fact(stmt=st, fact_type=FactType.OBSERVATION, subject_key=m.key,
                                 polarity=Polarity.ABSENT if m.negated else Polarity.PRESENT,
-                                certainty=self._certainty(m.uncertain), value=mv.group(1), unit=unit or term.unit,
-                                amount=value, review_required=mismatch or m.uncertain,
+                                certainty=self._certainty(queried), value=mv.group(2), unit=unit or term.unit,
+                                amount=value, review_required=mismatch or queried,
                                 is_critical=crit and not m.negated, is_deterioration=det and not m.negated))
             same_clause = [(k, h) for k, h in responses if norm.clause(h.start) == m.clause]
             if same_clause:
