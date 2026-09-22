@@ -1,0 +1,124 @@
+{
+ "_note": "Synthetic labelled set for redaction accuracy BOTH ways (Section 10.4). identifiers: strings that must not survive; keep: clinical strings that must survive unchanged. roster: known_names passed to the redactor.",
+ "roster": [
+  "Lim",
+  "Tan",
+  "Ravi",
+  "Ong",
+  "Chen",
+  "Goh",
+  "Lee",
+  "Wong",
+  "Lau",
+  "Kaur",
+  "Siti Aminah"
+ ],
+ "items": [
+  {
+   "text": "Seen by Dr Lim with daughter. NRIC S0000001I, phone 9123 4567.",
+   "identifiers": [
+    "Lim",
+    "S0000001I",
+    "9123 4567"
+   ],
+   "keep": [
+    "daughter"
+   ]
+  },
+  {
+   "text": "Known Parkinson disease; Addison crisis excluded? Ward 7 bed 12, Hodgkin lymphoma history.",
+   "identifiers": [],
+   "keep": [
+    "Parkinson",
+    "Addison",
+    "Ward 7 bed 12",
+    "Hodgkin"
+   ]
+  },
+  {
+   "text": "Email carer at tan.family@example.com or +65 8123 4567. MRN: SGH-0012345.",
+   "identifiers": [
+    "tan.family@example.com",
+    "8123 4567",
+    "SGH-0012345"
+   ],
+   "keep": []
+  },
+  {
+   "text": "Nurse Tan gave amlodipine 10 mg OD; Dr Kaur to review potassium 6.4 mmol/L at 15:30.",
+   "identifiers": [
+    "Tan",
+    "Kaur"
+   ],
+   "keep": [
+    "amlodipine 10 mg OD",
+    "potassium 6.4 mmol/L",
+    "15:30"
+   ]
+  },
+  {
+   "text": "Mdm Goh Siew Lan, DOB 03/04/1950, lives at Blk 12 Toa Payoh, Singapore 310012.",
+   "identifiers": [
+    "Goh",
+    "Siew",
+    "Lan",
+    "03/04/1950",
+    "310012"
+   ],
+   "keep": [
+    "Toa Payoh"
+   ]
+  },
+  {
+   "text": "Sputum tan-coloured; Lee side of chest clear? Warfarin held, INR 3.1.",
+   "identifiers": [],
+   "keep": [
+    "tan-coloured",
+    "Warfarin held",
+    "INR 3.1"
+   ]
+  },
+  {
+   "text": "Siti Aminah (daughter, 8765 4321) asks about discharge; Mr Wong Ah Kow visited.",
+   "identifiers": [
+    "Siti Aminah",
+    "8765 4321",
+    "Wong",
+    "Ah Kow"
+   ],
+   "keep": [
+    "discharge"
+   ]
+  },
+  {
+   "text": "Metformin 500 mg BD, HbA1c 8.2%, eGFR 58; FIN G1234567X on file.",
+   "identifiers": [
+    "G1234567X"
+   ],
+   "keep": [
+    "Metformin 500 mg BD",
+    "HbA1c 8.2%",
+    "eGFR 58"
+   ]
+  },
+  {
+   "text": "reviewed by dr lim at bedside, plan unchanged.",
+   "identifiers": [
+    "lim"
+   ],
+   "keep": [
+    "bedside"
+   ],
+   "_known_failure": "lower-case honorific and single-word roster name: NOT REDACTED (single roster words match case-sensitively)"
+  },
+  {
+   "text": "Refer to Nurse Led Clinic for BP review in 2 weeks.",
+   "identifiers": [],
+   "keep": [
+    "Nurse Led Clinic",
+    "BP review"
+   ],
+   "_known_failure": "honorific pattern reads 'Nurse Led Clinic' as a name: OVER-REDACTED"
+  }
+ ]
+}

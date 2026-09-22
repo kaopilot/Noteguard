@@ -1,34 +1,56 @@
-"""FastAPI application factory (B2 owns this file after CP0).
+"""FastAPI application factory (B2).
 
-B0 state: the app serves the STUB routes (golden fixtures). ``app.state.is_stub`` is
-True and every response carries X-Noteguard-Stub: 1. B2-owned tests refuse to run
-against the stub (tests/conftest.py), so they fail "not implemented" until B2 lands.
+Real routes on exactly contracts.routes.ROUTE_TEMPLATES; ``app.state.is_stub`` is False.
+SINGLE-PROCESS, IN-MEMORY demonstrator (declared): sessions, workspaces, audit chain and
+document tokens live in this process only; run one worker. Production uses Postgres + RLS.
+
+Configuration is code (``create_app(settings=Settings(...))``), never environment variables
+(L12). The engine is called through one seam (engine_seam.py): the stub engine until I1, then
+``create_app(engine=noteguard.engine.get_engine(), bundle_loader=<B4 approved loader>)``.
 """
 
 from __future__ import annotations
 
-from fastapi import FastAPI, Request
+from collections.abc import Callable
 
-from noteguard.contracts.routes import STUB_HEADER
-from noteguard.contracts.types import CONTRACT_VERSION
+from fastapi import FastAPI
+
+from noteguard.contracts.engine_api import EngineAPI
+from noteguard.contracts.log_allowlist import LogEvent
+from noteguard.contracts.types import CONTRACT_VERSION, RulesetBundle
+
+from .audit import AuditLog
+from .authz import EncounterFacts
+from .engine_seam import make_seam
+from .error_handlers import install_error_handlers
+from .logs import configure_process_logging, log_event, request_middleware
+from .seed import load_seed
+from .settings import Settings
+from .store import WorkspaceStore
 
 
-def create_app() -> FastAPI:
-    from noteguard.api.routes import stub
+def create_app(*, settings: Settings | None = None, engine: EngineAPI | None = None,
+               bundle_loader: Callable[[], RulesetBundle | None] | None = None) -> FastAPI:
+    from noteguard.api.routes import aggregate, core
 
-    app = FastAPI(title="Noteguard API (B0 stub)", version=CONTRACT_VERSION,
-                  docs_url=None, redoc_url=None, openapi_url="/api/openapi.json")
-    app.state.is_stub = True
-    app.include_router(stub.router)
-    stub.install_error_handlers(app)
-
-    @app.middleware("http")
-    async def _headers(request: Request, call_next):
-        response = await call_next(request)
-        response.headers[STUB_HEADER] = "1"
-        response.headers["Cache-Control"] = "private, no-store"
-        return response
-
+    configure_process_logging()
+    settings = settings or Settings()
+    seed = load_seed()
+    audit = AuditLog()
+    app = FastAPI(title="Noteguard API", version=CONTRACT_VERSION, docs_url=None, redoc_url=None,
+                  openapi_url="/api/openapi.json")
+    app.state.is_stub = False
+    app.state.settings = settings
+    app.state.audit = audit
+    #: ROUTE-layer authz data path: the care-team directory, built once from the seed.
+    app.state.directory = {s.encounter.encounter_id: EncounterFacts(s.encounter, s.memberships) for s in seed.snapshots}
+    #: STORE-layer authz and all clinical content: the per-page-load workspace store.
+    app.state.store = WorkspaceStore(settings=settings, seed=seed, audit=audit, seam=make_seam(engine, bundle_loader))
+    app.include_router(core.router)
+    app.include_router(aggregate.router)
+    install_error_handlers(app)
+    app.middleware("http")(request_middleware)
+    log_event(LogEvent.STARTUP)
     return app
 
 
