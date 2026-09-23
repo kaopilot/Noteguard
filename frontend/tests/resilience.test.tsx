@@ -1,6 +1,6 @@
 // Degraded and edge states (Review Standard S09-R01/R03, S16-R05; Section 13 inline decisions).
 // Mutation spot-checks: make keepOnOutage always return `next` -> the outage case fails; treat 4xx as
-// transient -> the 403 case fails; delete the
+// transient -> the 403 case fails; map ruleset_unapproved to an ordinary error -> the paused case fails; delete the
 // SourceViewer noRun text -> the missing-version case fails; drop `slot` from FlagCard -> the inline case fails.
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
@@ -58,6 +58,32 @@ test('a 403 on refresh is not an outage: earlier clinical results are removed, n
   await screen.findByText('Flags could not be loaded (server code forbidden_role).');
   expect(screen.queryByRole('article', { name: 'Critical result without documented response' })).toBeNull();
   expect(screen.queryByText(/The latest refresh did not complete/)).toBeNull();
+});
+
+test('an unapproved rule set pauses checks in plain words and is never shown as an outage', async () => {
+  const api = await openA1(false);
+  api.governance.unapproved = true;
+  fireEvent.change(screen.getByLabelText('Check sources up to (Singapore time)'), { target: { value: '2026-09-21T11:30' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Run checks' }));
+  await screen.findByText('Checks are paused: the rule set is awaiting clinical governance approval. No check was run.');
+  api.governance.unapproved = false;
+  await runAt('2026-09-21T11:30');
+  fireEvent.click(screen.getByRole('button', { name: 'Questions' }));
+  await screen.findByText('AI drafting disabled.', { exact: false });
+  // Approval withdrawn after a run (B4 re-verifies on every call): the next refresh is refused.
+  api.governance.unapproved = true;
+  fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+  const dose = screen.getByRole('article', { name: 'Dose differs between sources' });
+  fireEvent.click(within(dose).getByRole('button', { name: 'Decide' }));
+  const sheet = await screen.findByRole('dialog', { name: /Decide: Dose differs/ });
+  fireEvent.click(within(sheet).getByRole('radio', { name: /^Accept Records/ }));
+  fireEvent.click(within(sheet).getByRole('button', { name: 'Record: accept' }));
+  await screen.findByText(/The glance strip is paused:/);
+  expect(screen.queryByText(/The latest refresh did not complete/)).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Questions' }));
+  const note = (await screen.findByText(/^Questions are paused:$/)).closest('.note-paused');
+  expect(note?.textContent).toBe('Questions are paused: the rule set is awaiting clinical governance approval. Nothing is shown in their place.');
+  expect(screen.queryByRole('heading', { name: 'Which allergy entry is correct?' })).toBeNull();
 });
 
 test('a cited source version whose text is gone shows an explicit state, not a blank', async () => {

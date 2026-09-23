@@ -60,6 +60,8 @@ export function createFakeApi() {
   const decisions: Json[] = [];
   const outage = { on: false, status: 503 };
   const network = { failNextPosts: 0 };
+  // B4's approval check: while unapproved, B2's store refuses rule-dependent work with 503 ruleset_unapproved.
+  const governance = { unapproved: false };
   const added: { view: Json; text: string; key: string }[] = [];
   const allSources = () => [...sourceViews(ENC), ...added.map((a) => a.view)];
   const members = new Set(ENC.memberships.map((m: Json) => m.staff_id));
@@ -130,6 +132,9 @@ export function createFakeApi() {
       const e = textOf(p.source_version_id ?? '');
       return e ? reply(200, { note_version_id: e.source_version_id, extraction_status: e.status, text: e.text, pages: e.pages }) : reply(404, { error_code: 'not_found' });
     }
+    if (governance.unapproved && ['CHECK_RUNS', 'BUBBLES', 'GLANCE', 'SUMMARY'].includes(route)) {
+      return reply(503, { error_code: 'ruleset_unapproved' });
+    }
     if (route === 'CHECK_RUNS') {
       const prior = current ? current.scenario : null;
       current = GOLDENS.find((g) => g.cutoff === body.cutoff && (g.prior_scenario ?? null) === prior);
@@ -190,5 +195,5 @@ export function createFakeApi() {
     }
     return handle(method, new URL(url, 'http://ng.test').pathname, body);
   };
-  return { fetch, requests, outage, network, added };
+  return { fetch, requests, outage, network, added, governance };
 }

@@ -3,7 +3,7 @@ import { api, type ErrorCode } from '../api/client';
 import { CONTRACT } from '../api/contract-data.gen';
 import { decisionActionValues, editFieldValues, preparedCheckValues } from '../api/schema.gen';
 import type {
-  DecisionAction, DecisionRequest, EditField, Flag, FlagDetail, FlagState, PreparedCheck, ReasonCode,
+  DecisionAction, DecisionRequest, EditField, Flag, FlagDetail, PreparedCheck, ReasonCode, StaleRevision,
 } from '../api/types';
 import { DID, humanize } from '../lib/labels';
 import { offeredActions } from '../lib/permissions';
@@ -33,14 +33,6 @@ const ERROR_TEXT: Partial<Record<ErrorCode, string>> = {
   validation_failed: 'The server could not accept this decision as entered.',
   not_implemented: 'Decisions are not available in this build (501).',
   workspace_expired: 'This workspace has expired. Start a fresh case.',
-};
-
-type StaleBody = {
-  current_revision?: number;
-  current_state?: FlagState;
-  last_decision_action?: DecisionAction | null;
-  last_decision_actor_staff_id?: string | null;
-  last_decision_at?: string | null;
 };
 
 export function DecisionSheet({ flag, inline = false, otherFlags, onClose, onDecided, onStale }: {
@@ -128,7 +120,8 @@ export function DecisionSheet({ flag, inline = false, otherFlags, onClose, onDec
       return;
     }
     if (r.errorCode === 'stale_revision') {
-      const b = (r.body ?? {}) as StaleBody;
+      // Generated contract type (CCR-03). Partial: if a body is missing, the copy degrades rather than lies.
+      const b = (r.body ?? {}) as Partial<StaleRevision>;
       const who = b.last_decision_actor_staff_id ? staffName(b.last_decision_actor_staff_id) : 'Someone';
       const what = b.last_decision_action ? DID[b.last_decision_action] : 'changed';
       const when = b.last_decision_at ? ` at ${sgtDateTime(b.last_decision_at)}` : '';

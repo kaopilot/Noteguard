@@ -2,7 +2,7 @@ import type { BubbleList, ClosureView, Flag, GlanceView } from '../api/types';
 import { BUBBLE_STATUS, CLOSURE_STATUS, DID } from '../lib/labels';
 import { sgtDateTime, sgtTime } from '../lib/time';
 import { useEnc } from './ctx';
-import { NotBuilt, type Loadable } from './States';
+import { NotBuilt, Paused, type Loadable } from './States';
 import { TierBadge } from './TierBadge';
 
 export function Glance({ glance, closure, bubbles, onQuestions }: {
@@ -22,10 +22,12 @@ export function Glance({ glance, closure, bubbles, onQuestions }: {
       </section>
     );
   }
-  if (glance.kind === 'not_built' || glance.kind === 'error') {
+  if (glance.kind === 'not_built' || glance.kind === 'error' || glance.kind === 'paused') {
     return (
       <section className="glance" aria-label="At a glance">
-        {glance.kind === 'not_built' ? <NotBuilt what="The glance strip" /> : <p className="note note-problem">The glance strip could not be loaded (server code {glance.code}).</p>}
+        {glance.kind === 'not_built' && <NotBuilt what="The glance strip" />}
+        {glance.kind === 'paused' && <Paused what="The glance strip" />}
+        {glance.kind === 'error' && <p className="note note-problem">The glance strip could not be loaded (server code {glance.code}).</p>}
         {closure.kind === 'ok' && (
           <p className="glance-detail">Closure view: {CLOSURE_STATUS[closure.data.status].headline.toLowerCase()} ({closure.data.tier1_blockers.length} Tier 1 blocking).</p>
         )}

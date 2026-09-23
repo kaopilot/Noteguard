@@ -63,6 +63,7 @@ button { font: inherit; color: inherit; }
 .note-problem { background: #fbeff0; border-left: 4px solid var(--t1); }
 .note-change { background: #e7f2ee; border-left: 4px solid var(--change); }
 .note-notbuilt { background: #eef0f2; border: 1.5px dashed var(--ink-soft); }
+.note-paused { background: #fff6df; border-left: 4px solid var(--t2); }
 
 /* Login and encounter list */
 .login { max-width: 46rem; }

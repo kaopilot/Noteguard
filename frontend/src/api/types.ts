@@ -3,6 +3,7 @@ import type { components } from './schema.gen';
 
 type S = components['schemas'];
 export type AIStatusView = S['AIStatusView'];
+export type AIDraftStatus = S['AIDraftStatus'];
 export type AddTextSourceRequest = S['AddTextSourceRequest'];
 export type BubbleList = S['BubbleList'];
 export type BubbleStatus = S['BubbleStatus'];
@@ -34,6 +35,7 @@ export type SessionView = S['SessionView'];
 export type SourceText = S['SourceText'];
 export type SourceType = S['SourceType'];
 export type SourceView = S['SourceView'];
+export type StaleRevision = S['StaleRevision'];
 export type Staff = S['Staff'];
 export type Summary = S['Summary'];
 export type SummaryClaim = S['SummaryClaim'];
