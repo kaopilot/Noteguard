@@ -1,5 +1,5 @@
 import type { BubbleList, ClosureView, Flag, GlanceView } from '../api/types';
-import { BUBBLE_STATUS, CLOSURE_STATUS, humanize } from '../lib/labels';
+import { BUBBLE_STATUS, CLOSURE_STATUS, DID } from '../lib/labels';
 import { sgtDateTime, sgtTime } from '../lib/time';
 import { useEnc } from './ctx';
 import { NotBuilt, type Loadable } from './States';
@@ -72,7 +72,7 @@ export function Glance({ glance, closure, bubbles, onQuestions }: {
           <ul>
             {decisions.map((d) => (
               <li key={d.decision_id}>
-                {staffName(d.actor_staff_id)} {humanize(d.action).toLowerCase()}: {flagById(d.flag_id)?.title ?? 'a flag'}, {sgtTime(d.at)}
+                {staffName(d.actor_staff_id)} {DID[d.action]}: {flagById(d.flag_id)?.title ?? 'a flag'}, {sgtTime(d.at)}
               </li>
             ))}
           </ul>

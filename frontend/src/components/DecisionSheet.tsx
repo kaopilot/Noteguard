@@ -5,7 +5,7 @@ import { decisionActionValues, editFieldValues, preparedCheckValues } from '../a
 import type {
   DecisionAction, DecisionRequest, EditField, Flag, FlagDetail, FlagState, PreparedCheck, ReasonCode,
 } from '../api/types';
-import { humanize } from '../lib/labels';
+import { DID, humanize } from '../lib/labels';
 import { offeredActions } from '../lib/permissions';
 import { sgtDateTime } from '../lib/time';
 import { useEnc } from './ctx';
@@ -125,7 +125,7 @@ export function DecisionSheet({ flag, otherFlags, onClose, onDecided, onStale }:
     if (r.errorCode === 'stale_revision') {
       const b = (r.body ?? {}) as StaleBody;
       const who = b.last_decision_actor_staff_id ? staffName(b.last_decision_actor_staff_id) : 'Someone';
-      const what = b.last_decision_action ? humanize(b.last_decision_action).toLowerCase() : 'changed';
+      const what = b.last_decision_action ? DID[b.last_decision_action] : 'changed';
       const when = b.last_decision_at ? ` at ${sgtDateTime(b.last_decision_at)}` : '';
       const now = b.current_state ? ` It is now ${humanize(b.current_state).toLowerCase()} (revision ${b.current_revision ?? '?'}).` : '';
       setProblem(`${who} ${what} this flag${when} before your decision was sent.${now} Your decision was not recorded; review the current flag and decide again.`);

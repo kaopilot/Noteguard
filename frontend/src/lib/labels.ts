@@ -2,7 +2,7 @@
 // TypeScript fails the build if the contract adds a value this file does not describe. These maps
 // only choose words; tiers, owners, states and closure always come from the server.
 import type {
-  BubbleStatus, ChangeKind, ClosureStatus, Discipline, EvidenceRole, ExtractionStatus, SourceType, Tier,
+  BubbleStatus, ChangeKind, ClosureStatus, DecisionAction, Discipline, EvidenceRole, ExtractionStatus, SourceType, Tier,
 } from '../api/types';
 
 /** 'already_addressed_in_source' -> 'Already addressed in source'. */
@@ -10,6 +10,16 @@ export function humanize(value: string): string {
   const s = value.replace(/[_-]+/g, ' ').trim();
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
+
+/** Past tense of a decision action, for sentences such as "Dr Lim accepted this flag". */
+export const DID: Record<DecisionAction, string> = {
+  accept: 'accepted',
+  edit: 'edited',
+  reassign: 'reassigned',
+  mark_ready_for_clinician: 'marked ready for clinician',
+  dismiss: 'dismissed',
+  resolve: 'resolved',
+};
 
 export type TierShape = 'octagon' | 'triangle' | 'circle';
 export const TIER: Record<Tier, { label: string; shape: TierShape; hint: string }> = {
