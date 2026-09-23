@@ -263,12 +263,14 @@ def test_aggregate_no_content_or_ids():
     B4 strengthened the B0 body (all original assertions kept): the view is POPULATED by real check
     runs (an empty view would pass the content checks vacuously), first with one workspace (every
     cell "<5"), then with six (the Tier 1/2 cells become exact integers >= 5).
+    CCR-04 part 2 (B4.3): the response-time bucket is filled from B2's first_decision_at, "none_yet"
+    before any decision, and is part of the cell key (small-cell suppression applies to it).
     Mutations (applied, decisions/B4.md): show small counts as integers -> fails; remove the
     store-layer role check in store.aggregate_rows (B2's second layer) -> fails; shift an age-bucket
-    boundary -> fails."""
+    boundary -> fails; drop the response bucket from the cell key -> fails."""
     from noteguard.api.errors import ApiError
     from noteguard.contracts.types import Staff
-    from tests.support.api import A1, run_cutoff
+    from tests.support.api import A1, run_cutoff, url
     from tests.support.builders import AUTHOR
 
     app = real_app()
@@ -292,7 +294,9 @@ def test_aggregate_no_content_or_ids():
     assert body["cells"] and all(c["count"] == "<5" for c in body["cells"])
     assert body["ruleset_version"] == "v1" and body["small_cell_threshold"] == 5
     assert not UUID.search(r.text) and "flg_" not in r.text and "Potassium" not in r.text and "penicillin" not in r.text.lower()
-    assert {tuple(sorted(c)) for c in body["cells"]} == {("age_bucket", "count", "rule_id", "state", "tier")}
+    assert {tuple(sorted(c)) for c in body["cells"]} == {("age_bucket", "count", "response_time_bucket", "rule_id",
+                                                          "state", "tier")}
+    assert {c["response_time_bucket"] for c in body["cells"]} == {"none_yet"}  # CCR-04: nothing decided yet
     # Five more workspaces with the same run -> 6 copies per cell -> exact counts appear.
     for _ in range(5):
         c = client(app)
@@ -302,6 +306,15 @@ def test_aggregate_no_content_or_ids():
     body = r.json()
     counts = {(c["rule_id"], c["state"]): c["count"] for c in body["cells"]}
     assert counts[("ALG-001", "open")] == "6" and counts[("CRIT-001", "open")] == "6"
+    # CCR-04: one real decision in one workspace -> that copy moves to a timed response bucket.
+    dose = next(f for f in c.get(url(R.FLAGS, encounter_id=A1), headers=hc).json() if f["rule_id"] == "DOSE-001")
+    assert c.post(url(R.FLAG_DECISIONS, encounter_id=A1, flag_id=dose["flag_id"]), headers=hc,
+                  json={"action": "accept", "expected_revision": dose["revision"]}).status_code == 200
+    r = koh.get(R.AGGREGATE, headers=h)
+    dcells = [x for x in r.json()["cells"] if x["rule_id"] == "DOSE-001"]
+    assert {(x["state"], x["response_time_bucket"] == "none_yet", x["count"]) for x in dcells} == {
+        ("open", True, "5"), ("accepted", False, "<5")}
+    assert next(x for x in dcells if x["state"] == "accepted")["response_time_bucket"] in ("<1h", "1-4h", ">4h")
     for cell in body["cells"]:
         assert cell["count"] == "<5" or int(cell["count"]) >= 5
     assert not UUID.search(r.text) and "flg_" not in r.text
@@ -319,9 +332,17 @@ def test_aggregate_no_content_or_ids():
     t = datetime(2026, 9, 21, tzinfo=timezone.utc)
     assert [age_bucket(t, t + timedelta(hours=x)) for x in (0, 3.99, 4, 23.99, 24, 90)] == [
         "<4h", "<4h", "4-24h", "4-24h", ">24h", ">24h"]
-    rows = [SimpleNamespace(rule_id=RuleId.ALG_001, tier=Tier.T1, state=FlagState.OPEN, created_at=t)] * 6
+    from noteguard.governance.aggregate import response_bucket
+    assert [response_bucket(t, None)] + [response_bucket(t, t + timedelta(hours=x)) for x in (0, 0.99, 1, 3.99, 4, 50)] == [
+        "none_yet", "<1h", "<1h", "1-4h", "1-4h", ">4h", ">4h"]
+    rows = [SimpleNamespace(rule_id=RuleId.ALG_001, tier=Tier.T1, state=FlagState.OPEN, created_at=t,
+                            first_decision_at=None)] * 6
     assert [c.count for c in build_view(rows, now=t, ruleset_version="v1").cells] == ["6"]
     assert [c.count for c in build_view(rows, now=t, ruleset_version="v1", threshold=7).cells] == ["<7"]
+    # The response bucket is part of the cell key: 3 decided + 3 undecided = two cells, both suppressed.
+    split = rows[:3] + [SimpleNamespace(**(vars(rows[0]) | {"first_decision_at": t + timedelta(minutes=5)}))] * 3
+    assert sorted((c.response_time_bucket, c.count) for c in build_view(split, now=t, ruleset_version="v1").cells) == [
+        ("<1h", "<5"), ("none_yet", "<5")]
     # Store layer refuses a clinician even with the route guard bypassed (second layer, B2's seam).
     lim_staff = Staff.model_validate(AUTHOR.staff_record("lim"))
     with pytest.raises(ApiError):
