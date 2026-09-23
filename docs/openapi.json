@@ -175,6 +175,17 @@
             "title": "Count",
             "type": "string"
           },
+          "response_time_bucket": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response Time Bucket"
+          },
           "rule_id": {
             "$ref": "#/components/schemas/RuleId"
           },
