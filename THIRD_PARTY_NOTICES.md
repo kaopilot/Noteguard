@@ -3,7 +3,10 @@
 ## care-core (MIT)
 
 `noteguard/contracts/egress.py` (`QualifiedRedactedText`) is adapted from
-`backend/app/services/egress.py` in care-core. Any further port (e.g. B2's
+`backend/app/services/egress.py` in care-core.
+`noteguard/redaction/redact.py` (NRIC/FIN, MRN, SG phone and email patterns, the known-name
+pass and the interval-union overlap rule) is adapted from `backend/app/services/redaction.py`
+in care-core (B2, session B2.2). Any further port (e.g. B2's
 `redaction.py` identifier patterns) must add its source file here and cite it in the
 commit message.
 
