@@ -4,6 +4,10 @@ Access is already enforced here with B2's dependency ``authz.require_aggregate_v
 (aggregate roles only: medical director, quality/risk, legal; no encounter access, no
 workspace). B4 replaces the 501 with the PHI-minimised AggregateView (no content, no patient or
 encounter identifiers, small cells as "<5") and keeps the dependency.
+
+Data: ``request.app.state.store.aggregate_rows(staff)`` returns content-free, identifier-free
+rows (rule, tier, state, created_at, owner role, first decision time, disposition) and re-checks
+the aggregate role at the store (second layer). Bucketing, counting and "<5" are B4's.
 """
 
 from __future__ import annotations

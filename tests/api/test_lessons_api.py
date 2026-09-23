@@ -77,7 +77,7 @@ def test_store_layer_authz_fault_injection():
     }
     # No encounter data (identity / own workspace / filtered list / token-bound), each asserted below.
     exempt = {"login", "staff_for_session", "logout", "create_workspace", "resolve_workspace", "reset_workspace",
-              "list_encounters", "read_document"}
+              "list_encounters", "read_document", "aggregate_rows"}  # aggregate_rows: id-free, role-gated (test_api_behaviour)
     public = {n for n, _ in inspect.getmembers(WorkspaceStore, inspect.isfunction) if not n.startswith("_")}
     assert public == set(calls) | exempt, "classify every new store method here"
     lim_ctx = ctx_of(app, lim, lh)

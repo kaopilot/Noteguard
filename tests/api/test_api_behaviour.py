@@ -392,6 +392,36 @@ def test_session_and_workspace_isolation():
     assert client(app).post(R.SESSION, json={"staff_id": "no-such-staff"}).status_code == 401
 
 
+def test_aggregate_rows_seam_for_b4():
+    """B4's data seam: aggregate roles only (store layer), no ids of any kind, no text.
+    Mutation (applied): drop the role check in aggregate_rows -> Dr Lim gets rows."""
+    import dataclasses
+
+    from noteguard.api.errors import ApiError
+    from noteguard.contracts.errors import ErrorCode
+
+    app = real_app()
+    store = app.state.store
+    c, h = session(app, "lim", "ENC-A1_1130")
+    assert decide(c, h, A1, gflag("ENC-A1_1130", "DOSE-001")["flag_id"], action="accept",
+                  expected_revision=1).status_code == 200
+    staff = {k: store.staff_for_session(session(app, k)[0].cookies.get(R.SESSION_COOKIE)) for k in ("rao", "lim", "siti")}
+    for k in ("lim", "siti"):
+        with pytest.raises(ApiError) as exc:
+            store.aggregate_rows(staff[k])
+        assert exc.value.code is ErrorCode.FORBIDDEN_ROLE, k
+    rows = store.aggregate_rows(staff["rao"])
+    assert sorted(r.rule_id.value for r in rows) == sorted(f["rule_id"] for f in load("ENC-A1_1130")["flags"])
+    dose = next(r for r in rows if r.rule_id.value == "DOSE-001")
+    assert dose.disposition.value == "accept" and dose.first_decision_at is not None and dose.owner_role.value == "clinician"
+    dumped = json.dumps([dataclasses.asdict(r) for r in rows], default=str)
+    assert not re.search(r"[0-9a-f]{8}-[0-9a-f]{4}-|flg_|bbl_", dumped)  # no staff, flag, encounter or patient ids
+    assert set(dataclasses.asdict(rows[0])) == {"rule_id", "tier", "state", "created_at", "owner_role",
+                                                "first_decision_at", "disposition"}
+    reads = [e for e in app.state.audit.events() if e.action.value == "aggregate_read"]
+    assert [e.outcome.value for e in reads] == ["denied", "denied", "success"]
+
+
 def test_aggregate_route_is_b4_placeholder_behind_b2_authz():
     app = real_app()
     assert client(app).get(R.AGGREGATE).status_code == 401

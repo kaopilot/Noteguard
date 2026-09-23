@@ -46,6 +46,7 @@ from noteguard.contracts.log_allowlist import LogEvent
 from noteguard.contracts.states import InvalidTransition
 from noteguard.contracts.types import (
     AIDraftStatus,
+    RuleId,
     AuditAction,
     AuditOutcome,
     AuditTargetType,
@@ -56,6 +57,9 @@ from noteguard.contracts.types import (
     DecisionAction,
     DecisionRequest,
     EditField,
+    FlagState,
+    Role,
+    Tier,
     EncounterSnapshot,
     FeedbackEvent,
     Flag,
@@ -90,6 +94,19 @@ _RULESET_VERSION = re.compile(r"^ruleset@([^;]+);")
 
 def _h(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+@dataclass(frozen=True)
+class AggregateRow:
+    """One flag, stripped for the aggregate view (B4): no ids of any kind, no text."""
+
+    rule_id: RuleId
+    tier: Tier
+    state: FlagState
+    created_at: datetime
+    owner_role: Role | None
+    first_decision_at: datetime | None  # owner/clinician response time = first_decision_at - created_at
+    disposition: DecisionAction | None  # latest human decision, if any
 
 
 @dataclass
@@ -721,3 +738,31 @@ class WorkspaceStore:
     def feedback_events(self, ctx: AuthContext, encounter_id: str) -> tuple[FeedbackEvent, ...]:
         st = self._gate(ctx, encounter_id, A.RECORD_FEEDBACK)
         return tuple(st.feedback)
+
+    # ------------------------------------------------------------------ aggregate seam (B4 consumes)
+    def aggregate_rows(self, staff: Staff) -> tuple[AggregateRow, ...]:
+        """Content-free, identifier-free rows for B4's aggregate view; aggregate roles only.
+
+        Store-layer check (the route layer is ``authz.require_aggregate_viewer``). Covers every live
+        workspace in this process. In the demonstrator each workspace is one user's copy of the same
+        synthetic case, so rows count workspace copies, not distinct real encounters. Counting,
+        age buckets and small-cell suppression ("<5") are B4's."""
+        if not permissions.is_allowed(A.VIEW_AGGREGATE, staff.role, frozenset()):
+            self._audit.record(AuditAction.AGGREGATE_READ, AuditTargetType.AGGREGATE, AuditOutcome.DENIED, actor=staff)
+            raise ApiError(ErrorCode.FORBIDDEN_ROLE)
+        now = utcnow()
+        rows: list[AggregateRow] = []
+        with self._lock:
+            for ws in self._workspaces.values():
+                if ws.expires_at <= now:
+                    continue
+                for st in ws.encounters.values():
+                    for f in st.flags.values():
+                        decs = [d for d in st.decisions if d.flag_id == f.flag_id]
+                        owner = self._seed.staff.get(f.owner_staff_id)
+                        rows.append(AggregateRow(rule_id=f.rule_id, tier=f.tier, state=f.state, created_at=f.created_at,
+                                                 owner_role=owner.role if owner else None,
+                                                 first_decision_at=decs[0].at if decs else None,
+                                                 disposition=decs[-1].action if decs else None))
+        self._audit.record(AuditAction.AGGREGATE_READ, AuditTargetType.AGGREGATE, AuditOutcome.SUCCESS, actor=staff)
+        return tuple(rows)
