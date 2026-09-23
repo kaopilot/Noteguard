@@ -1,0 +1,845 @@
+{
+  "scenario": "ENC-A2_1200",
+  "encounter_ref": "ENC-A2",
+  "encounter_id": "ab20b7e4-977f-4edb-9895-1303446ecb13",
+  "cutoff": "2026-09-14T04:00:00Z",
+  "evaluated_at": "2026-09-14T04:01:00Z",
+  "run_id": "829fb574-54e7-4fb4-8910-29723596fa74",
+  "prior_scenario": null,
+  "comparison": "flags, bubbles and summary claims: EXACT set equality on the fields in fixtures/expected/README.md; required_changes: must be present",
+  "run": {
+    "run_id": "829fb574-54e7-4fb4-8910-29723596fa74",
+    "encounter_id": "ab20b7e4-977f-4edb-9895-1303446ecb13",
+    "source_cutoff": "2026-09-14T04:00:00Z",
+    "ruleset_version": "v1",
+    "registry_version": "v1",
+    "source_set_hash": "0fe46840a0ce89cea4817c47050cec8a942f8f9d481aae9ad18ec043573ac7e4",
+    "started_at": "2026-09-14T04:01:00Z",
+    "completed_at": "2026-09-14T04:01:00Z",
+    "outcome": "completed"
+  },
+  "flags": [
+    {
+      "flag_id": "flg_6f577be351b01c459966924f",
+      "tier": 1,
+      "category": "allergy-conflict",
+      "title": "Conflicting allergy documentation",
+      "reason": "Nursing admission (Nurse Wee, 08:30) states \"No known drug allergies\" while Pharmacy medicines reconciliation (Pharmacist Teo, 11:20) names \"Sulfa allergy - hives (patient and daughter confirm)\".",
+      "evidence": [
+        {
+          "note_version_id": "721bfb85-7047-4ff8-b212-100914037800",
+          "start": 19,
+          "end": 42,
+          "page": null,
+          "quote": "No known drug allergies",
+          "quote_sha256": "6266d7522cde56ed7a4988dd7af6010cf4f9abd3f20fbeee8e09bcfcdd5c9900",
+          "role_in_flag": "claim",
+          "evidence_revision": 1,
+          "record_field": null
+        },
+        {
+          "note_version_id": "6f29f794-785f-4088-bbe7-6f7527a80c37",
+          "start": 35,
+          "end": 87,
+          "page": null,
+          "quote": "Sulfa allergy - hives (patient and daughter confirm)",
+          "quote_sha256": "fe7c120bcb8d2021d0912795fc84c273536a3ecd360f77f5e0eb9165bef88a71",
+          "role_in_flag": "counter_claim",
+          "evidence_revision": 1,
+          "record_field": null
+        }
+      ],
+      "owner_staff_id": "7cbb8cde-13b0-43ca-b641-cca7414ec5f6",
+      "check_version": "ruleset@v1;rule@ALG-001.1;registry@v1",
+      "created_at": "2026-09-14T04:01:00Z",
+      "rule_id": "ALG-001",
+      "lens": "contradiction",
+      "subject_key": "allergen:sulfonamide",
+      "state": "open",
+      "revision": 1,
+      "evidence_revision": 1,
+      "affected_contributor_ids": [
+        "9046c579-11dc-4f02-a75f-cb66dbfd4870",
+        "b1329d6d-0c57-4232-951d-e369573c2a2b"
+      ],
+      "question": null,
+      "ready_for_clinician": false,
+      "new_evidence_since_decision": false,
+      "source_changed_since_flag": false,
+      "first_run_id": "829fb574-54e7-4fb4-8910-29723596fa74",
+      "last_run_id": "829fb574-54e7-4fb4-8910-29723596fa74"
+    },
+    {
+      "flag_id": "flg_fab2c8ea5befa6d78d2960e5",
+      "tier": 1,
+      "category": "critical-observation-unacknowledged",
+      "title": "Critical result without documented response",
+      "reason": "Lab result call (Nurse Arun, 09:40) records \"Na 118 mmol/L\". No later review, repeat, treatment, escalation or transfer for this result is documented in the supplied sources up to 12:00.",
+      "evidence": [
+        {
+          "note_version_id": "6802b34c-e5fb-489b-bb7e-52ed612e0a44",
+          "start": 12,
+          "end": 25,
+          "page": null,
+          "quote": "Na 118 mmol/L",
+          "quote_sha256": "4d89b2bc8c49eebc72f72ac137993907e05c08351065ad07aa98bc37821fb126",
+          "role_in_flag": "claim",
+          "evidence_revision": 1,
+          "record_field": null
+        }
+      ],
+      "owner_staff_id": "7cbb8cde-13b0-43ca-b641-cca7414ec5f6",
+      "check_version": "ruleset@v1;rule@CRIT-001.1;registry@v1",
+      "created_at": "2026-09-14T04:01:00Z",
+      "rule_id": "CRIT-001",
+      "lens": "completeness",
+      "subject_key": "analyte:sodium",
+      "state": "open",
+      "revision": 1,
+      "evidence_revision": 1,
+      "affected_contributor_ids": [
+        "c932917e-fd36-443c-9bf8-e179cf10058a"
+      ],
+      "question": null,
+      "ready_for_clinician": false,
+      "new_evidence_since_decision": false,
+      "source_changed_since_flag": false,
+      "first_run_id": "829fb574-54e7-4fb4-8910-29723596fa74",
+      "last_run_id": "829fb574-54e7-4fb4-8910-29723596fa74"
+    },
+    {
+      "flag_id": "flg_af5ab646fcc6c7e61800f0a9",
+      "tier": 2,
+      "category": "dose-discrepancy",
+      "title": "Dose differs between sources",
+      "reason": "Consultant ward round (Dr Farah, 09:15) records \"Bisoprolol 2.5mg once daily\"; Pharmacy medicines reconciliation (Pharmacist Teo, 11:20) records \"Pre-admission: bisoprolol 5 mg OD, atorvastatin 40 mg nocte\". No explicit change links them.",
+      "evidence": [
+        {
+          "note_version_id": "168e0447-dd06-4ad7-89d7-030859250254",
+          "start": 53,
+          "end": 80,
+          "page": null,
+          "quote": "Bisoprolol 2.5mg once daily",
+          "quote_sha256": "e07d4a2317589497c4a913c0e7dd01d0e2e8a454cff872c61b26866e8183c2e0",
+          "role_in_flag": "claim",
+          "evidence_revision": 1,
+          "record_field": null
+        },
+        {
+          "note_version_id": "6f29f794-785f-4088-bbe7-6f7527a80c37",
+          "start": 89,
+          "end": 148,
+          "page": null,
+          "quote": "Pre-admission: bisoprolol 5 mg OD, atorvastatin 40 mg nocte",
+          "quote_sha256": "a67a4f944ac40e6ece914bea6dcf19df58ba68cbdf9b1a2dabc3ffdc0c1ae47b",
+          "role_in_flag": "counter_claim",
+          "evidence_revision": 1,
+          "record_field": null
+        }
+      ],
+      "owner_staff_id": "7cbb8cde-13b0-43ca-b641-cca7414ec5f6",
+      "check_version": "ruleset@v1;rule@DOSE-001.1;registry@v1",
+      "created_at": "2026-09-14T04:01:00Z",
+      "rule_id": "DOSE-001",
+      "lens": "consistency",
+      "subject_key": "drug:bisoprolol",
+      "state": "open",
+      "revision": 1,
+      "evidence_revision": 1,
+      "affected_contributor_ids": [
+        "b1329d6d-0c57-4232-951d-e369573c2a2b"
+      ],
+      "question": null,
+      "ready_for_clinician": false,
+      "new_evidence_since_decision": false,
+      "source_changed_since_flag": false,
+      "first_run_id": "829fb574-54e7-4fb4-8910-29723596fa74",
+      "last_run_id": "829fb574-54e7-4fb4-8910-29723596fa74"
+    },
+    {
+      "flag_id": "flg_0713f6af80dd423d84d79356",
+      "tier": 2,
+      "category": "pending-action-owner-timing",
+      "title": "Pending item without owner or timing",
+      "reason": "Consultant ward round (Dr Farah, 09:15) records \"Urine culture sent, ward team to chase\" without an explicit timing in the supplied sources.",
+      "evidence": [
+        {
+          "note_version_id": "168e0447-dd06-4ad7-89d7-030859250254",
+          "start": 108,
+          "end": 146,
+          "page": null,
+          "quote": "Urine culture sent, ward team to chase",
+          "quote_sha256": "909b47685ccec37d2f0900cc2c48f834013725e8a5a4ac21b0d6956a5c1a3097",
+          "role_in_flag": "claim",
+          "evidence_revision": 1,
+          "record_field": null
+        }
+      ],
+      "owner_staff_id": "7cbb8cde-13b0-43ca-b641-cca7414ec5f6",
+      "check_version": "ruleset@v1;rule@PEND-001.1;registry@v1",
+      "created_at": "2026-09-14T04:01:00Z",
+      "rule_id": "PEND-001",
+      "lens": "completeness",
+      "subject_key": "test:urine_culture",
+      "state": "open",
+      "revision": 1,
+      "evidence_revision": 1,
+      "affected_contributor_ids": [],
+      "question": null,
+      "ready_for_clinician": false,
+      "new_evidence_since_decision": false,
+      "source_changed_since_flag": false,
+      "first_run_id": "829fb574-54e7-4fb4-8910-29723596fa74",
+      "last_run_id": "829fb574-54e7-4fb4-8910-29723596fa74"
+    },
+    {
+      "flag_id": "flg_59e03d1811c9e85a5cec0d8f",
+      "tier": 3,
+      "category": "unparsed-dose",
+      "title": "Dose not recognised by the checker",
+      "reason": "Nursing admission (Nurse Wee, 08:30) contains \"4 units given as per chart\", which the checker could not attach to a medication regimen, so it has not been compared.",
+      "evidence": [
+        {
+          "note_version_id": "721bfb85-7047-4ff8-b212-100914037800",
+          "start": 44,
+          "end": 70,
+          "page": null,
+          "quote": "4 units given as per chart",
+          "quote_sha256": "ef073af825aa0ff95cc9f18b45fc4020ff2c49d1df23cdd87a21f61fca84260a",
+          "role_in_flag": "claim",
+          "evidence_revision": 1,
+          "record_field": null
+        }
+      ],
+      "owner_staff_id": "9046c579-11dc-4f02-a75f-cb66dbfd4870",
+      "check_version": "ruleset@v1;rule@DOSE-002.1;registry@v1",
+      "created_at": "2026-09-14T04:01:00Z",
+      "rule_id": "DOSE-002",
+      "lens": "completeness",
+      "subject_key": "unparsed_dose@source:09b67152-c0c1-4923-aa82-f7e1cc86f6d1:ef073af825aa0ff9",
+      "state": "open",
+      "revision": 1,
+      "evidence_revision": 1,
+      "affected_contributor_ids": [],
+      "question": null,
+      "ready_for_clinician": false,
+      "new_evidence_since_decision": false,
+      "source_changed_since_flag": false,
+      "first_run_id": "829fb574-54e7-4fb4-8910-29723596fa74",
+      "last_run_id": "829fb574-54e7-4fb4-8910-29723596fa74"
+    }
+  ],
+  "must_not_flag": [
+    {
+      "rule_id": "DOSE-001",
+      "subject_key": "drug:atorvastatin",
+      "why": "\"40 mg nocte\" in both sources."
+    },
+    {
+      "rule_id": "DIFF-001",
+      "subject_key": "*",
+      "why": "\"Clinically stable\" occurs once in scope; the repeated Na line is not a status statement."
+    },
+    {
+      "rule_id": "PDF-001",
+      "subject_key": "*",
+      "why": "No PDF is in scope at 12:00."
+    },
+    {
+      "rule_id": "DET-001",
+      "subject_key": "*",
+      "why": "The only reassurance (09:15 \"Clinically stable\") precedes every deterioration marker; the 08:30 observations are inside the placeholder ranges (CCR-02)."
+    }
+  ],
+  "must_not_suppress_note": "08:10 \"Na reviewed overnight\" is EARLIER than the 09:40 result, and the 10:30 copy of it is CARRIED FORWARD: neither suppresses CRIT-001.",
+  "bubbles": [
+    {
+      "bubble_id": "bbl_7421b5cd74460363c2e2910f",
+      "question_template_id": "q_allergy_which_correct",
+      "question": "Which allergy entry is correct?",
+      "subject_key": "allergen:sulfonamide",
+      "status": "conflicting",
+      "evidence": [
+        {
+          "note_version_id": "721bfb85-7047-4ff8-b212-100914037800",
+          "start": 19,
+          "end": 42,
+          "page": null,
+          "quote": "No known drug allergies",
+          "quote_sha256": "6266d7522cde56ed7a4988dd7af6010cf4f9abd3f20fbeee8e09bcfcdd5c9900",
+          "role_in_flag": "claim",
+          "evidence_revision": 1,
+          "record_field": null
+        },
+        {
+          "note_version_id": "6f29f794-785f-4088-bbe7-6f7527a80c37",
+          "start": 35,
+          "end": 87,
+          "page": null,
+          "quote": "Sulfa allergy - hives (patient and daughter confirm)",
+          "quote_sha256": "fe7c120bcb8d2021d0912795fc84c273536a3ecd360f77f5e0eb9165bef88a71",
+          "role_in_flag": "counter_claim",
+          "evidence_revision": 1,
+          "record_field": null
+        }
+      ],
+      "cutoff": "2026-09-14T04:00:00Z",
+      "uncertainty_note": "The supplied sources disagree. Only a clinician's decision can settle which entry is correct; the checker does not choose between sources.",
+      "flag_id": "flg_6f577be351b01c459966924f",
+      "absence": null,
+      "rank": 2
+    },
+    {
+      "bubble_id": "bbl_32b89926bde29e65cfe39f56",
+      "question_template_id": "q_crit_response",
+      "question": "Was the critical sodium reviewed or repeated?",
+      "subject_key": "analyte:sodium",
+      "status": "not_documented_in_supplied_sources",
+      "evidence": [
+        {
+          "note_version_id": "6802b34c-e5fb-489b-bb7e-52ed612e0a44",
+          "start": 12,
+          "end": 25,
+          "page": null,
+          "quote": "Na 118 mmol/L",
+          "quote_sha256": "4d89b2bc8c49eebc72f72ac137993907e05c08351065ad07aa98bc37821fb126",
+          "role_in_flag": "trigger",
+          "evidence_revision": 1,
+          "record_field": null
+        }
+      ],
+      "cutoff": "2026-09-14T04:00:00Z",
+      "uncertainty_note": "Searched 6 supplied sources up to 12:00 for the listed terms and found no matching entry. This describes the supplied record only, not what took place.",
+      "flag_id": "flg_fab2c8ea5befa6d78d2960e5",
+      "absence": {
+        "question_template_id": "q_crit_response",
+        "terms_searched": [
+          "analyte:sodium",
+          "cue:response_review",
+          "cue:response_repeat",
+          "cue:response_treatment",
+          "cue:response_escalation",
+          "cue:response_transfer"
+        ],
+        "registry_version": "v1",
+        "sources_searched": [
+          {
+            "note_version_id": "6734e91e-8eda-472d-84e1-6133c8898a0d",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "721bfb85-7047-4ff8-b212-100914037800",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "168e0447-dd06-4ad7-89d7-030859250254",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "6802b34c-e5fb-489b-bb7e-52ed612e0a44",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "19213424-56b1-4b69-a90a-2b67c795c4f4",
+            "extraction_status": "not_applicable"
+          },
+          {
+            "note_version_id": "6f29f794-785f-4088-bbe7-6f7527a80c37",
+            "extraction_status": "not_applicable"
+          }
+        ],
+        "cutoff": "2026-09-14T04:00:00Z",
+        "status": "not_documented_in_supplied_sources"
+      },
+      "rank": 3
+    },
+    {
+      "bubble_id": "bbl_46a25ed16e9d62d6ea45e27c",
+      "question_template_id": "q_dose_current",
+      "question": "Which bisoprolol dose is current?",
+      "subject_key": "drug:bisoprolol",
+      "status": "conflicting",
+      "evidence": [
+        {
+          "note_version_id": "168e0447-dd06-4ad7-89d7-030859250254",
+          "start": 53,
+          "end": 80,
+          "page": null,
+          "quote": "Bisoprolol 2.5mg once daily",
+          "quote_sha256": "e07d4a2317589497c4a913c0e7dd01d0e2e8a454cff872c61b26866e8183c2e0",
+          "role_in_flag": "claim",
+          "evidence_revision": 1,
+          "record_field": null
+        },
+        {
+          "note_version_id": "6f29f794-785f-4088-bbe7-6f7527a80c37",
+          "start": 89,
+          "end": 148,
+          "page": null,
+          "quote": "Pre-admission: bisoprolol 5 mg OD, atorvastatin 40 mg nocte",
+          "quote_sha256": "a67a4f944ac40e6ece914bea6dcf19df58ba68cbdf9b1a2dabc3ffdc0c1ae47b",
+          "role_in_flag": "counter_claim",
+          "evidence_revision": 1,
+          "record_field": null
+        }
+      ],
+      "cutoff": "2026-09-14T04:00:00Z",
+      "uncertainty_note": "The supplied sources disagree. Only a clinician's decision can settle which entry is correct; the checker does not choose between sources.",
+      "flag_id": "flg_af5ab646fcc6c7e61800f0a9",
+      "absence": null,
+      "rank": 5
+    },
+    {
+      "bubble_id": "bbl_9275ff9ae19931ba58ba2807",
+      "question_template_id": "q_pending_owner",
+      "question": "Who owns the pending urine culture result?",
+      "subject_key": "test:urine_culture",
+      "status": "documented",
+      "evidence": [
+        {
+          "note_version_id": "168e0447-dd06-4ad7-89d7-030859250254",
+          "start": 108,
+          "end": 146,
+          "page": null,
+          "quote": "Urine culture sent, ward team to chase",
+          "quote_sha256": "909b47685ccec37d2f0900cc2c48f834013725e8a5a4ac21b0d6956a5c1a3097",
+          "role_in_flag": "trigger",
+          "evidence_revision": 1,
+          "record_field": null
+        }
+      ],
+      "cutoff": "2026-09-14T04:00:00Z",
+      "uncertainty_note": "Documented in the cited source. The checker matched wording only and has not verified the clinical content.",
+      "flag_id": "flg_0713f6af80dd423d84d79356",
+      "absence": null,
+      "rank": 6
+    },
+    {
+      "bubble_id": "bbl_25fdeefd699c4c1e11333523",
+      "question_template_id": "q_unparsed_dose",
+      "question": "Which medication does \"4 units given as per chart\" belong to?",
+      "subject_key": "unparsed_dose@source:09b67152-c0c1-4923-aa82-f7e1cc86f6d1:ef073af825aa0ff9",
+      "status": "requires_human_review",
+      "evidence": [
+        {
+          "note_version_id": "721bfb85-7047-4ff8-b212-100914037800",
+          "start": 44,
+          "end": 70,
+          "page": null,
+          "quote": "4 units given as per chart",
+          "quote_sha256": "ef073af825aa0ff95cc9f18b45fc4020ff2c49d1df23cdd87a21f61fca84260a",
+          "role_in_flag": "claim",
+          "evidence_revision": 1,
+          "record_field": null
+        }
+      ],
+      "cutoff": "2026-09-14T04:00:00Z",
+      "uncertainty_note": "The checker cannot answer this from the supplied text; a person needs to check.",
+      "flag_id": "flg_59e03d1811c9e85a5cec0d8f",
+      "absence": null,
+      "rank": 9
+    }
+  ],
+  "required_changes": [
+    {
+      "kind": "reworded",
+      "subject_key": "drug:atorvastatin",
+      "from_evidence": {
+        "note_version_id": "168e0447-dd06-4ad7-89d7-030859250254",
+        "start": 82,
+        "end": 106,
+        "page": null,
+        "quote": "Atorvastatin 40 mg nocte",
+        "quote_sha256": "c97fe381dc8a9677a01e6bd0ea2a4c3819dfc20f630a7c0de5509fb72ee11e35",
+        "role_in_flag": "origin",
+        "evidence_revision": 1,
+        "record_field": null
+      },
+      "to_evidence": {
+        "note_version_id": "6f29f794-785f-4088-bbe7-6f7527a80c37",
+        "start": 89,
+        "end": 148,
+        "page": null,
+        "quote": "Pre-admission: bisoprolol 5 mg OD, atorvastatin 40 mg nocte",
+        "quote_sha256": "a67a4f944ac40e6ece914bea6dcf19df58ba68cbdf9b1a2dabc3ffdc0c1ae47b",
+        "role_in_flag": "claim",
+        "evidence_revision": 1,
+        "record_field": null
+      }
+    },
+    {
+      "kind": "carried_forward",
+      "subject_key": "analyte:sodium",
+      "from_evidence": {
+        "note_version_id": "6734e91e-8eda-472d-84e1-6133c8898a0d",
+        "start": 29,
+        "end": 68,
+        "page": null,
+        "quote": "Na reviewed overnight, plan as per team",
+        "quote_sha256": "a98311ad6bb96d42be69cd36f4b1c7ed78b6c3c09e657131dd8d67260a82975f",
+        "role_in_flag": "origin",
+        "evidence_revision": 1,
+        "record_field": null
+      },
+      "to_evidence": {
+        "note_version_id": "19213424-56b1-4b69-a90a-2b67c795c4f4",
+        "start": 18,
+        "end": 57,
+        "page": null,
+        "quote": "Na reviewed overnight, plan as per team",
+        "quote_sha256": "a98311ad6bb96d42be69cd36f4b1c7ed78b6c3c09e657131dd8d67260a82975f",
+        "role_in_flag": "claim",
+        "evidence_revision": 1,
+        "record_field": null
+      }
+    }
+  ],
+  "summary": {
+    "encounter_id": "ab20b7e4-977f-4edb-9895-1303446ecb13",
+    "encounter_ref": "ENC-A2",
+    "patient_ref": "ab1b4c08-8278-45d5-b775-0ecba96438c6",
+    "generated_at": "2026-09-14T04:01:00Z",
+    "cutoff": "2026-09-14T04:00:00Z",
+    "ruleset_version": "v1",
+    "registry_version": "v1",
+    "closure_status": "blocked",
+    "timeline": [
+      {
+        "source_id": "cac6ad4e-8082-4bce-af6a-2efce24ae045",
+        "note_version_id": "6734e91e-8eda-472d-84e1-6133c8898a0d",
+        "version": 1,
+        "author_staff_id": "83aa10d2-5aaf-4b86-9a93-06ad4837c940",
+        "discipline": "clinician",
+        "source_type": "pasted_text",
+        "source_time": "2026-09-14T00:10:00Z",
+        "extraction_status": "not_applicable",
+        "title": "Overnight review"
+      },
+      {
+        "source_id": "09b67152-c0c1-4923-aa82-f7e1cc86f6d1",
+        "note_version_id": "721bfb85-7047-4ff8-b212-100914037800",
+        "version": 1,
+        "author_staff_id": "9046c579-11dc-4f02-a75f-cb66dbfd4870",
+        "discipline": "nursing",
+        "source_type": "pasted_text",
+        "source_time": "2026-09-14T00:30:00Z",
+        "extraction_status": "not_applicable",
+        "title": "Nursing admission"
+      },
+      {
+        "source_id": "0259d0e2-906c-48ec-b0bc-7515e21937cd",
+        "note_version_id": "168e0447-dd06-4ad7-89d7-030859250254",
+        "version": 1,
+        "author_staff_id": "7cbb8cde-13b0-43ca-b641-cca7414ec5f6",
+        "discipline": "clinician",
+        "source_type": "pasted_text",
+        "source_time": "2026-09-14T01:15:00Z",
+        "extraction_status": "not_applicable",
+        "title": "Consultant ward round"
+      },
+      {
+        "source_id": "abcc118a-b01c-4c2c-bad6-91564ec3ce7e",
+        "note_version_id": "6802b34c-e5fb-489b-bb7e-52ed612e0a44",
+        "version": 1,
+        "author_staff_id": "c932917e-fd36-443c-9bf8-e179cf10058a",
+        "discipline": "nursing",
+        "source_type": "pasted_text",
+        "source_time": "2026-09-14T01:40:00Z",
+        "extraction_status": "not_applicable",
+        "title": "Lab result call"
+      },
+      {
+        "source_id": "4f745164-fad5-42d7-b9c8-a849f3764923",
+        "note_version_id": "19213424-56b1-4b69-a90a-2b67c795c4f4",
+        "version": 1,
+        "author_staff_id": "9046c579-11dc-4f02-a75f-cb66dbfd4870",
+        "discipline": "nursing",
+        "source_type": "pasted_text",
+        "source_time": "2026-09-14T02:30:00Z",
+        "extraction_status": "not_applicable",
+        "title": "Nursing handover"
+      },
+      {
+        "source_id": "def05ff7-5bde-43fa-ac83-49615da3b367",
+        "note_version_id": "6f29f794-785f-4088-bbe7-6f7527a80c37",
+        "version": 1,
+        "author_staff_id": "b1329d6d-0c57-4232-951d-e369573c2a2b",
+        "discipline": "pharmacy",
+        "source_type": "pasted_text",
+        "source_time": "2026-09-14T03:20:00Z",
+        "extraction_status": "not_applicable",
+        "title": "Pharmacy medicines reconciliation"
+      }
+    ],
+    "claims": [
+      {
+        "template": "open_priority",
+        "params": {
+          "flag_id": "flg_fab2c8ea5befa6d78d2960e5",
+          "rule_id": "CRIT-001",
+          "tier": 1,
+          "state": "open",
+          "owner_staff_id": "7cbb8cde-13b0-43ca-b641-cca7414ec5f6"
+        },
+        "text": "Tier 1 · Critical result without documented response · owner Dr Farah · open",
+        "evidence": [
+          {
+            "note_version_id": "6802b34c-e5fb-489b-bb7e-52ed612e0a44",
+            "start": 12,
+            "end": 25,
+            "page": null,
+            "quote": "Na 118 mmol/L",
+            "quote_sha256": "4d89b2bc8c49eebc72f72ac137993907e05c08351065ad07aa98bc37821fb126",
+            "role_in_flag": "claim",
+            "evidence_revision": 1,
+            "record_field": null
+          }
+        ]
+      },
+      {
+        "template": "open_priority",
+        "params": {
+          "flag_id": "flg_6f577be351b01c459966924f",
+          "rule_id": "ALG-001",
+          "tier": 1,
+          "state": "open",
+          "owner_staff_id": "7cbb8cde-13b0-43ca-b641-cca7414ec5f6"
+        },
+        "text": "Tier 1 · Conflicting allergy documentation · owner Dr Farah · open",
+        "evidence": [
+          {
+            "note_version_id": "721bfb85-7047-4ff8-b212-100914037800",
+            "start": 19,
+            "end": 42,
+            "page": null,
+            "quote": "No known drug allergies",
+            "quote_sha256": "6266d7522cde56ed7a4988dd7af6010cf4f9abd3f20fbeee8e09bcfcdd5c9900",
+            "role_in_flag": "claim",
+            "evidence_revision": 1,
+            "record_field": null
+          },
+          {
+            "note_version_id": "6f29f794-785f-4088-bbe7-6f7527a80c37",
+            "start": 35,
+            "end": 87,
+            "page": null,
+            "quote": "Sulfa allergy - hives (patient and daughter confirm)",
+            "quote_sha256": "fe7c120bcb8d2021d0912795fc84c273536a3ecd360f77f5e0eb9165bef88a71",
+            "role_in_flag": "counter_claim",
+            "evidence_revision": 1,
+            "record_field": null
+          }
+        ]
+      },
+      {
+        "template": "open_priority",
+        "params": {
+          "flag_id": "flg_af5ab646fcc6c7e61800f0a9",
+          "rule_id": "DOSE-001",
+          "tier": 2,
+          "state": "open",
+          "owner_staff_id": "7cbb8cde-13b0-43ca-b641-cca7414ec5f6"
+        },
+        "text": "Tier 2 · Dose differs between sources · owner Dr Farah · open",
+        "evidence": [
+          {
+            "note_version_id": "168e0447-dd06-4ad7-89d7-030859250254",
+            "start": 53,
+            "end": 80,
+            "page": null,
+            "quote": "Bisoprolol 2.5mg once daily",
+            "quote_sha256": "e07d4a2317589497c4a913c0e7dd01d0e2e8a454cff872c61b26866e8183c2e0",
+            "role_in_flag": "claim",
+            "evidence_revision": 1,
+            "record_field": null
+          },
+          {
+            "note_version_id": "6f29f794-785f-4088-bbe7-6f7527a80c37",
+            "start": 89,
+            "end": 148,
+            "page": null,
+            "quote": "Pre-admission: bisoprolol 5 mg OD, atorvastatin 40 mg nocte",
+            "quote_sha256": "a67a4f944ac40e6ece914bea6dcf19df58ba68cbdf9b1a2dabc3ffdc0c1ae47b",
+            "role_in_flag": "counter_claim",
+            "evidence_revision": 1,
+            "record_field": null
+          }
+        ]
+      },
+      {
+        "template": "open_priority",
+        "params": {
+          "flag_id": "flg_0713f6af80dd423d84d79356",
+          "rule_id": "PEND-001",
+          "tier": 2,
+          "state": "open",
+          "owner_staff_id": "7cbb8cde-13b0-43ca-b641-cca7414ec5f6"
+        },
+        "text": "Tier 2 · Pending item without owner or timing · owner Dr Farah · open",
+        "evidence": [
+          {
+            "note_version_id": "168e0447-dd06-4ad7-89d7-030859250254",
+            "start": 108,
+            "end": 146,
+            "page": null,
+            "quote": "Urine culture sent, ward team to chase",
+            "quote_sha256": "909b47685ccec37d2f0900cc2c48f834013725e8a5a4ac21b0d6956a5c1a3097",
+            "role_in_flag": "claim",
+            "evidence_revision": 1,
+            "record_field": null
+          }
+        ]
+      },
+      {
+        "template": "top_question",
+        "params": {
+          "bubble_id": "bbl_7421b5cd74460363c2e2910f",
+          "question_template_id": "q_allergy_which_correct",
+          "status": "conflicting"
+        },
+        "text": "Which allergy entry is correct? — conflicting",
+        "evidence": [
+          {
+            "note_version_id": "721bfb85-7047-4ff8-b212-100914037800",
+            "start": 19,
+            "end": 42,
+            "page": null,
+            "quote": "No known drug allergies",
+            "quote_sha256": "6266d7522cde56ed7a4988dd7af6010cf4f9abd3f20fbeee8e09bcfcdd5c9900",
+            "role_in_flag": "claim",
+            "evidence_revision": 1,
+            "record_field": null
+          },
+          {
+            "note_version_id": "6f29f794-785f-4088-bbe7-6f7527a80c37",
+            "start": 35,
+            "end": 87,
+            "page": null,
+            "quote": "Sulfa allergy - hives (patient and daughter confirm)",
+            "quote_sha256": "fe7c120bcb8d2021d0912795fc84c273536a3ecd360f77f5e0eb9165bef88a71",
+            "role_in_flag": "counter_claim",
+            "evidence_revision": 1,
+            "record_field": null
+          }
+        ]
+      },
+      {
+        "template": "top_question",
+        "params": {
+          "bubble_id": "bbl_32b89926bde29e65cfe39f56",
+          "question_template_id": "q_crit_response",
+          "status": "not_documented_in_supplied_sources"
+        },
+        "text": "Was the critical sodium reviewed or repeated? — not documented in supplied sources",
+        "evidence": [
+          {
+            "note_version_id": "6802b34c-e5fb-489b-bb7e-52ed612e0a44",
+            "start": 12,
+            "end": 25,
+            "page": null,
+            "quote": "Na 118 mmol/L",
+            "quote_sha256": "4d89b2bc8c49eebc72f72ac137993907e05c08351065ad07aa98bc37821fb126",
+            "role_in_flag": "trigger",
+            "evidence_revision": 1,
+            "record_field": null
+          }
+        ]
+      },
+      {
+        "template": "top_question",
+        "params": {
+          "bubble_id": "bbl_46a25ed16e9d62d6ea45e27c",
+          "question_template_id": "q_dose_current",
+          "status": "conflicting"
+        },
+        "text": "Which bisoprolol dose is current? — conflicting",
+        "evidence": [
+          {
+            "note_version_id": "168e0447-dd06-4ad7-89d7-030859250254",
+            "start": 53,
+            "end": 80,
+            "page": null,
+            "quote": "Bisoprolol 2.5mg once daily",
+            "quote_sha256": "e07d4a2317589497c4a913c0e7dd01d0e2e8a454cff872c61b26866e8183c2e0",
+            "role_in_flag": "claim",
+            "evidence_revision": 1,
+            "record_field": null
+          },
+          {
+            "note_version_id": "6f29f794-785f-4088-bbe7-6f7527a80c37",
+            "start": 89,
+            "end": 148,
+            "page": null,
+            "quote": "Pre-admission: bisoprolol 5 mg OD, atorvastatin 40 mg nocte",
+            "quote_sha256": "a67a4f944ac40e6ece914bea6dcf19df58ba68cbdf9b1a2dabc3ffdc0c1ae47b",
+            "role_in_flag": "counter_claim",
+            "evidence_revision": 1,
+            "record_field": null
+          }
+        ]
+      }
+    ],
+    "human_review_statement": "Requires human review. Not the medical record. Does not diagnose or recommend treatment.",
+    "stale_after_source_change": false
+  },
+  "closure": {
+    "encounter_id": "ab20b7e4-977f-4edb-9895-1303446ecb13",
+    "cutoff": "2026-09-14T04:00:00Z",
+    "status": "blocked",
+    "tier1_blockers": [
+      {
+        "flag_id": "flg_fab2c8ea5befa6d78d2960e5",
+        "tier": 1,
+        "state": "open",
+        "owner_staff_id": "7cbb8cde-13b0-43ca-b641-cca7414ec5f6",
+        "opened_at": "2026-09-14T04:01:00Z"
+      },
+      {
+        "flag_id": "flg_6f577be351b01c459966924f",
+        "tier": 1,
+        "state": "open",
+        "owner_staff_id": "7cbb8cde-13b0-43ca-b641-cca7414ec5f6",
+        "opened_at": "2026-09-14T04:01:00Z"
+      }
+    ],
+    "tier2_open": [
+      {
+        "flag_id": "flg_af5ab646fcc6c7e61800f0a9",
+        "tier": 2,
+        "state": "open",
+        "owner_staff_id": "7cbb8cde-13b0-43ca-b641-cca7414ec5f6",
+        "opened_at": "2026-09-14T04:01:00Z"
+      },
+      {
+        "flag_id": "flg_0713f6af80dd423d84d79356",
+        "tier": 2,
+        "state": "open",
+        "owner_staff_id": "7cbb8cde-13b0-43ca-b641-cca7414ec5f6",
+        "opened_at": "2026-09-14T04:01:00Z"
+      }
+    ],
+    "tier3_open_count": 1,
+    "decisions": []
+  },
+  "glance": {
+    "encounter_id": "ab20b7e4-977f-4edb-9895-1303446ecb13",
+    "cutoff": "2026-09-14T04:00:00Z",
+    "closure_status": "blocked",
+    "open_tier1": 2,
+    "open_tier2": 2,
+    "open_tier3": 1,
+    "tier1_owner_ids": [
+      "7cbb8cde-13b0-43ca-b641-cca7414ec5f6"
+    ],
+    "top_bubble_ids": [
+      "bbl_7421b5cd74460363c2e2910f",
+      "bbl_32b89926bde29e65cfe39f56",
+      "bbl_46a25ed16e9d62d6ea45e27c"
+    ],
+    "top_bubble_statuses": [
+      "conflicting",
+      "not_documented_in_supplied_sources",
+      "conflicting"
+    ]
+  }
+}
