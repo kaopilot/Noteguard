@@ -61,7 +61,7 @@ export function Summary({ summary }: { summary: Loadable<SummaryT> }) {
               <div><dt>Closure</dt><dd>{CLOSURE_STATUS[s.closure_status].headline}</dd></div>
             </dl>
             <h3>Sources</h3>
-            <div className="table-wrap">
+            <div className="table-wrap" role="region" aria-label="Sources table" tabIndex={0}>
               <table className="summary-sources">
                 <thead><tr><th scope="col">Time</th><th scope="col">Source</th><th scope="col">Author</th><th scope="col">Discipline</th><th scope="col">Type</th><th scope="col">Extraction</th></tr></thead>
                 <tbody>

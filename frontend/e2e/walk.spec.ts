@@ -167,7 +167,12 @@ test('documents, export and install: PDF via one-time token, clipboard copy, pri
   if (!mobile) {
     await page.evaluate(() => navigator.serviceWorker.ready);
     const cdp = await context.newCDPSession(page);
+    // Playwright contexts are incognito-like and Chrome never installs from incognito, so that one
+    // environment error is excluded; any app-side criterion (manifest, icons, SW) has its own error id.
     const { installabilityErrors } = await cdp.send('Page.getInstallabilityErrors');
-    expect(installabilityErrors).toEqual([]);
+    expect(installabilityErrors.map((e) => e.errorId).filter((id) => id !== 'in-incognito')).toEqual([]);
+    const manifest = await cdp.send('Page.getAppManifest');
+    expect(manifest.errors).toEqual([]);
+    expect(manifest.url).toContain('/manifest.webmanifest');
   }
 });

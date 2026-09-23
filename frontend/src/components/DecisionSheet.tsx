@@ -150,11 +150,11 @@ export function DecisionSheet({ flag, inline = false, otherFlags, onClose, onDec
 
   const content = (
     <>
-        <header className="sheet-head">
+        <div className="sheet-head">
           <TierBadge tier={flag.tier} />
           <h2 id={titleId}>Decide: {flag.title}</h2>
           <button type="button" className="btn btn-quiet" onClick={onClose}>Close</button>
-        </header>
+        </div>
         <p className="sheet-sub">Owner {staffName(flag.owner_staff_id)}; {humanize(flag.state).toLowerCase()}; revision {flag.revision}. One flag per decision.</p>
         {actions.length === 0 ? (
           <p className="note note-quiet">No decision is available to you on this flag.</p>

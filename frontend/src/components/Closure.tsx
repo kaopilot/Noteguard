@@ -60,7 +60,7 @@ export function Closure({ closure, onReviewTier3 }: { closure: Loadable<ClosureV
             </p>
             <h3>Decisions</h3>
             {c.decisions.length === 0 ? <p className="note note-quiet">No decisions recorded yet.</p> : (
-              <div className="table-wrap">
+              <div className="table-wrap" role="region" aria-label="Decisions table" tabIndex={0}>
                 <table className="decisions">
                   <thead><tr><th scope="col">When</th><th scope="col">Who</th><th scope="col">Decision</th><th scope="col">Reason code</th><th scope="col">Flag</th></tr></thead>
                   <tbody>
