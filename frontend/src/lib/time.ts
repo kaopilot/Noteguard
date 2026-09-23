@@ -23,10 +23,23 @@ export function toSgtInput(iso: string): string {
   return `${p.year}-${p.month}-${p.day}T${hour}:${p.minute}`;
 }
 
-/** Singapore wall-clock input -> UTC ISO string with 'Z', or null if unparseable. */
+/** Like toSgtInput but with seconds ('YYYY-MM-DDTHH:MM:SS'), rounded UP to the whole second. Used for
+ * check-run cutoffs built from server timestamps: a version recorded at 16:33:40.938 is only in scope
+ * for a cutoff >= that instant, and the server refuses cutoffs in the future, so neither flooring
+ * (drops the version) nor rounding to the minute (future) is safe. */
+export function toSgtInputSecondsCeil(iso: string): string {
+  const ms = Date.parse(iso);
+  const up = new Date(Math.ceil(ms / 1000) * 1000).toISOString();
+  const p = Object.fromEntries(partsFmt.formatToParts(new Date(up)).map((x) => [x.type, x.value]));
+  const hour = p.hour === '24' ? '00' : p.hour;
+  return `${p.year}-${p.month}-${p.day}T${hour}:${p.minute}:${up.slice(17, 19)}`;
+}
+
+/** Singapore wall-clock input (seconds optional) -> UTC ISO string with 'Z', or null if unparseable. */
 export function sgtInputToUtc(value: string): string | null {
-  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) return null;
-  const d = new Date(`${value}:00+08:00`);
+  // Browsers (and jsdom) may normalise a seconds-precision value to HH:MM, HH:MM:SS or HH:MM:SS.sss.
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?$/.test(value)) return null;
+  const d = new Date(`${value.length === 16 ? `${value}:00` : value}+08:00`);
   return Number.isNaN(d.getTime()) ? null : d.toISOString().replace('.000Z', 'Z');
 }
 

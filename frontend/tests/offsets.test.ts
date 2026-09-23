@@ -4,6 +4,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { expect, test } from 'vitest';
 import { checkSpan, codePointToUtf16, segments } from '../src/lib/offsets';
+import { sgtInputToUtc, toSgtInputSecondsCeil } from '../src/lib/time';
 
 const ROOT = resolve(__dirname, '..', '..');
 type Ev = { note_version_id: string | null; start: number; end: number; quote: string; role_in_flag: string };
@@ -62,4 +63,14 @@ test('a mismatching or out-of-range span is refused and never highlighted', () =
   expect(checkSpan(text, 0, 999, text)).toEqual({ ok: false, reason: 'out_of_range' });
   expect(checkSpan(text, 5, 2, '')).toEqual({ ok: false, reason: 'out_of_range' });
   expect(segments('abcdef', [{ start: 1, end: 3 }, { start: 2, end: 4 }]).filter((s) => s.mark).map((s) => s.text)).toEqual(['bcd']);
+});
+
+test('cutoff times: rounded up to the second, parsed with or without seconds, in Singapore time', () => {
+  expect(toSgtInputSecondsCeil('2026-09-23T08:33:40.938Z')).toBe('2026-09-23T16:33:41');
+  expect(toSgtInputSecondsCeil('2026-09-21T08:00:00Z')).toBe('2026-09-21T16:00:00');
+  expect(toSgtInputSecondsCeil('2026-09-21T15:59:59.500Z')).toBe('2026-09-22T00:00:00');
+  expect(sgtInputToUtc('2026-09-21T16:00')).toBe('2026-09-21T08:00:00Z');
+  expect(sgtInputToUtc('2026-09-23T16:33:41')).toBe('2026-09-23T08:33:41Z');
+  expect(sgtInputToUtc('2026-09-23T16:33:41.000')).toBe('2026-09-23T08:33:41Z');
+  expect(sgtInputToUtc('21/09/2026 16:00')).toBeNull();
 });

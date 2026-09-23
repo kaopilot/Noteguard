@@ -6,7 +6,7 @@ import { fireEvent, render, screen, waitFor, within } from '@testing-library/rea
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { App } from '../src/App';
 import { setWorkspaceToken } from '../src/api/client';
-import { toSgtInput } from '../src/lib/time';
+import { sgtInputToUtc } from '../src/lib/time';
 import { A1, createFakeApi } from './fakeApi';
 
 beforeEach(() => setWorkspaceToken(null));
@@ -51,7 +51,14 @@ test('the run control defaults to a cutoff that includes a newly recorded source
   fireEvent.click(within(dialog).getByRole('button', { name: 'Add source' }));
   await screen.findByText(/^Added: Late note/);
   const recorded = api.added[0]?.view.version_time as string;
-  await waitFor(() => expect((screen.getByLabelText('Check sources up to (Singapore time)') as HTMLInputElement).value).toBe(toSgtInput(recorded)));
+  // The property that matters: the default cutoff is at or after the moment the source was recorded.
+  await waitFor(() => {
+    const value = (screen.getByLabelText('Check sources up to (Singapore time)') as HTMLInputElement).value;
+    const cutoff = sgtInputToUtc(value);
+    expect(cutoff).not.toBeNull();
+    expect(Date.parse(cutoff ?? '')).toBeGreaterThanOrEqual(Date.parse(recorded));
+    expect(Date.parse(cutoff ?? '') - Date.parse(recorded)).toBeLessThan(1000);
+  });
 });
 
 test('a retry after a lost connection reuses the idempotency key; changing the note issues a new one', async () => {

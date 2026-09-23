@@ -85,7 +85,7 @@ export function createFakeApi() {
       sourceId = cur.source_id;
       supersedes = cur.note_version_id;
     }
-    const now = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
+    const now = new Date(Date.now() - 1).toISOString(); // B2 keeps sub-second precision
     const slow = type === 'pdf' && String(body.file_name).includes('slow');
     const view = { source_id: sourceId, note_version_id: `added-v${added.length + 1}`, version, supersedes_version_id: supersedes,
       title: body.title, source_type: type, discipline: body.discipline, author_staff_id: body.author_staff_id,

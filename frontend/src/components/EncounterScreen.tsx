@@ -123,7 +123,11 @@ export function EncounterScreen({ me, encounterId, onBack, onSessionProblem }: {
     setRunBusy(false);
     if (!r.ok) {
       watch(r);
-      setRunProblem(r.status === 501 ? 'Running checks is not available in this build.' : `Checks did not run (server code ${r.errorCode}).`);
+      setRunProblem(r.status === 501
+        ? 'Running checks is not available in this build.'
+        : r.errorCode === 'validation_failed'
+          ? 'Checks did not run: the server refused this cutoff. It cannot be later than the server’s current time.'
+          : `Checks did not run (server code ${r.errorCode}).`);
       return;
     }
     setNotice(`Checks ran over sources up to the chosen cutoff: ${r.data.flags.length} current flags.`);

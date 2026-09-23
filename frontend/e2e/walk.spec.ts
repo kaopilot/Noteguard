@@ -176,3 +176,71 @@ test('documents, export and install: PDF via one-time token, clipboard copy, pri
     expect(manifest.url).toContain('/manifest.webmanifest');
   }
 });
+
+test('add sources: paste, new version, real PDFs (text and scanned), non-PDF refused; timeline and run control follow', async ({ page }) => {
+  const mobile = test.info().project.name.startsWith('mobile');
+  const pdf = (name: string) => `${process.cwd()}/../fixtures/pdfs/${name}`;
+  await signIn(page, /Dr Lim/);
+  await page.getByRole('button', { name: /ENC-A1/ }).click();
+  const add = async () => {
+    await page.getByRole('button', { name: 'Add a source' }).click();
+    return page.getByRole('dialog', { name: 'Add a source' });
+  };
+
+  let d = await add();
+  await d.getByLabel('Title').fill('Evening nursing note');
+  await d.getByLabel('Clinical time of the note (Singapore time)').fill('2026-09-21T16:30');
+  await d.getByLabel('Note text').fill('Evening review: comfortable \u{1F642}, family (家人) updated. Plan unchanged.');
+  await shot(page, '09-add-source');
+  await d.getByRole('button', { name: 'Add source' }).click();
+  await expect(page.getByText(/^Added: Evening nursing note \(version 1\), recorded /)).toBeVisible();
+
+  d = await add();
+  const amend = d.getByLabel('New source or new version');
+  const value = await d.locator('option', { hasText: 'New version of: Ward round' }).getAttribute('value');
+  await amend.selectOption(value ?? '');
+  await expect(d.getByLabel('Title')).toBeDisabled();
+  await d.getByLabel('Note text').fill('Ward round addendum: plan unchanged after review.');
+  await d.getByRole('button', { name: 'Add version 2' }).click();
+  await expect(page.getByText(/^Added: Ward round \(version 2\)/)).toBeVisible();
+
+  const uploads: [string, string][] = [
+    ['Referral letter (resent)', 'ENC-A1_referral_letter.pdf'],
+    ['Lab report scan (resent)', 'ENC-A1_outside_lab_report_scanned.pdf'],
+  ];
+  for (const [title, file] of uploads) {
+    d = await add();
+    await d.getByRole('radio', { name: /Upload a PDF/ }).check();
+    await d.getByLabel('Title').fill(title);
+    await d.getByLabel('PDF file').setInputFiles(pdf(file));
+    await d.getByRole('button', { name: 'Add source' }).click();
+    await expect(page.getByText(new RegExp(`^Added: ${title.replace(/[()]/g, '\\$&')} \\(version 1\\)`))).toBeVisible();
+  }
+
+  d = await add();
+  await d.getByRole('radio', { name: /Upload a PDF/ }).check();
+  await d.getByLabel('Title').fill('Not really a PDF');
+  await d.getByLabel('PDF file').setInputFiles({ name: 'fake.pdf', mimeType: 'application/pdf', buffer: Buffer.from('hello, plain text') });
+  await d.getByRole('button', { name: 'Add source' }).click();
+  await expect(d.getByText('This file is not a PDF. Nothing was added.')).toBeVisible();
+  await d.getByRole('button', { name: 'Close' }).click();
+
+  if (mobile) await page.getByRole('button', { name: 'Record', exact: true }).click();
+  const row = (t: string) => page.locator('li.tl-row', { has: page.getByRole('button', { name: t, exact: true }) });
+  await expect(row('Evening nursing note')).toContainText('Typed text');
+  await expect(row('Referral letter (resent)')).toContainText('Text fully extracted');
+  await expect(row('Lab report scan (resent)')).toContainText('No text layer');
+  await expect(page.locator('li.tl-row', { hasText: 'Amended: version 2' }).first()).toBeVisible();
+  await page.getByRole('button', { name: 'Evening nursing note', exact: true }).click();
+  await expect(page.getByTestId('source-text')).toContainText('comfortable \u{1F642}, family (家人) updated');
+  await shot(page, '10-added-in-viewer');
+  if (mobile) await page.getByRole('button', { name: 'Close' }).click();
+
+  const cutoff = await page.getByLabel('Check sources up to (Singapore time)').inputValue();
+  expect(cutoff > '2026-09-22').toBe(true);
+  await page.getByRole('button', { name: 'Run checks' }).click();
+  const outcome = page.getByText(/Checks ran over sources up to the chosen cutoff|Running checks is not available in this build|Checks did not run/);
+  await expect(outcome).toBeVisible();
+  test.info().annotations.push({ type: 'run-after-intake', description: (await outcome.textContent()) ?? '' });
+  expect(await page.evaluate(() => localStorage.length + sessionStorage.length)).toBe(0);
+});

@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
 import type { CheckRunView } from '../api/types';
 import { humanize } from '../lib/labels';
-import { sgtDateTime, sgtInputToUtc, toSgtInput } from '../lib/time';
+import { sgtDateTime, sgtInputToUtc, toSgtInputSecondsCeil } from '../lib/time';
 import { useEnc } from './ctx';
 import type { Loadable } from './States';
 
@@ -13,8 +13,10 @@ export function RunControl({ run, busy, problem, onRun }: {
 }) {
   const { view } = useEnc();
   const inputId = useId();
-  const latest = view.sources.reduce((m, s) => (s.version_time > m ? s.version_time : m), view.encounter.started_at);
-  const [value, setValue] = useState(toSgtInput(latest));
+  // Default: everything recorded so far. Compare as instants (ISO strings with and without fractional
+  // seconds do not sort correctly as text) and round up to the second (see toSgtInputSecondsCeil).
+  const latest = view.sources.reduce((m, s) => (Date.parse(s.version_time) > Date.parse(m) ? s.version_time : m), view.encounter.started_at);
+  const [value, setValue] = useState(toSgtInputSecondsCeil(latest));
   const [invalid, setInvalid] = useState(false);
   const [open, setOpen] = useState(false);
   const submit = () => {
@@ -29,7 +31,7 @@ export function RunControl({ run, busy, problem, onRun }: {
     <form className="run-form" onSubmit={(e) => { e.preventDefault(); submit(); }}>
       <label htmlFor={inputId} className="run-label">Check sources up to (Singapore time)</label>
       <div className="run-row">
-        <input id={inputId} type="datetime-local" value={value} onChange={(e) => setValue(e.target.value)} required />
+        <input id={inputId} type="datetime-local" step={1} value={value} onChange={(e) => setValue(e.target.value)} required />
         <button type="submit" className="btn btn-primary" disabled={busy}>{busy ? 'Running…' : 'Run checks'}</button>
       </div>
       {invalid && <p className="note note-problem" role="alert">Enter a date and time.</p>}
