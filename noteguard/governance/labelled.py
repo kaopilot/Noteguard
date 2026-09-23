@@ -91,11 +91,11 @@ def _case_snapshot(doc: dict, c: dict) -> tuple[EncounterSnapshot, dict[str, str
                         "identifier_namespace": "urn:labelled-eval", "external_id": f"{ref}-{n['key']}",
                         "source_type": "pdf" if is_pdf else "pasted_text", "author_staff_id": sid[n["author"]],
                         "discipline": roster[n["author"]]["discipline"], "title": n["key"], "source_time": t})
-        versions.append({"source_version_id": vid, "source_id": src_id, "version": 1, "version_time": t, "received_at": t,
-                         "sha256": sha, "byte_length": len(text.encode()),
-                         "media_type": "application/pdf" if is_pdf else "text/plain; charset=utf-8",
-                         "idempotency_key": ids.idempotency_key("urn:labelled-eval", f"{ref}-{n['key']}", 1, sha),
-                         "supersedes_version_id": None})
+        versions.append(dict(source_version_id=vid, source_id=src_id, version=1, version_time=t, received_at=t,
+                             sha256=sha, byte_length=len(text.encode()),
+                             media_type="application/pdf" if is_pdf else "text/plain; charset=utf-8",
+                             idempotency_key=ids.idempotency_key("urn:labelled-eval", f"{ref}-{n['key']}", 1, sha),
+                             supersedes_version_id=None))
         extractions.append({"source_version_id": vid, "status": n.get("status", "not_applicable"), "text": text,
                             "pages": [{"page": 1, "start": 0, "end": len(text), "char_count": len(text)}] if is_pdf else [],
                             "extractor": "pdfplumber@0.11.7" if is_pdf else "paste@1"})

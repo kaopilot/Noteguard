@@ -149,9 +149,9 @@ def _per_rule(scored: dict[str, dict], cases: tuple[labelled.Case, ...], bundle:
     rows = []
     for rid in sorted(set(c) | set(rules), key=lambda r: r.value):
         r, x = rules.get(rid), c[rid]
-        rows.append({"rule_id": rid.value, "tier": int(r.default_tier) if r else None,
-                     "enabled": bool(r and r.enabled), "protected": bool(r and is_protected(r)), **x,
-                     "precision": _ratio(x["tp"], x["raised"]), "recall": _ratio(x["tp"], x["labelled"])})
+        rows.append(dict(rule_id=rid.value, tier=int(r.default_tier) if r else None,
+                         enabled=bool(r and r.enabled), protected=bool(r and is_protected(r)), **x,
+                         precision=_ratio(x["tp"], x["raised"]), recall=_ratio(x["tp"], x["labelled"])))
     return rows
 
 
@@ -217,14 +217,14 @@ def evaluate(baseline: RulesetBundle, candidate: RulesetBundle, engine: EngineAP
 
     def side_report(name: str) -> dict:
         b = sides[name]
-        return {"ruleset_version": b.ruleset.ruleset_version, "ruleset_sha256": b.ruleset_sha256,
-                "registry_version": b.registry.registry_version, "registry_sha256": b.registry_sha256,
-                "tier1_recall": _ratio(t1[name][0], t1[name][1]),
-                "per_rule": {part: _per_rule(scored[name], tuple(c for c in gated if c.part == part), b)
-                             for part in GATED_PARTS},
-                "per_rule_all_gated": _per_rule(scored[name], gated, b),
-                "disagreements": _disagreements(scored[name], gated),
-                "known_limits": _disagreements(scored[name], limits)}
+        return dict(ruleset_version=b.ruleset.ruleset_version, ruleset_sha256=b.ruleset_sha256,
+                    registry_version=b.registry.registry_version, registry_sha256=b.registry_sha256,
+                    tier1_recall=_ratio(t1[name][0], t1[name][1]),
+                    per_rule={part: _per_rule(scored[name], tuple(c for c in gated if c.part == part), b)
+                              for part in GATED_PARTS},
+                    per_rule_all_gated=_per_rule(scored[name], gated, b),
+                    disagreements=_disagreements(scored[name], gated),
+                    known_limits=_disagreements(scored[name], limits))
 
     report = {
         "report_version": REPORT_VERSION,
