@@ -425,6 +425,10 @@ class WorkspaceStore:
                 self._audit.record(AuditAction.CHECK_RUN, AuditTargetType.ENCOUNTER, AuditOutcome.ERROR,
                                    actor=ctx.staff, target_id=encounter_id)
                 raise ApiError(ErrorCode.NOT_IMPLEMENTED) from None
+            except ApiError:  # e.g. 503 ruleset_unapproved from B4's loader: the refusal is audited too
+                self._audit.record(AuditAction.CHECK_RUN, AuditTargetType.ENCOUNTER, AuditOutcome.DENIED,
+                                   actor=ctx.staff, target_id=encounter_id)
+                raise
             self._guard_engine_result(st, result)
             run_id = result.run.run_id
             raised, revised = [], []

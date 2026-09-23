@@ -292,6 +292,25 @@ def test_engine_contract_guard():
     assert run_cutoff(c, h, A1, "ENC-A1_1130").json() == {"error_code": "not_implemented"}
 
 
+def test_refused_ruleset_is_audited_and_commits_nothing():
+    """A bundle loader that refuses (B4: unapproved ruleset -> ApiError(ruleset_unapproved)) gives 503,
+    commits nothing, and the refusal is audited. Mutation (applied): drop the `except ApiError` audit
+    in run_checks -> no denied check_run event."""
+    from noteguard.api.errors import ApiError
+    from noteguard.contracts.errors import ErrorCode
+
+    def refusing_loader():
+        raise ApiError(ErrorCode.RULESET_UNAPPROVED)
+
+    app = create_app(engine=StubEngine(), bundle_loader=refusing_loader)
+    c, h = session(app, "lim")
+    r = run_cutoff(c, h, A1, "ENC-A1_1130")
+    assert r.status_code == 503 and r.json() == {"error_code": "ruleset_unapproved"}
+    assert c.get(url(R.FLAGS, encounter_id=A1), headers=h).status_code == 404
+    runs = [e for e in app.state.audit.events() if e.action.value == "check_run"]
+    assert [(e.outcome.value, e.target_id) for e in runs] == [("denied", A1)]
+
+
 def test_feedback_capture():
     """FeedbackEvent (B4 consumes): one per decision, plus usefulness feedback on a decided flag."""
     app = real_app()
