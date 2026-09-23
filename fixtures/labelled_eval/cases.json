@@ -1,0 +1,135 @@
+{
+  "corpus_version": "b4-labelled-1",
+  "provenance": "Hand-written and hand-labelled by B4 (session B4.1) from the rule catalog (build context 8.2, docs/RULES.md subject-key conventions), committed BEFORE the engine was run on it. ALL NAMES, PEOPLE AND CONTENT ARE FICTIONAL. Independent of ENC-A1/B1/C1 wording and roster; ENC-A2 was never seen.",
+  "label_rules": "expected = every flag the catalog says must exist at the cutoff (exact set: any other flag counts as a false positive). A subject ending in '*' matches by prefix. {src:<note key>} resolves to that note's source id. must_not documents the catalog's must-not-flag reasoning; exact set equality already scores it.",
+  "day": "2026-09-22",
+  "clinic": {"key": "CLN-L", "display_name": "Synthetic Community Hospital, Ward 3"},
+  "staff": {
+    "farah": {"display_name": "Dr Farah", "discipline": "clinician", "role": "clinician"},
+    "nair": {"display_name": "Dr Nair", "discipline": "clinician", "role": "clinician"},
+    "boon": {"display_name": "Nurse Boon", "discipline": "nursing", "role": "nurse"},
+    "yeo": {"display_name": "Pharmacist Yeo", "discipline": "pharmacy", "role": "pharmacist"},
+    "ismail": {"display_name": "Physio Ismail", "discipline": "physiotherapy", "role": "allied_health"},
+    "chua": {"display_name": "SW Chua", "discipline": "counselling_social_work", "role": "allied_health"}
+  },
+  "cases": [
+    {"case_id": "L01_crit_unanswered", "rc": "farah",
+     "notes": [{"key": "n1", "time": "10:00", "author": "boon", "text": "Bloods back. Sodium 158 mmol/L. Potassium 6.7 mmol/L."}],
+     "expected": [{"rule_id": "CRIT-001", "subject": "analyte:potassium", "tier": 1}],
+     "must_not": [{"rule_id": "CRIT-001", "subject": "analyte:sodium", "why": "158 is below the 160 placeholder threshold"}]},
+
+    {"case_id": "L02_crit_answered_later", "rc": "farah",
+     "notes": [{"key": "n1", "time": "10:00", "author": "boon", "text": "Potassium 6.5 mmol/L."},
+               {"key": "n2", "time": "11:00", "author": "farah", "text": "Potassium result reviewed, treated per protocol."}],
+     "expected": [],
+     "must_not": [{"rule_id": "CRIT-001", "subject": "analyte:potassium", "why": "later, new, non-negated clinician response for the same analyte suppresses at evaluation time"}]},
+
+    {"case_id": "L03_crit_earlier_review_does_not_suppress", "rc": "farah",
+     "notes": [{"key": "n1", "time": "09:00", "author": "farah", "text": "Potassium reviewed on the morning round."},
+               {"key": "n2", "time": "10:30", "author": "boon", "text": "Potassium 6.9 mmol/L."}],
+     "expected": [{"rule_id": "CRIT-001", "subject": "analyte:potassium", "tier": 1}],
+     "must_not": []},
+
+    {"case_id": "L04_crit_negated_response", "rc": "farah",
+     "notes": [{"key": "n1", "time": "10:00", "author": "boon", "text": "Potassium 6.6 mmol/L."},
+               {"key": "n2", "time": "11:00", "author": "farah", "text": "Potassium not yet reviewed."}],
+     "expected": [{"rule_id": "CRIT-001", "subject": "analyte:potassium", "tier": 1}],
+     "must_not": []},
+
+    {"case_id": "L05_crit_carried_forward_response", "rc": "farah",
+     "notes": [{"key": "n1", "time": "08:00", "author": "nair", "text": "Potassium reviewed, plan unchanged."},
+               {"key": "n2", "time": "10:00", "author": "boon", "text": "Potassium 6.4 mmol/L."},
+               {"key": "n3", "time": "12:00", "author": "farah", "text": "Potassium reviewed, plan unchanged."}],
+     "expected": [{"rule_id": "CRIT-001", "subject": "analyte:potassium", "tier": 1}],
+     "must_not": []},
+
+    {"case_id": "L06_alg_nkda_vs_named", "rc": "farah",
+     "notes": [{"key": "n1", "time": "08:30", "author": "boon", "text": "Allergies: NKDA."},
+               {"key": "n2", "time": "10:00", "author": "yeo", "text": "Sulfonamide allergy - rash (per GP records)."}],
+     "expected": [{"rule_id": "ALG-001", "subject": "allergen:sulfonamide", "tier": 1}],
+     "must_not": []},
+
+    {"case_id": "L07_alg_consistent", "rc": "farah",
+     "notes": [{"key": "n1", "time": "08:30", "author": "boon", "text": "Penicillin allergy (hives)."},
+               {"key": "n2", "time": "10:00", "author": "yeo", "text": "Allergy: penicillin - hives, confirmed with patient."}],
+     "expected": [],
+     "must_not": [{"rule_id": "ALG-001", "subject": "*", "why": "both sources agree"}]},
+
+    {"case_id": "L08_dose_conflict_and_explicit_change", "rc": "farah",
+     "notes": [{"key": "n1", "time": "09:00", "author": "farah", "text": "Bisoprolol 2.5 mg OD. Atorvastatin 20 mg nocte."},
+               {"key": "n2", "time": "10:30", "author": "yeo", "text": "Bisoprolol 5 mg OD per GP list."},
+               {"key": "n3", "time": "15:00", "author": "farah", "text": "Atorvastatin increased to 40 mg nocte."}],
+     "expected": [{"rule_id": "DOSE-001", "subject": "drug:bisoprolol", "tier": 2}],
+     "must_not": [{"rule_id": "DOSE-001", "subject": "drug:atorvastatin", "why": "explicit change by a later clinician note (L3)"}]},
+
+    {"case_id": "L09_dose_unit_equivalence", "rc": "farah",
+     "notes": [{"key": "n1", "time": "09:00", "author": "farah", "text": "Metformin 500 mg BD."},
+               {"key": "n2", "time": "10:30", "author": "yeo", "text": "Metformin 0.5 g BD per GP list."}],
+     "expected": [],
+     "must_not": [{"rule_id": "DOSE-001", "subject": "drug:metformin", "why": "identical dose after unit normalisation"}]},
+
+    {"case_id": "L10_unparsed_dose", "rc": "farah",
+     "notes": [{"key": "n1", "time": "09:00", "author": "farah", "text": "Plan: 40 mg IV once, then review."}],
+     "expected": [{"rule_id": "DOSE-002", "subject": "unparsed_dose@source:{src:n1}:*", "tier": 3}],
+     "must_not": []},
+
+    {"case_id": "L11_pending_owner_timing_variants", "rc": "farah",
+     "notes": [{"key": "n1", "time": "09:00", "author": "farah",
+                "text": "Urine culture sent, Dr Farah to chase.\nChest x-ray pending, result by 16:00.\nBlood culture sent, Dr Farah to chase by 18:00."}],
+     "expected": [{"rule_id": "PEND-001", "subject": "test:urine_culture", "tier": 2},
+                  {"rule_id": "PEND-001", "subject": "test:chest_xray", "tier": 2}],
+     "must_not": [{"rule_id": "PEND-001", "subject": "test:blood_culture", "why": "owner and timing both present"}]},
+
+    {"case_id": "L12_pdf_no_text_layer", "rc": "farah",
+     "notes": [{"key": "n1", "time": "09:00", "author": "farah", "text": "Ward round. Plan: continue current care."},
+               {"key": "p1", "time": "10:00", "author": "boon", "text": "", "status": "no_text_layer"}],
+     "expected": [{"rule_id": "PDF-001", "subject": "source:{src:p1}", "tier": 2}],
+     "must_not": []},
+
+    {"case_id": "L13_no_responsible_clinician", "rc": null, "attending": "nair",
+     "notes": [{"key": "n1", "time": "09:00", "author": "boon", "text": "Potassium 4.1 mmol/L. Obs within normal limits."}],
+     "expected": [{"rule_id": "OWN-001", "subject": "encounter:responsible_clinician", "tier": 1}],
+     "must_not": []},
+
+    {"case_id": "L14_reassurance_after_deterioration", "rc": "farah",
+     "notes": [{"key": "n1", "time": "11:00", "author": "boon", "text": "SpO2 88% on room air, RR 28."},
+               {"key": "n2", "time": "14:00", "author": "chua", "text": "Discharge planning discussed with family. Patient stable."}],
+     "expected": [{"rule_id": "DET-001", "subject": "status:stable", "tier": 1}],
+     "must_not": [{"rule_id": "CRIT-001", "subject": "analyte:spo2", "why": "SpO2 has deterioration thresholds, not critical ones"}]},
+
+    {"case_id": "L15_deterioration_answered_by_clinician", "rc": "farah",
+     "notes": [{"key": "n1", "time": "11:00", "author": "boon", "text": "SpO2 89% on room air."},
+               {"key": "n2", "time": "12:00", "author": "farah", "text": "SpO2 reviewed, oxygen commenced."},
+               {"key": "n3", "time": "15:00", "author": "chua", "text": "Patient stable, discharge planning started."}],
+     "expected": [],
+     "must_not": [{"rule_id": "DET-001", "subject": "*", "why": "clinician review of the same analyte between the marker and the reassurance"}]},
+
+    {"case_id": "L16_copied_forward_after_deterioration", "rc": "farah",
+     "notes": [{"key": "n1", "time": "09:00", "author": "farah", "text": "Ward round. Patient stable."},
+               {"key": "n2", "time": "13:00", "author": "boon", "text": "SpO2 90% on room air."},
+               {"key": "n3", "time": "16:00", "author": "ismail", "text": "Mobilised with frame. Patient stable."}],
+     "expected": [{"rule_id": "DET-001", "subject": "status:stable", "tier": 1},
+                  {"rule_id": "DIFF-001", "subject": "status:stable@source:{src:n3}", "tier": 3}],
+     "must_not": []},
+
+    {"case_id": "L17_quiet_encounter", "rc": "farah",
+     "notes": [{"key": "n1", "time": "09:00", "author": "farah", "text": "Ward round. Amlodipine 5 mg OD. Plan: home tomorrow."},
+               {"key": "n2", "time": "10:00", "author": "boon", "text": "Obs within normal limits. Potassium 4.2 mmol/L."}],
+     "expected": [],
+     "must_not": [{"rule_id": "*", "subject": "*", "why": "nothing in the catalog applies"}]},
+
+    {"case_id": "L18_response_paraphrase_precision", "rc": "farah",
+     "notes": [{"key": "n1", "time": "10:00", "author": "boon", "text": "Potassium 6.8 mmol/L."},
+               {"key": "n2", "time": "11:00", "author": "farah", "text": "Hyperkalaemia managed per local protocol."}],
+     "expected": [],
+     "must_not": [{"rule_id": "CRIT-001", "subject": "analyte:potassium", "why": "clinically answered, but in words outside the registry: a PRECISION probe (expected to surface as a false positive; a flag here is conservative, not unsafe)"}]}
+  ],
+  "known_limits": [
+    {"case_id": "K01_allergen_outside_registry", "rc": "farah",
+     "why": "Recall limit declared in the brief: allergens not in registry v1 are not recognised. Reported, EXCLUDED from the release gate (the gate is only as good as the registry and corpus).",
+     "notes": [{"key": "n1", "time": "08:30", "author": "boon", "text": "Allergies: NKDA."},
+               {"key": "n2", "time": "10:00", "author": "yeo", "text": "Allergic to cotrimoxazole - rash."}],
+     "expected": [{"rule_id": "ALG-001", "subject": "*", "tier": 1}],
+     "must_not": []}
+  ]
+}
