@@ -299,7 +299,65 @@ def test_feedback_capture():
     assert fb(usefulness="useful", corrected_owner_staff_id=staff_id("kaur")).json() == {"error_code": "reassign_target_invalid"}
     from tests.api.helpers import ctx_of
     events = app.state.store.feedback_events(ctx_of(app, c, h), A1)
-    assert [e.usefulness for e in events] == [None, "wrong_owner"] or [getattr(e.usefulness, "value", None) for e in events] == [None, "wrong_owner"]
+    assert [getattr(e.usefulness, "value", None) for e in events] == [None, "wrong_owner"]
+    assert [e.action.value for e in events] == ["accept", "accept"]
+
+
+def test_concurrent_decisions_have_one_winner(monkeypatch):
+    """Six simultaneous accepts with the same expected_revision: exactly one 200, five 409s,
+    one decision recorded. The transition lookup (inside the critical section, between the
+    revision check and the write) is slowed so a missing lock reliably double-applies: without
+    this widening, removing the lock was caught 0/5 times in B2.2's check; with it, 5/5.
+    Mutation (applied): drop the store lock around decide() -> several 200s."""
+    import threading
+    import time
+
+    from noteguard.contracts import states
+
+    real_target = states.decision_target
+
+    def slow_target(action, state):
+        time.sleep(0.01)
+        return real_target(action, state)
+
+    monkeypatch.setattr(states, "decision_target", slow_target)
+    for _ in range(3):
+        c, h = session(real_app(), "lim", "ENC-A1_1130")
+        fid = gflag("ENC-A1_1130", "DOSE-001")["flag_id"]
+        barrier, codes = threading.Barrier(6), []
+
+        def go():
+            barrier.wait()
+            codes.append(decide(c, h, A1, fid, action="accept", expected_revision=1).status_code)
+
+        threads = [threading.Thread(target=go) for _ in range(6)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+        assert sorted(codes) == [200, 409, 409, 409, 409, 409]
+        d = c.get(url(R.FLAG, encounter_id=A1, flag_id=fid), headers=h).json()
+        assert d["flag"]["revision"] == 2 and len(d["decisions"]) == 1
+
+
+def test_unhandled_exception_is_bare_500(caplog, capsys):
+    """An unexpected exception (whose message may carry content) ends as a bare 500 with no-store;
+    no traceback, message or input reaches a log. Mutation (applied): re-raise in
+    request_middleware -> the exception escapes."""
+    app = real_app()
+    caplog.set_level(logging.DEBUG)
+    c, h = session(app, "lim")
+
+    def boom(*args, **kwargs):
+        raise ValueError(f"note text {MARKER}")
+
+    app.state.store.list_encounters = boom
+    r = c.get(R.ENCOUNTERS, headers=h)
+    assert r.status_code == 500 and r.json() == {"error_code": "internal_error"}
+    assert "no-store" in r.headers["cache-control"]
+    out = capsys.readouterr()
+    logged = "\n".join(f"{rec.getMessage()} {rec.exc_info!r}" for rec in caplog.records) + out.out + out.err
+    assert MARKER not in logged and "Traceback" not in logged
 
 
 # --- sessions, workspaces, aggregate hand-off -------------------------------------------
@@ -440,9 +498,14 @@ def _scan_upload_effect(app) -> int:
     return upload_pdf(c, h, A1, SCAN.read_bytes()).status_code
 
 
+#: 45 text pages: extraction takes far longer than a zero timeout, so the race is not close
+#: (a 1-page scan lost it 1 time in 60 during B2.2's stress check).
+SLOW_PDF = make_pdf([f"Page {n} potassium 5.1 mmol/L reviewed" for n in range(1, 46)])
+
+
 def _timeout_effect(app) -> tuple[int, str]:
     c, h = session(app, "lim")
-    r = upload_pdf(c, h, A1, SCAN.read_bytes(), title="Timed scan")
+    r = upload_pdf(c, h, A1, SLOW_PDF, title="Timed scan")
     kept = [s for s in sources(c, h, A1) if s["title"] == "Timed scan"]
     return r.status_code, kept[0]["extraction_status"] if kept else "not retained"
 
@@ -460,7 +523,7 @@ CONFIG_EFFECTS = {
     "workspace_ttl_s": (0, _workspace_effect, 200, 410),
     "pdf_max_bytes": (100, _scan_upload_effect, 201, 413),
     "pdf_max_pages": (0, _scan_upload_effect, 201, 422),
-    "pdf_extraction_timeout_s": (0.0, _timeout_effect, (201, "no_text_layer"), (422, "failed")),
+    "pdf_extraction_timeout_s": (0.0, _timeout_effect, (201, "complete"), (422, "failed")),
     "document_token_ttl_s": (0, _document_effect, 200, 404),
 }
 
