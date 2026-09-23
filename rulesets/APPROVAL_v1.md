@@ -1,6 +1,6 @@
 # Approval record — ruleset v1 / registry v1
 
-**Status: DRAFT.** Not approved. The runtime (`noteguard.governance.approval`) refuses to load a
+**Status: APPROVED** (24 Sep 2026: @k's written sign-off in chat session I1.1, recorded by I1). The runtime (`noteguard.governance.approval`) refuses to load a
 ruleset unless this record is `approved`, names an evaluation report, and its hashes equal the
 bytes of `rulesets/v1.json` and `rulesets/registry_v1.json` (checked on every load).
 
@@ -34,8 +34,8 @@ The machine-readable record is the single fenced JSON block below. It validates 
   "registry_sha256": "3ff6c6129d310cce76f9831a84d1d789fbaa72f1b88a0dc2675e3917a308bb8b",
   "evaluation_report_sha256": "81cc969e384be097761f2e82b9b2bd54cae97cb82ff305a02db43d5a6f18d8cc",
   "approver_role": "clinical_governance",
-  "approver_label": "Synthetic demo approver (pending @k sign-off)",
-  "approved_on": "2026-09-23",
-  "status": "draft"
+  "approver_label": "Synthetic demo approver",
+  "approved_on": "2026-09-24",
+  "status": "approved"
 }
 ```
