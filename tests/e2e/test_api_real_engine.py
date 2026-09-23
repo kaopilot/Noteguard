@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import hashlib
 from datetime import datetime, timezone
-import json
 
 import pytest
 
@@ -26,7 +25,7 @@ from noteguard.governance.approval import api_bundle_loader
 from tests.api.helpers import decide, session, sources, upload_pdf
 from tests.support.api import A1, B1, C1, run_cutoff, url
 from tests.support.builders import staff_id
-from tests.support.golden import ROOT, claim_key, load
+from tests.support.golden import claim_key, load
 
 pytestmark = [pytest.mark.owner("I1"), pytest.mark.e2e]
 
@@ -36,14 +35,6 @@ SEQUENCES = [("lim", A1, ["ENC-A1_1130", "ENC-A1_1600_rerun"]), ("lim", A1, ["EN
 #: Values that belong to THIS run (fresh ids and clocks), never to the golden.
 RUN_SPECIFIC = frozenset({"run_id", "started_at", "completed_at", "created_at", "first_run_id", "last_run_id",
                           "generated_at", "opened_at"})
-
-
-#: CCR-05 (approved by @k, 24 Sep 2026, option (a); landing waits for B4's report refresh): the golden's
-#: OWN-001 reason is aligned to the ruleset's reason_template. Until it lands, that one field of that rule
-#: is expected to equal the template (read from the ruleset, not typed here). A no-op once the golden matches.
-CCR05_RULE = "OWN-001"
-CCR05_REASON = next(r["reason_template"] for r in json.loads((ROOT / "rulesets" / "v1.json").read_text(encoding="utf-8"))["rules"]
-                    if r["rule_id"] == CCR05_RULE)
 
 
 def gated_app():
@@ -98,8 +89,6 @@ def test_golden_scenarios_through_real_api():
         extra = sorted(got[k]["rule_id"] for k in got.keys() - exp.keys())
         assert not missing and not extra, (name, "missing", missing, "extra", extra)
         for fid, f in exp.items():
-            if f["rule_id"] == CCR05_RULE:
-                f = dict(f, reason=CCR05_REASON)
             diff = sorted(k for k in set(f) | set(got[fid]) if _norm({k: f.get(k)}) != _norm({k: got[fid].get(k)}))
             assert not diff, (name, f["rule_id"], "fields differ", diff)
             assert got[fid]["last_run_id"] == run_ids[-1] and got[fid]["first_run_id"] in run_ids, (name, f["rule_id"])

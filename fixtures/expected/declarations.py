@@ -326,8 +326,7 @@ ENC_C1_1000 = {
                     "escalation or transfer for this result is documented in the supplied sources up to 10:00.")},
         {"rule": "OWN-001", "subject": "encounter:responsible_clinician", "tier": 1, "owner": "lim", "affected": [],
          "evidence": [REC("encounter.responsible_clinician_id")],
-         "reason": ("No responsible clinician is recorded on the care team for this encounter; Tier 1 items are routed "
-                    "to the attending clinician, Dr Lim, until one is recorded.")},
+         "reason": "No responsible clinician is recorded for this encounter; Tier 1 items are routed to the attending clinician until one is recorded."},  # CCR-05: the ruleset's OWN-001 reason_template verbatim
     ],
     "must_not_flag": [
         ("PEND-001", "*", "No pending cue in scope."),

@@ -62,7 +62,7 @@
       "tier": 1,
       "category": "no-responsible-clinician",
       "title": "No responsible clinician recorded",
-      "reason": "No responsible clinician is recorded on the care team for this encounter; Tier 1 items are routed to the attending clinician, Dr Lim, until one is recorded.",
+      "reason": "No responsible clinician is recorded for this encounter; Tier 1 items are routed to the attending clinician until one is recorded.",
       "evidence": [
         {
           "note_version_id": null,
