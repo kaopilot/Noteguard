@@ -6,7 +6,7 @@ frozen ``AggregateView``. No clinical text, no patient, encounter, flag, staff o
 
 Small cells: any count below the threshold (5) is shown as "<5" (primary suppression). Known gap:
 no complementary suppression, so a viewer who knows a row total could difference a small cell out.
-Zero cells are not emitted. In the demonstrator every per-user workspace is a copy of the same
+Zero cells are not emitted. Owner response time (CCR-04) is bucketed from B2's ``first_decision_at``. In the demonstrator every per-user workspace is a copy of the same
 synthetic case, so counts are workspace copies, not distinct encounters (declared).
 """
 
@@ -22,6 +22,10 @@ SMALL_CELL_THRESHOLD = 5
 #: Age since the flag was first raised, at generation time. Upper bounds are exclusive.
 AGE_BUCKETS: tuple[tuple[timedelta, str], ...] = ((timedelta(hours=4), "<4h"), (timedelta(hours=24), "4-24h"))
 AGE_BUCKET_OLDEST = ">24h"
+#: CCR-04: time from created_at to the first human decision. Upper bounds are exclusive.
+RESPONSE_BUCKETS: tuple[tuple[timedelta, str], ...] = ((timedelta(hours=1), "<1h"), (timedelta(hours=4), "1-4h"))
+RESPONSE_BUCKET_SLOWEST = ">4h"
+RESPONSE_NONE_YET = "none_yet"
 
 
 def age_bucket(created_at: datetime, now: datetime) -> str:
@@ -32,15 +36,27 @@ def age_bucket(created_at: datetime, now: datetime) -> str:
     return AGE_BUCKET_OLDEST
 
 
+def response_bucket(created_at: datetime, first_decision_at: datetime | None) -> str:
+    if first_decision_at is None:
+        return RESPONSE_NONE_YET
+    waited = first_decision_at - created_at
+    for bound, label in RESPONSE_BUCKETS:
+        if waited < bound:
+            return label
+    return RESPONSE_BUCKET_SLOWEST
+
+
 def build_view(rows: Iterable, *, now: datetime, ruleset_version: str,
                threshold: int = SMALL_CELL_THRESHOLD) -> AggregateView:
-    """``rows``: objects with rule_id, tier, state, created_at (B2's AggregateRow). Only these four
-    fields are read; nothing else from a row can reach the view."""
-    counts = Counter((r.rule_id, r.tier, r.state, age_bucket(r.created_at, now)) for r in rows)
+    """``rows``: objects with rule_id, tier, state, created_at, first_decision_at (B2's AggregateRow).
+    Only these five fields are read; nothing else from a row can reach the view. The response bucket
+    is part of the cell key, so small-cell suppression applies to the finer cells too."""
+    counts = Counter((r.rule_id, r.tier, r.state, age_bucket(r.created_at, now),
+                      response_bucket(r.created_at, r.first_decision_at)) for r in rows)
     cells = tuple(
-        AggregateCell(rule_id=rule_id, tier=tier, state=state, age_bucket=bucket,
+        AggregateCell(rule_id=rule_id, tier=tier, state=state, age_bucket=bucket, response_time_bucket=resp,
                       count=str(n) if n >= threshold else f"<{threshold}")
-        for (rule_id, tier, state, bucket), n in sorted(counts.items(), key=lambda kv: (
-            kv[0][0].value, int(kv[0][1]), kv[0][2].value, kv[0][3])))
+        for (rule_id, tier, state, bucket, resp), n in sorted(counts.items(), key=lambda kv: (
+            kv[0][0].value, int(kv[0][1]), kv[0][2].value, kv[0][3], kv[0][4])))
     return AggregateView(generated_at=now, ruleset_version=ruleset_version, cells=cells,
                          small_cell_threshold=threshold)

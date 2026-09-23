@@ -179,6 +179,9 @@ class AggregateCell(Frozen):
     state: FlagState
     age_bucket: str  # e.g. "<4h", "4-24h", ">24h"
     count: str  # integer as string, or "<5"
+    # CCR-04 (approved): time from created_at to the first human decision, "<1h" | "1-4h" | ">4h",
+    # or "none_yet" when no decision exists. Part of the cell key, so "<5" still applies.
+    response_time_bucket: str | None = None
 
 
 class AggregateView(Frozen):
