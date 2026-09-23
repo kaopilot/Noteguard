@@ -16,8 +16,9 @@ Lanes affected and what each must do:
   - @k: re-sign APPROVAL_v1 on the refreshed report hash (the ruleset and registry hashes do not change).
   - B2, B3: none (no copy of the text in frontend/; B2's golden-through-API test serves the updated golden via the stub).
 Golden fixture impact: one field of one flag in ENC-C1_1000. Attach the review-sheet diff at landing.
-Status: approved (@k, 24 Sep 2026, chat I1.1, option (a)). LANDING IN PROGRESS on branch `ccr-05`:
-  step 1 is done; steps 2-4 are pending. Merge `ccr-05` only when step 4 is green.
+Status: approved (@k, 24 Sep 2026, chat I1.1, option (a)). LANDED 24 Sep 2026 by I1 (session I1.2), merging `ccr-05`
+  into `i1-integration`. Steps: 1 I1 (1ecdecb); 2 B4 (45ee87d, 13003d3); 3 @k's written re-sign authorisation (chat I1.2),
+  recorded by I1 after checking the report hash; 4 --verify consistent, governance 9 passed, make test REAL 0.
 
 Landing steps:
   1. I1 (done, one commit on `ccr-05`): declarations.py reason = template; `make goldens` (diff: ENC-C1_1000.json, 1 line;
