@@ -43,8 +43,10 @@ type StaleBody = {
   last_decision_at?: string | null;
 };
 
-export function DecisionSheet({ flag, otherFlags, onClose, onDecided, onStale }: {
+export function DecisionSheet({ flag, inline = false, otherFlags, onClose, onDecided, onStale }: {
   flag: Flag;
+  /** true: rendered inside the flag card (wide screens); false: bottom sheet (mobile). */
+  inline?: boolean;
   otherFlags: readonly Flag[];
   onClose: () => void;
   onDecided: (d: FlagDetail) => void;
@@ -52,7 +54,8 @@ export function DecisionSheet({ flag, otherFlags, onClose, onDecided, onStale }:
 }) {
   const { me, view, staffName } = useEnc();
   const titleId = useId();
-  const panel = useRef<HTMLDivElement>(null);
+  const panel = useRef<HTMLElement | null>(null);
+  const setPanel = (el: HTMLElement | null) => { panel.current = el; };
   const actions = useMemo(() => offeredActions(me, view, flag, decisionActionValues), [me, view, flag]);
   const [action, setAction] = useState<DecisionAction | null>(actions[0] ?? null);
   const [reason, setReason] = useState<ReasonCode | ''>('');
@@ -66,13 +69,14 @@ export function DecisionSheet({ flag, otherFlags, onClose, onDecided, onStale }:
   const [problem, setProblem] = useState<string | null>(null);
 
   useEffect(() => {
-    panel.current?.focus();
+    panel.current?.focus({ preventScroll: inline });
+    if (inline) panel.current?.scrollIntoView?.({ block: 'nearest' });
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  }, [onClose, inline]);
 
   const reasons: readonly string[] = useMemo(() => {
     if (!action) return [];
@@ -144,11 +148,8 @@ export function DecisionSheet({ flag, otherFlags, onClose, onDecided, onStale }:
     && (action !== 'reassign' || owner !== '')
     && (action !== 'mark_ready_for_clinician' || check !== '');
 
-  return (
-    <div className="sheet-backdrop" onClick={onClose}>
-      <div className="sheet" role="dialog" aria-modal="true" aria-labelledby={titleId} ref={panel} tabIndex={-1}
-        onClick={(e) => e.stopPropagation()}>
-        <div className="sheet-grip" aria-hidden="true" />
+  const content = (
+    <>
         <header className="sheet-head">
           <TierBadge tier={flag.tier} />
           <h2 id={titleId}>Decide: {flag.title}</h2>
@@ -158,7 +159,7 @@ export function DecisionSheet({ flag, otherFlags, onClose, onDecided, onStale }:
         {actions.length === 0 ? (
           <p className="note note-quiet">No decision is available to you on this flag.</p>
         ) : (
-          <form className="decision-form" onSubmit={(e) => { e.preventDefault(); void submit(); }}>
+          <form className="decision-form" aria-labelledby={titleId} onSubmit={(e) => { e.preventDefault(); void submit(); }}>
             <fieldset>
               <legend>Action</legend>
               {actions.map((a) => (
@@ -241,6 +242,17 @@ export function DecisionSheet({ flag, otherFlags, onClose, onDecided, onStale }:
             </div>
           </form>
         )}
+    </>
+  );
+  if (inline) {
+    return <section className="decide-inline" aria-labelledby={titleId} ref={setPanel} tabIndex={-1}>{content}</section>;
+  }
+  return (
+    <div className="sheet-backdrop" onClick={onClose}>
+      <div className="sheet" role="dialog" aria-modal="true" aria-labelledby={titleId} ref={setPanel} tabIndex={-1}
+        onClick={(e) => e.stopPropagation()}>
+        <div className="sheet-grip" aria-hidden="true" />
+        {content}
       </div>
     </div>
   );

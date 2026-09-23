@@ -15,7 +15,7 @@ export function Bubbles({ bubbles }: { bubbles: Loadable<BubbleList> }) {
           <>
             <p className="note note-quiet">
               Answered by the deterministic checker from the supplied sources up to {sgtDateTime(list.cutoff)}.
-              AI drafting: {humanize(list.ai_status).toLowerCase()}.
+              {list.ai_status === 'disabled' ? 'AI drafting disabled.' : `AI drafting: ${humanize(list.ai_status).toLowerCase()}.`}
             </p>
             {list.bubbles.map((b) => (
               <article key={b.bubble_id} className={`bubble bubble-${b.status}`}>

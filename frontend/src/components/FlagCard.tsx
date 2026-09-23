@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { api } from '../api/client';
 import type { Flag, FlagDetail } from '../api/types';
 import { humanize } from '../lib/labels';
@@ -7,12 +7,13 @@ import { useEnc } from './ctx';
 import { EvidenceItem } from './EvidenceItem';
 import { TierBadge } from './TierBadge';
 
-export function FlagCard({ flag, blocksClosure, canDecide, onDecide, focused }: {
+export function FlagCard({ flag, blocksClosure, canDecide, onDecide, focused, slot }: {
   flag: Flag;
   blocksClosure: boolean;
   canDecide: boolean;
   onDecide: (f: Flag) => void;
   focused: boolean;
+  slot?: ReactNode;
 }) {
   const { staffName, view } = useEnc();
   const [history, setHistory] = useState<FlagDetail | 'loading' | 'unavailable' | null>(null);
@@ -65,6 +66,7 @@ export function FlagCard({ flag, blocksClosure, canDecide, onDecide, focused }: 
           {history !== null && history !== 'unavailable' ? 'Hide history' : 'History'}
         </button>
       </div>
+      {slot}
       {history === 'loading' && <p className="note note-quiet">Loading history…</p>}
       {history === 'unavailable' && <p className="note note-problem">History could not be loaded.</p>}
       {history !== null && typeof history === 'object' && (

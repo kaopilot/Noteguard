@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { CONTRACT } from '../api/contract-data.gen';
 import { decisionActionValues, tierValues } from '../api/schema.gen';
 import type { ClosureView, Flag } from '../api/types';
@@ -13,11 +13,13 @@ const MOVABLE_STATES = new Set(
   Object.values(CONTRACT.decisions.transitions as Record<string, Record<string, string>>).flatMap((m) => Object.keys(m)),
 );
 
-export function FlagList({ flags, closure, focusFlagId, onDecide }: {
+export function FlagList({ flags, closure, focusFlagId, onDecide, decideSlot }: {
   flags: readonly Flag[];
   closure: ClosureView | null;
   focusFlagId: string | null;
   onDecide: (f: Flag) => void;
+  /** Wide screens: the decision form renders inside the card being decided (inline, Section 13). */
+  decideSlot?: (f: Flag) => ReactNode;
 }) {
   const { me, view } = useEnc();
   const [showDecided, setShowDecided] = useState(false);
@@ -42,6 +44,7 @@ export function FlagList({ flags, closure, focusFlagId, onDecide }: {
                 canDecide={offeredActions(me, view, f, decisionActionValues).length > 0}
                 onDecide={onDecide}
                 focused={f.flag_id === focusFlagId}
+                slot={decideSlot?.(f)}
               />
             ))}
           </section>

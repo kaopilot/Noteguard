@@ -11,7 +11,7 @@ import { TierBadge } from './TierBadge';
 type Blocker = ClosureView['tier1_blockers'][number];
 
 export function Closure({ closure, onReviewTier3 }: { closure: Loadable<ClosureView>; onReviewTier3: () => void }) {
-  const { me, view, staffName, flagById, openFlag } = useEnc();
+  const { me, view, staffName, flagById, openFlag, openSource } = useEnc();
   const [result, setResult] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -25,15 +25,22 @@ export function Closure({ closure, onReviewTier3 }: { closure: Loadable<ClosureV
     else setResult(`The server did not allow closure (code ${r.errorCode}).`);
   };
 
-  const row = (b: Blocker) => (
+  const row = (b: Blocker) => {
+    const ev = flagById(b.flag_id)?.evidence ?? [];
+    const first = ev.find((e) => e.note_version_id !== null);
+    return (
     <li key={b.flag_id} className="closure-item">
       <TierBadge tier={b.tier} />
       <div>
         <button type="button" className="link" onClick={() => openFlag(b.flag_id)}>{flagById(b.flag_id)?.title ?? 'Flag'}</button>
         <p>{humanize(b.state)}; owner {staffName(b.owner_staff_id)}; open since {sgtDateTime(b.opened_at)} ({age(b.opened_at)})</p>
+        {first?.note_version_id && (
+          <button type="button" className="link" onClick={() => openSource({ versionId: first.note_version_id ?? '', evidence: ev })}>Show evidence</button>
+        )}
       </div>
     </li>
-  );
+    );
+  };
 
   return (
     <section className="closure" aria-label="Closure">

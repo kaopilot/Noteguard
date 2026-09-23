@@ -64,7 +64,7 @@ test('main path: runs, flags, evidence, source viewer, decision, closure, summar
   if (mobile) await page.getByRole('button', { name: 'Flags', exact: true }).click();
   const dose = page.getByRole('article', { name: 'Dose differs between sources' });
   await dose.getByRole('button', { name: 'Decide' }).click();
-  const sheet = page.getByRole('dialog', { name: /Decide: Dose differs between sources/ });
+  const sheet = page.getByRole('form', { name: /Decide: Dose differs between sources/ });
   await expect(sheet).toBeVisible();
   await shot(page, '05-decision-sheet');
   await sheet.getByRole('radio', { name: /^Accept Records/ }).check();
@@ -120,4 +120,54 @@ test('offline: the shell says clinical content is not stored', async ({ page, co
   await expect(page.getByText('Offline — clinical content is not stored on this device.').first()).toBeVisible();
   await shot(page, '07-offline');
   await context.setOffline(false);
+});
+
+test('documents, export and install: PDF via one-time token, clipboard copy, print layout, installability', async ({ page, context }) => {
+  const mobile = test.info().project.name.startsWith('mobile');
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await signIn(page, /Dr Lim/);
+  await page.getByRole('button', { name: /ENC-A1/ }).click();
+  await runAt(page, '2026-09-21T16:00');
+
+  // PDF original through the single-use, no-store document token.
+  if (mobile) await page.getByRole('button', { name: 'Record', exact: true }).click();
+  await page.getByRole('button', { name: 'Outside referral letter' }).click();
+  await expect(page.getByText(/^PDF, 1 page\./)).toBeVisible();
+  const [doc] = await Promise.all([
+    context.waitForEvent('response', (r) => r.url().includes('/api/documents/')),
+    page.getByRole('button', { name: 'Open the original PDF' }).click(),
+  ]);
+  expect(doc.status()).toBe(200);
+  expect(doc.headers()['content-type']).toContain('application/pdf');
+  expect(doc.headers()['cache-control']).toContain('no-store');
+  const again = await page.request.get(doc.url());
+  expect(again.status()).toBeGreaterThanOrEqual(400);
+  test.info().annotations.push({ type: 'document-token-reuse', description: String(again.status()) });
+  if (mobile) await page.getByRole('button', { name: 'Close' }).click();
+
+  // Scanned PDF: never looks complete.
+  await page.getByRole('button', { name: 'Scanned outside lab report' }).click();
+  await expect(page.getByText('No text could be extracted from this document. Review the original.')).toBeVisible();
+  if (mobile) await page.getByRole('button', { name: 'Close' }).click();
+
+  // Copy and print.
+  await page.getByRole('button', { name: 'Summary' }).click();
+  await page.getByRole('button', { name: 'Copy summary' }).click();
+  await expect(page.getByText('Summary copied as plain text with its citations.')).toBeVisible();
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copied.startsWith('Requires human review. Not the medical record. Does not diagnose or recommend treatment.')).toBe(true);
+  expect(copied).toContain('\u201cPatient stable\u201d');
+  await page.emulateMedia({ media: 'print' });
+  await expect(page.locator('.app-bar')).toBeHidden();
+  await expect(page.locator('.glance')).toBeHidden();
+  await expect(page.locator('.summary-statement')).toBeVisible();
+  await shot(page, '08-print');
+  await page.emulateMedia({ media: 'screen' });
+
+  if (!mobile) {
+    await page.evaluate(() => navigator.serviceWorker.ready);
+    const cdp = await context.newCDPSession(page);
+    const { installabilityErrors } = await cdp.send('Page.getInstallabilityErrors');
+    expect(installabilityErrors).toEqual([]);
+  }
 });

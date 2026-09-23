@@ -19,7 +19,7 @@ export function Summary({ summary }: { summary: Loadable<SummaryT> }) {
 
   const asText = (s: SummaryT): string => {
     const lines = [s.human_review_statement, ''];
-    if (s.stale_after_source_change) lines.push('STALE: sources changed after the cutoff.', '');
+    if (s.stale_after_source_change) lines.push('Stale: sources changed after cutoff.', '');
     lines.push(`Encounter ${s.encounter_ref}, ${view.patient_label}, ${view.encounter.setting}`);
     lines.push(`Sources up to ${sgtDateTime(s.cutoff)}; generated ${sgtDateTime(s.generated_at)}; ruleset ${s.ruleset_version}, registry ${s.registry_version}`);
     lines.push(`Closure: ${CLOSURE_STATUS[s.closure_status].headline}`, '', 'Sources:');
@@ -51,7 +51,7 @@ export function Summary({ summary }: { summary: Loadable<SummaryT> }) {
         {(s) => (
           <article className="summary">
             <p className="summary-statement" role="note">{s.human_review_statement}</p>
-            {s.stale_after_source_change && <p className="note note-problem" role="alert">Stale: sources changed after this summary’s cutoff. Run checks again.</p>}
+            {s.stale_after_source_change && <p className="note note-problem" role="alert">Stale: sources changed after cutoff. Run checks again to regenerate this summary.</p>}
             <h2>Encounter {s.encounter_ref}: {view.patient_label}</h2>
             <dl className="summary-facts">
               <div><dt>Setting</dt><dd>{view.encounter.setting}</dd></div>

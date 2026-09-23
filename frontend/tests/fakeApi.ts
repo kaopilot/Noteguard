@@ -48,6 +48,7 @@ export function createFakeApi() {
   let current: Json = null;
   let flags: Json[] = [];
   const decisions: Json[] = [];
+  const outage = { on: false };
 
   const reply = (status: number, body?: Json) =>
     new Response(body === undefined ? null : JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'private, no-store' } });
@@ -67,6 +68,7 @@ export function createFakeApi() {
       return session ? reply(200, session) : reply(401, { error_code: 'unauthenticated' });
     }
     if (!session) return reply(401, { error_code: 'unauthenticated' });
+    if (outage.on && method === 'GET' && route !== 'ENCOUNTER') return reply(503, null);
     if (route === 'WORKSPACES') return reply(200, { workspace_token: TOKEN, encounter_ids: [A1], expires_at: '2026-09-23T12:00:00Z', single_process_store: true });
     if (route === 'WORKSPACE_CURRENT') { current = null; flags = []; decisions.length = 0; return reply(204); }
     if (route === 'ENCOUNTERS') {
@@ -129,5 +131,5 @@ export function createFakeApi() {
     requests.push({ method, url, headers, body });
     return handle(method, new URL(url, 'http://ng.test').pathname, body);
   };
-  return { fetch, requests };
+  return { fetch, requests, outage };
 }

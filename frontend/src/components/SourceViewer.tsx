@@ -41,7 +41,11 @@ function VersionPane({ version, evidence, label }: { version: SourceView; eviden
   return (
     <div className="version-pane">
       <h3 className="version-label">{label}</h3>
-      <Loaded value={text} what="Source text">
+      <Loaded value={text} what="Source text" noRun={
+        <p className="note note-problem" role="alert">
+          This source version is no longer available (the server answered 404). The citation still points to it; no other text is shown in its place.
+        </p>
+      }>
         {() => marked && (
           <>
             {marked.unmatched > 0 && (

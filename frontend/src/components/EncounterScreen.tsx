@@ -4,6 +4,7 @@ import type {
   BubbleList, CheckRunView, ClosureView, EncounterView, Flag, FlagDetail, GlanceView, SessionView, Summary as SummaryT,
 } from '../api/types';
 import { ROSTER } from '../lib/roster';
+import { sgtDateTime } from '../lib/time';
 import { Bubbles } from './Bubbles';
 import { Closure } from './Closure';
 import { EncounterCtx, type EncounterCtxValue, type SourceTarget } from './ctx';
@@ -24,6 +25,15 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'summary', label: 'Summary' },
 ];
 const WIDE = '(min-width: 1100px)';
+
+/** A 5xx or network failure: keep showing the last good result, labelled stale (S09). A 4xx such as
+ * 403 is NOT transient: access may have been withdrawn, so the old result is replaced. */
+function isTransient(l: Loadable<unknown>): l is Extract<Loadable<unknown>, { kind: 'error' }> {
+  return l.kind === 'error' && (l.status === 0 || l.status >= 500);
+}
+function keepOnOutage<T>(next: Loadable<T>) {
+  return (prev: Loadable<T>): Loadable<T> => (isTransient(next) && prev.kind === 'ok' ? prev : next);
+}
 
 function useWide(): boolean {
   return useSyncExternalStore(
@@ -58,6 +68,7 @@ export function EncounterScreen({ me, encounterId, onBack, onSessionProblem }: {
   const [runBusy, setRunBusy] = useState(false);
   const [runProblem, setRunProblem] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [stale, setStale] = useState<string | null>(null);
 
   const p = useMemo(() => ({ encounter_id: encounterId }), [encounterId]);
   const watch = useCallback(<T,>(r: ApiResult<T>): Loadable<T> => {
@@ -76,8 +87,18 @@ export function EncounterScreen({ me, encounterId, onBack, onSessionProblem }: {
       api<ClosureView>('GET', 'CLOSURE', p),
       api<SummaryT>('GET', 'SUMMARY', p),
     ]);
-    setRun(watch(r)); setFlags(watch(f)); setBubbles(watch(b)); setGlance(watch(g)); setClosure(watch(c)); setSummary(watch(s));
+    const next = [watch(r), watch(f), watch(b), watch(g), watch(c), watch(s)] as const;
+    const failed = next.find(isTransient);
+    setStale(failed ? (failed.status === 0 ? 'no network connection' : `HTTP ${failed.status}`) : null);
+    setRun(keepOnOutage(next[0])); setFlags(keepOnOutage(next[1])); setBubbles(keepOnOutage(next[2]));
+    setGlance(keepOnOutage(next[3])); setClosure(keepOnOutage(next[4])); setSummary(keepOnOutage(next[5]));
   }, [p, watch]);
+
+  useEffect(() => {
+    if (!stale) return undefined;
+    const t = window.setInterval(() => void loadDerived(), 30_000);
+    return () => window.clearInterval(t);
+  }, [stale, loadDerived]);
 
   useEffect(() => {
     void (async () => {
@@ -118,7 +139,7 @@ export function EncounterScreen({ me, encounterId, onBack, onSessionProblem }: {
         const latest = v.sources.filter((s) => s.source_id === cur.source_id).sort((a, b) => b.version - a.version)[0];
         return latest && latest.note_version_id !== id ? latest : undefined;
       },
-      openSource: (t) => { setTarget(t); if (!wide) setPane('record'); },
+      openSource: (t) => { setTarget(t); if (wide) setTab('review'); },
       openFlag: (id) => { setTab('review'); setPane('flags'); setFocusFlag(id); },
       flagById: (id) => flagList.find((f) => f.flag_id === id),
     };
@@ -139,6 +160,9 @@ export function EncounterScreen({ me, encounterId, onBack, onSessionProblem }: {
     );
   }
   const v = view.data;
+  const decision = (inline: boolean) => deciding && (
+    <DecisionSheet flag={deciding} inline={inline} otherFlags={flagList} onClose={() => setDeciding(null)} onDecided={onDecided} onStale={() => void loadDerived()} />
+  );
   const onDecided = (d: FlagDetail) => {
     setDeciding(null);
     setNotice(`Recorded: ${d.flag.title} is now ${d.flag.state} (revision ${d.flag.revision}).`);
@@ -146,7 +170,10 @@ export function EncounterScreen({ me, encounterId, onBack, onSessionProblem }: {
   };
   const flagsPanel = (
     <Loaded value={flags} what="Flags" noRun={<p className="note note-quiet">No flags yet: run checks first.</p>}>
-      {(list) => <FlagList flags={list} closure={closure.kind === 'ok' ? closure.data : null} focusFlagId={focusFlag} onDecide={setDeciding} />}
+      {(list) => (
+        <FlagList flags={list} closure={closure.kind === 'ok' ? closure.data : null} focusFlagId={focusFlag} onDecide={setDeciding}
+          decideSlot={wide ? (f) => (deciding?.flag_id === f.flag_id ? decision(true) : null) : undefined} />
+      )}
     </Loaded>
   );
   const sourceOverlay = !wide && target !== null;
@@ -159,6 +186,15 @@ export function EncounterScreen({ me, encounterId, onBack, onSessionProblem }: {
           <h1>{v.encounter.encounter_ref}: {v.patient_label}</h1>
           <p className="enc-sub">{v.encounter.setting}; responsible clinician {v.encounter.responsible_clinician_id ? ctx.staffName(v.encounter.responsible_clinician_id) : 'not recorded'}</p>
         </div>
+        {stale && (
+          <div className="note note-problem" role="alert">
+            The latest refresh did not complete ({stale}).{' '}
+            {run.kind === 'ok'
+              ? `Showing the last results received: check run completed ${sgtDateTime(run.data.run.completed_at)}, sources up to ${sgtDateTime(run.data.run.source_cutoff)}. They may be out of date.`
+              : 'There are no earlier results to show.'}{' '}
+            <button type="button" className="link" onClick={() => void loadDerived()}>Try again</button>
+          </div>
+        )}
         <Glance glance={glance} closure={closure} bubbles={bubbles} flags={flagList} onQuestions={() => setTab('questions')} />
         <RunControl run={run} busy={runBusy} problem={runProblem} onRun={(c) => void runChecks(c)} />
         {notice && <p className="note note-change" role="status">{notice}</p>}
@@ -189,9 +225,7 @@ export function EncounterScreen({ me, encounterId, onBack, onSessionProblem }: {
         {tab === 'summary' && <Summary summary={summary} />}
       </main>
       {sourceOverlay && <div className="sheet-backdrop"><SourceViewer target={target} asSheet onClose={() => setTarget(null)} /></div>}
-      {deciding && (
-        <DecisionSheet flag={deciding} otherFlags={flagList} onClose={() => setDeciding(null)} onDecided={onDecided} onStale={() => void loadDerived()} />
-      )}
+      {!wide && decision(false)}
     </EncounterCtx.Provider>
   );
 }
