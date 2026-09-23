@@ -16,4 +16,4 @@ Lanes affected and what each must do:
   - Integrator: `make types`; `test_openapi_export_in_sync` and `test_generated_types` stay green.
   - B3: replace `StaleBody` with `components['schemas']['StaleRevision']`.
 Golden fixture impact: none.
-Status: proposed
+Status: approved (@k, 23 Sep 2026). B2 part and make types landed in B2.4; B3 part pending.
