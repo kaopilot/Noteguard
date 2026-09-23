@@ -289,6 +289,71 @@ def test_ai_output_validator_rejects_new_entity():
 
 def test_eval_report_tier1_recall_gate():
     """evaluate.py reports per-rule counts with denominators and fails the gate if Tier 1 recall
-    on the labelled fixtures drops below 1.0."""
-    lane_module("noteguard.governance.evaluate", "B4")
-    not_implemented("B4", "run evaluate on fixtures/labelled_eval and check the gate")
+    on the labelled fixtures drops below 1.0.
+
+    Applied inputs (real engine, fixtures/labelled_eval + golden scenarios): v1 vs v1; a benign
+    candidate (positive control); an engine wrapper that drops CRIT-001 for the candidate only (recall
+    reasons isolated from the static floor); a candidate lowering ALG-001's tier; a candidate that
+    disables CRIT-001; a candidate extending a suppressing cue (floor only).
+    Mutations (applied, decisions/B4.md): drop the tier comparison in evaluate._tier1 -> the ALG-001
+    case passes the gate; drop the suppressing-cue floor check -> the negation case passes."""
+    from noteguard.contracts.types import CueKind, RuleId, Tier
+    from noteguard.governance import evaluate as ev
+    from noteguard.governance import labelled
+
+    v1 = ev.bundle_from_files(ev.ROOT / "rulesets" / "v1.json", ev.ROOT / "rulesets" / "registry_v1.json")
+    cases = labelled.load_cases() + labelled.load_golden()
+    assert {c.part for c in cases} == {"b4_labelled", "golden", "known_limit"}
+
+    def with_rule(rule_id, **upd):
+        rules = tuple(r.model_copy(update=upd) if r.rule_id is rule_id else r for r in v1.ruleset.rules)
+        return v1.model_copy(update={"ruleset": v1.ruleset.model_copy(update={"rules": rules})})
+
+    def with_cue(kind, phrase):
+        cues = dict(v1.registry.cues) | {kind: tuple(v1.registry.cues.get(kind, ())) + (phrase,)}
+        return v1.model_copy(update={"registry": v1.registry.model_copy(update={"cues": cues})})
+
+    base = ev.evaluate(v1, v1, cases=cases)
+    assert base["gate"] == {"passed": True, "reasons": []}
+    t1 = base["candidate"]["tier1_recall"]
+    n, d = map(int, t1.split("/"))
+    assert n == d >= 10, t1  # Tier 1 recall 1.0 on at least ten Tier 1 labels
+    rows = {r["rule_id"]: r for r in base["candidate"]["per_rule"]["b4_labelled"]}
+    for rid in ("CRIT-001", "ALG-001", "DET-001", "OWN-001"):
+        r = rows[rid]
+        assert r["labelled"] >= 1 and r["recall"] == f"{r['tp']}/{r['labelled']}" and r["precision"] == f"{r['tp']}/{r['raised']}"
+        assert r["tp"] + r["fn"] == r["labelled"] and r["tp"] + r["fp"] == r["raised"]
+    # The declared precision probe and the known limit are visible, and the limit is not gated.
+    kinds = {(x["case"], x["kind"]) for x in base["candidate"]["disagreements"]}
+    assert ("L18_response_paraphrase_precision", "false_positive") in kinds
+    assert [(x["case"], x["kind"]) for x in base["candidate"]["known_limits"]] == [("K01_allergen_outside_registry", "false_negative")]
+    assert ev.report_sha256(base) == ev.report_sha256(ev.evaluate(v1, v1, cases=cases))  # deterministic
+
+    # Positive control: a widening change (new pending cue) passes.
+    assert ev.evaluate(v1, with_cue(CueKind.PENDING, "outstanding"), cases=cases)["gate"]["passed"]
+
+    # Recall reasons isolated: the candidate ruleset is benign, the candidate's ENGINE drops CRIT-001.
+    from noteguard.engine import get_engine
+
+    real, benign = get_engine(), with_cue(CueKind.PENDING, "outstanding")
+
+    class DropCrit:
+        def run_checks(self, snap, bundle, cutoff, **kw):
+            r = real.run_checks(snap, bundle, cutoff, **kw)
+            if bundle is benign:
+                r = r.model_copy(update={"flags": tuple(f for f in r.flags if f.rule_id is not RuleId.CRIT_001)})
+            return r
+
+    g = ev.evaluate(v1, benign, engine=DropCrit(), cases=cases)["gate"]
+    assert g == {"passed": False, "reasons": ["tier1_recall_below_1", "tier1_recall_decreased", "new_protected_miss"]}
+
+    # Tier lowered on a protected rule: raised at Tier 2 is not a Tier 1 catch, and the floor refuses it.
+    g = ev.evaluate(v1, with_rule(RuleId.ALG_001, default_tier=Tier.T2), cases=cases)["gate"]
+    assert g == {"passed": False, "reasons": ["tier1_recall_below_1", "tier1_recall_decreased",
+                                              "floor:tier_lowered:ALG-001"]}
+    # Disabled protected rule.
+    g = ev.evaluate(v1, with_rule(RuleId.CRIT_001, enabled=False), cases=cases)["gate"]
+    assert not g["passed"] and {"tier1_recall_below_1", "new_protected_miss", "floor:rule_disabled:CRIT-001"} <= set(g["reasons"])
+    # Floor only: extending a suppressing cue is refused even where this corpus shows no recall loss.
+    g = ev.evaluate(v1, with_cue(CueKind.NEGATION, "clear"), cases=cases)["gate"]
+    assert g == {"passed": False, "reasons": ["floor:suppressing_cue_extended:negation"]}
