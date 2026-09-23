@@ -536,6 +536,51 @@ def test_redaction_offsets_residual_scan_and_eval():
     assert evaluate() == dict(items=10, identifiers=19, not_redacted=1, keep=19, over_redacted=1, egress_refused=0)
 
 
+def test_ccr03_stale_revision_declared_on_decision_route():
+    """CCR-03: the 409 StaleRevision body is in the OpenAPI document (hence schema.gen.ts), and the
+    runtime 409 body validates against it. Mutation (applied): drop responses= -> fails."""
+    from noteguard.contracts.types import StaleRevision
+
+    app = real_app()
+    op = app.openapi()["paths"][R.FLAG_DECISIONS]["post"]["responses"]["409"]
+    assert op["content"]["application/json"]["schema"] == {"$ref": "#/components/schemas/StaleRevision"}
+    assert "invalid_transition" in op["description"]
+    c, h = session(app, "lim", "ENC-A1_1130")
+    dose = gflag("ENC-A1_1130", "DOSE-001")["flag_id"]
+    assert decide(c, h, A1, dose, action="accept", expected_revision=1).status_code == 200
+    r = decide(c, h, A1, dose, action="accept", expected_revision=1)
+    assert r.status_code == 409
+    StaleRevision.model_validate(r.json())
+
+
+def _check_run_logs(caplog) -> list[dict]:
+    return [d for d in (json.loads(r.getMessage()) for r in caplog.records if r.name == "noteguard")
+            if d["event"] == "check_run"]
+
+
+def test_check_run_log_counts_only_sources_in_scope(caplog):
+    """B3 decisions #29: the check_run log's sources_in_scope counted every source in the workspace.
+    It now counts the versions the run read, verified against the engine's source_set_hash.
+    Mutation (applied): log len(st.sources) again -> the out-of-scope additions are counted."""
+    app = real_app()
+    caplog.set_level(logging.DEBUG)
+    for staff, scenario in (("lim", "ENC-A1_1130"), ("lim", "ENC-A1_1600"), ("wong", "ENC-B1_1600"), ("lim", "ENC-C1_1000")):
+        session(app, staff, scenario)
+        count = _check_run_logs(caplog)[-1].get("sources_in_scope")
+        assert isinstance(count, int) and count > 0, scenario  # present = hashed to the engine's source_set_hash
+    session(app, "lim", "ENC-A1_1600")
+    baseline = _check_run_logs(caplog)[-1]["sources_in_scope"]
+    c, h = session(app, "lim")
+    ward = next(s for s in sources(c, h, A1) if s["extraction_status"] == "not_applicable")
+    new_version = dict(title=ward["title"], discipline=ward["discipline"], author_staff_id=ward["author_staff_id"],
+                       source_time=ward["source_time"], text="Amended after the cutoff.", source_id=ward["source_id"])
+    assert c.post(url(R.SOURCES, encounter_id=A1), headers=h, json=new_version).status_code == 201
+    assert c.post(url(R.SOURCES, encounter_id=A1), headers=h, json=note()).status_code == 201  # recorded now
+    assert run_cutoff(c, h, A1, "ENC-A1_1600").status_code == 200  # cutoff precedes both version_times
+    assert _check_run_logs(caplog)[-1]["sources_in_scope"] == baseline
+    assert len(sources(c, h, A1)) > baseline  # the workspace itself holds more
+
+
 # --- L11: every config key changes behaviour ----------------------------------------------
 
 def _session_effect(app) -> int:

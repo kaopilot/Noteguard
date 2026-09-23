@@ -449,8 +449,24 @@ class WorkspaceStore:
                                target_id=f.flag_id)
         log_event(LogEvent.CHECK_RUN, actor_id=ctx.staff.staff_id, encounter_id=encounter_id, run_id=run_id,
                   ruleset_version=result.run.ruleset_version, registry_version=result.run.registry_version,
-                  flags_raised=len(raised), count=len(result.flags), sources_in_scope=len(st.sources))
+                  flags_raised=len(raised), count=len(result.flags),
+                  sources_in_scope=self._verified_scope_count(snapshot, cutoff, result))
         return CheckRunView(run=result.run, flags=result.flags, changes=changes)
+
+    @staticmethod
+    def _verified_scope_count(snapshot: EncounterSnapshot, cutoff: datetime, result: CheckRunResult) -> int | None:
+        """How many source versions the run read, for the log only. Scope rule (contracts): a Source is
+        in scope iff source_time <= cutoff, and its latest version with version_time <= cutoff is read.
+        The count is logged ONLY if these versions hash to the engine's own source_set_hash; otherwise
+        None (dropped from the log), never an unverified number. (Was len(all sources): B3 #29.)"""
+        shas = []
+        for s in snapshot.sources:
+            if s.source_time > cutoff:
+                continue
+            vs = [v for v in snapshot.versions if v.source_id == s.source_id and v.version_time <= cutoff]
+            if vs:
+                shas.append(max(vs, key=lambda v: v.version).sha256)
+        return len(shas) if ids.source_set_hash(shas) == result.run.source_set_hash else None
 
     @staticmethod
     def _guard_engine_result(st: EncounterState, result: CheckRunResult) -> None:

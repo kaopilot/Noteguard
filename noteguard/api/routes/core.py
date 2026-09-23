@@ -36,6 +36,7 @@ from noteguard.contracts.types import (
     DecisionRequest,
     FeedbackEvent,
     Flag,
+    StaleRevision,
     Staff,
     Summary,
     WorkspaceInfo,
@@ -168,7 +169,12 @@ def get_flag(encounter_id: str, flag_id: str, ctx: Guard, request: Request):
     return _store(request).get_flag(ctx, encounter_id, flag_id)
 
 
-@router.post(R.FLAG_DECISIONS, response_model=FlagDetail)
+_DECISION_409 = {409: {"model": StaleRevision, "description": (
+    "stale_revision: StaleRevision body (current state and the other actor's decision). "
+    "invalid_transition: {error_code} only; branch on error_code.")}}  # CCR-03 (approved by @k, 23 Sep 2026)
+
+
+@router.post(R.FLAG_DECISIONS, response_model=FlagDetail, responses=_DECISION_409)
 def decide(encounter_id: str, flag_id: str, body: DecisionRequest, ctx: Guard, request: Request):
     authz.decision_route_check(request, ctx, encounter_id, body.action)  # route layer (coarse)
     return _store(request).decide(ctx, encounter_id, flag_id, body)  # store layer (exact tier/owner rule)
