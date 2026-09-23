@@ -150,6 +150,13 @@ button { font: inherit; color: inherit; }
 .flag-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; margin-bottom: 0.75rem; }
 .flag-history { font-size: var(--step--1); }
 .history-toggle { margin-top: 0.25rem; }
+.feedback { margin: 0 1rem 1rem; padding: 0.6rem 0.75rem; border-top: 1px solid var(--rule); }
+.feedback-q { font-weight: 700; margin-bottom: 0.35rem; }
+.feedback-q small { display: block; font-weight: 400; color: var(--ink-soft); }
+.feedback-options { display: flex; flex-wrap: wrap; gap: 0.35rem 0.9rem; margin-bottom: 0.5rem; }
+.feedback-option { display: inline-flex; align-items: center; gap: 0.35rem; min-height: 36px; }
+.feedback-sent { margin: 0 1rem 1rem; padding: 0.5rem 0.75rem; background: #e7f2ee; border-left: 4px solid var(--change); }
+.aggregate-count { font-variant-numeric: tabular-nums; font-weight: 700; text-align: right; }
 
 /* Evidence */
 .ev-list { list-style: none; padding: 0; margin: 0.5rem 1rem; display: grid; gap: 0.5rem; }

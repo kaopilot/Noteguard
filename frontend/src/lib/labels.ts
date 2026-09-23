@@ -2,7 +2,7 @@
 // TypeScript fails the build if the contract adds a value this file does not describe. These maps
 // only choose words; tiers, owners, states and closure always come from the server.
 import type {
-  AIDraftStatus, BubbleStatus, ChangeKind, ClosureStatus, DecisionAction, Discipline, EvidenceRole, ExtractionStatus, SourceType, Tier,
+  AIDraftStatus, BubbleStatus, ChangeKind, Usefulness, ClosureStatus, DecisionAction, Discipline, EvidenceRole, ExtractionStatus, SourceType, Tier,
 } from '../api/types';
 
 /** 'already_addressed_in_source' -> 'Already addressed in source'. */
@@ -32,6 +32,15 @@ export const AI_STATUS: Record<AIDraftStatus, string> = {
 /** Shown when the server refuses rule-dependent work because the rule set is not approved (503
  * ruleset_unapproved, B4's approval check). A governance state, not an outage. */
 export const RULESET_PAUSED = 'the rule set is awaiting clinical governance approval.';
+
+/** Usefulness feedback wording. Feedback informs offline governance review only (Section 11). */
+export const USEFULNESS: Record<Usefulness, string> = {
+  useful: 'Useful',
+  not_useful: 'Not useful',
+  wrong_owner: 'Wrong owner',
+  stale_wording: 'Wording out of date',
+  missing_rule: 'A related concern was not flagged',
+};
 
 export type TierShape = 'octagon' | 'triangle' | 'circle';
 export const TIER: Record<Tier, { label: string; shape: TierShape; hint: string }> = {

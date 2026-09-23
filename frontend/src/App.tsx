@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, setWorkspaceToken } from './api/client';
 import type { EncounterListItem, SessionView, WorkspaceInfo } from './api/types';
+import { Aggregate } from './components/Aggregate';
 import { EncounterScreen } from './components/EncounterScreen';
 import { humanize } from './lib/labels';
+import { mayViewAggregate } from './lib/permissions';
 import { ROSTER } from './lib/roster';
 
 type Phase = 'boot' | 'login' | 'ready';
@@ -144,7 +146,8 @@ export function App() {
           </ul>
         </main>
       )}
-      {phase === 'ready' && me && !open && (
+      {phase === 'ready' && me && !open && mayViewAggregate(me) && <Aggregate />}
+      {phase === 'ready' && me && !open && !mayViewAggregate(me) && (
         <main className="screen">
           <h1>Encounters</h1>
           {encounters === null ? <p className="note note-quiet">Loading encounters…</p> : encounters.length === 0 ? (

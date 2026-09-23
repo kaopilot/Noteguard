@@ -1,21 +1,28 @@
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { api } from '../api/client';
 import type { Flag, FlagDetail } from '../api/types';
 import { humanize } from '../lib/labels';
+import { mayRecordFeedback } from '../lib/permissions';
+import { useTimeOnScreen } from '../lib/timeOnScreen';
 import { sgtDateTime } from '../lib/time';
 import { useEnc } from './ctx';
 import { EvidenceItem } from './EvidenceItem';
+import { Feedback } from './Feedback';
 import { TierBadge } from './TierBadge';
 
-export function FlagCard({ flag, blocksClosure, canDecide, onDecide, focused, slot }: {
+export function FlagCard({ flag, blocksClosure, canDecide, onDecide, focused, slot, decided = false }: {
   flag: Flag;
   blocksClosure: boolean;
   canDecide: boolean;
   onDecide: (f: Flag) => void;
   focused: boolean;
   slot?: ReactNode;
+  /** At least one human decision exists (from the closure view), so usefulness feedback can attach. */
+  decided?: boolean;
 }) {
-  const { staffName, view } = useEnc();
+  const { staffName, view, me } = useEnc();
+  const cardRef = useRef<HTMLElement | null>(null);
+  const timeOnScreen = useTimeOnScreen(cardRef);
   const [history, setHistory] = useState<FlagDetail | 'loading' | 'unavailable' | null>(null);
   const headingId = `flag-${flag.flag_id}`;
 
@@ -30,7 +37,7 @@ export function FlagCard({ flag, blocksClosure, canDecide, onDecide, focused, sl
   };
 
   return (
-    <article className={`flag flag-t${flag.tier}${focused ? ' flag-focused' : ''}`} aria-labelledby={headingId} id={`card-${flag.flag_id}`}>
+    <article ref={cardRef} className={`flag flag-t${flag.tier}${focused ? ' flag-focused' : ''}`} aria-labelledby={headingId} id={`card-${flag.flag_id}`}>
       <header className="flag-head">
         <TierBadge tier={flag.tier} />
         <h3 id={headingId}>{flag.title}</h3>
@@ -67,6 +74,7 @@ export function FlagCard({ flag, blocksClosure, canDecide, onDecide, focused, sl
         </button>
       </div>
       {slot}
+      {decided && mayRecordFeedback(me, view, flag) && <Feedback flag={flag} timeOnScreen={timeOnScreen} />}
       {history === 'loading' && <p className="note note-quiet">Loading history…</p>}
       {history === 'unavailable' && <p className="note note-problem">History could not be loaded.</p>}
       {history !== null && typeof history === 'object' && (
