@@ -149,6 +149,9 @@ def test_unapproved_ruleset_refused(tmp_path):
     (d / "APPROVAL_v1.md").write_text((d / "APPROVAL_v1.md").read_text() * 2, encoding="utf-8")
     assert codes(d) == {ap.APPROVAL_RECORD_INVALID}
     assert codes(tmp_path / "ok" / "missing") == {ap.APPROVAL_RECORD_MISSING}
+    with pytest.raises(ap.RulesetRefused) as e:  # the pinned-version parameter is read (L11)
+        ap.load_pinned("v2", tmp_path / "ok")
+    assert e.value.codes == (ap.APPROVAL_RECORD_MISSING,)
 
     # The REAL pinned record: loadable iff approved, with a report hash and matching hashes
     # (today: draft, so refused; after @k's CP2 approval: loads). Oracle computed independently.
@@ -248,6 +251,10 @@ def test_protected_floor_refused():
     # The threshold is read: above the sample size nothing is proposed or refused.
     batch = pr.propose_from_feedback(events, rs, "v2", min_surfaced=11, registry=reg)
     assert not batch.accepted and not batch.refused
+    batch = pr.propose_from_feedback(events, rs, "v2", noisy_dismissal_rate=0.95, registry=reg)  # 9/10 < 0.95
+    assert not batch.accepted and not batch.refused
+    fast = {x.rule_id: x.rates["fast_decision_share"] for x in pr.rule_metrics(events, reading_floor_ms=500)}
+    assert fast[RuleId.ALG_001] == "0/9"  # 900 ms is not below a 500 ms floor
 
 
 def test_aggregate_no_content_or_ids():
@@ -300,6 +307,11 @@ def test_aggregate_no_content_or_ids():
     assert not UUID.search(r.text) and "flg_" not in r.text
     for key in ("mrn", "nric", "encounter_id", "patient", "staff_id", "quote", "reason", "title"):
         assert key not in r.text.lower()
+    # The small-cell threshold is read (L11): six copies are "6" at 5 and "<7" at 7.
+    from types import SimpleNamespace
+
+    from noteguard.contracts.types import FlagState, RuleId, Tier
+    from noteguard.governance.aggregate import build_view
     # Age buckets at their boundaries (upper bounds exclusive).
     from datetime import datetime, timedelta, timezone
 
@@ -307,6 +319,9 @@ def test_aggregate_no_content_or_ids():
     t = datetime(2026, 9, 21, tzinfo=timezone.utc)
     assert [age_bucket(t, t + timedelta(hours=x)) for x in (0, 3.99, 4, 23.99, 24, 90)] == [
         "<4h", "<4h", "4-24h", "4-24h", ">24h", ">24h"]
+    rows = [SimpleNamespace(rule_id=RuleId.ALG_001, tier=Tier.T1, state=FlagState.OPEN, created_at=t)] * 6
+    assert [c.count for c in build_view(rows, now=t, ruleset_version="v1").cells] == ["6"]
+    assert [c.count for c in build_view(rows, now=t, ruleset_version="v1", threshold=7).cells] == ["<7"]
     # Store layer refuses a clinician even with the route guard bypassed (second layer, B2's seam).
     lim_staff = Staff.model_validate(AUTHOR.staff_record("lim"))
     with pytest.raises(ApiError):
@@ -559,3 +574,56 @@ def test_eval_report_tier1_recall_gate():
     # Floor only: extending a suppressing cue is refused even where this corpus shows no recall loss.
     g = ev.evaluate(v1, with_cue(CueKind.NEGATION, "clear"), cases=cases)["gate"]
     assert g == {"passed": False, "reasons": ["floor:suppressing_cue_extended:negation"]}
+
+
+def test_approval_verify_and_offline_clis(tmp_path):
+    """CP2 guard: an APPROVED record must be backed by the committed report AND a fresh rerun of the
+    evaluation that passes the gate (evaluate.verify_approval / --verify). Each problem is isolated on
+    a copy; the real record is checked whenever it is approved (today it is a draft). Both offline
+    CLIs run end to end on files (they are the tools @k and I1 use).
+    Mutation (applied): drop the fresh-rerun comparison in verify_approval -> fails."""
+    import json
+    import shutil
+
+    from noteguard.contracts import ids
+    from noteguard.governance import approval as ap
+    from noteguard.governance import evaluate as ev
+    from noteguard.governance import propose as pr
+    from tests.support.golden import ROOT
+
+    report = ROOT / "fixtures" / "labelled_eval" / "reports" / "EVAL_v1_vs_v1.json"
+    committed = ev.report_sha256(json.loads(report.read_text(encoding="utf-8")))
+    for sub in ("a", "b", "c"):
+        (tmp_path / sub).mkdir()
+    d = _approved_copy(tmp_path / "a", evaluation_report_sha256=committed)
+    assert ev.verify_approval(d / "APPROVAL_v1.md", report) == []  # positive control
+    wrong = _approved_copy(tmp_path / "b")  # report hash "e" * 64
+    assert ev.verify_approval(wrong / "APPROVAL_v1.md", report) == ["report_file_does_not_match_record",
+                                                                      "report_not_reproducible"]
+    # Files changed and re-hashed, but the evaluation was not rerun: the old report cannot vouch for them.
+    c = _approved_copy(tmp_path / "c", evaluation_report_sha256=committed)
+    rs = json.loads((c / "v1.json").read_text(encoding="utf-8"))
+    next(r for r in rs["rules"] if r["rule_id"] == "CRIT-001")["enabled"] = False
+    (c / "v1.json").write_text(json.dumps(rs), encoding="utf-8")
+    rec = json.loads((c / "APPROVAL_v1.md").read_text().split("```json\n")[1].split("\n```")[0])
+    rec["ruleset_sha256"] = ids.sha256_hex((c / "v1.json").read_bytes())
+    (c / "APPROVAL_v1.md").write_text(f"```json\n{json.dumps(rec)}\n```\n", encoding="utf-8")
+    assert ev.verify_approval(c / "APPROVAL_v1.md", report) == ["report_not_reproducible", "gate_refused"]
+    # The real record: whenever it is approved, it must verify clean.
+    real = ap.parse_approval_record(ROOT / "rulesets" / "APPROVAL_v1.md")
+    if real.status.value == "approved":
+        assert ev.verify_approval(ROOT / "rulesets" / "APPROVAL_v1.md", report) == []
+
+    # CLIs on files: propose (exported feedback) and evaluate (a candidate file that disables CRIT-001).
+    fb = tmp_path / "feedback.json"
+    fb.write_text(json.dumps([e.model_dump(mode="json") for e in
+                              _feedback("DIFF-001", 10, "dismiss", "extraction_error")
+                              + _feedback("ALG-001", 10, "dismiss", "not_clinically_relevant")]), encoding="utf-8")
+    assert pr.main(["--feedback", str(fb), "--target", "v2", "--out", str(tmp_path / "p.json")]) == 0
+    out = json.loads((tmp_path / "p.json").read_text(encoding="utf-8"))
+    assert [(x["kind"], x["rule_id"]) for x in out["accepted"]] == [("retire_tier3_rule", "DIFF-001")]
+    assert [(x["proposal"]["rule_id"], x["code"]) for x in out["refused"]] == [("ALG-001", "protected_floor")]
+    assert ev.main(["--baseline", "v1", "--candidate", "v2bad", "--candidate-ruleset", str(c / "v1.json"),
+                    "--out-dir", str(tmp_path / "r")]) == 1
+    assert json.loads((tmp_path / "r" / "EVAL_v1_vs_v2bad.json").read_text())["gate"]["passed"] is False
+    assert ev.main(["--baseline", "v1", "--candidate", "v1", "--out-dir", str(tmp_path / "r")]) == 0

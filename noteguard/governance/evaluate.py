@@ -18,6 +18,7 @@ and counts only; no source text.
 
 Usage:
     uv run python -m noteguard.governance.evaluate --baseline v1 --candidate v1 [--out-dir DIR]
+    uv run python -m noteguard.governance.evaluate --baseline v1 --verify   (CP2: record/report/fresh agree)
     (--candidate-ruleset / --candidate-registry take file paths for an unreleased candidate)
 """
 
@@ -271,6 +272,32 @@ def render_markdown(report: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+def verify_approval(approval_path: Path, report_path: Path, *, engine: EngineAPI | None = None) -> list[str]:
+    """CP2 check: the record's files, the committed report and a FRESH evaluation all agree, and the
+    gate passes. Returns problem codes (empty = consistent). Rulesets are read from the record's dir."""
+    from .approval import RulesetRefused, parse_approval_record
+
+    try:
+        rec = parse_approval_record(approval_path)
+    except RulesetRefused as exc:
+        return list(exc.codes)
+    if rec.evaluation_report_sha256 is None:
+        return ["evaluation_report_missing"]
+    d = approval_path.parent
+    bundle = bundle_from_files(d / f"{rec.ruleset_version}.json", d / f"registry_{rec.registry_version}.json")
+    problems = []
+    if (bundle.ruleset_sha256, bundle.registry_sha256) != (rec.ruleset_sha256, rec.registry_sha256):
+        problems.append("file_hash_mismatch")
+    if not report_path.is_file() or report_sha256(json.loads(report_path.read_text(encoding="utf-8"))) != rec.evaluation_report_sha256:
+        problems.append("report_file_does_not_match_record")
+    fresh = evaluate(bundle, bundle, engine=engine)
+    if report_sha256(fresh) != rec.evaluation_report_sha256:
+        problems.append("report_not_reproducible")
+    if not fresh["gate"]["passed"]:
+        problems.append("gate_refused")
+    return problems
+
+
 def _side(version: str, ruleset: Path | None, registry: Path | None) -> RulesetBundle:
     rs = ruleset or ROOT / "rulesets" / f"{version}.json"
     reg = registry or ROOT / "rulesets" / f"registry_{Ruleset.model_validate_json(rs.read_bytes()).registry_version}.json"
@@ -284,7 +311,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--candidate-ruleset", type=Path)
     ap.add_argument("--candidate-registry", type=Path)
     ap.add_argument("--out-dir", type=Path, default=REPORTS_DIR)
+    ap.add_argument("--verify", action="store_true",
+                    help="CP2 check of APPROVAL_<baseline>.md against the committed and a fresh report")
     a = ap.parse_args(argv)
+    if a.verify:
+        problems = verify_approval(ROOT / "rulesets" / f"APPROVAL_{a.baseline}.md",
+                                   a.out_dir / f"EVAL_{a.baseline}_vs_{a.baseline}.json")
+        sys.stdout.write(f"APPROVAL_{a.baseline}: {'consistent' if not problems else ', '.join(problems)}\n")
+        return 0 if not problems else 1
     base = _side(a.baseline, None, None)
     cand = _side(a.candidate, a.candidate_ruleset, a.candidate_registry)
     report = evaluate(base, cand)
