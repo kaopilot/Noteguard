@@ -244,3 +244,39 @@ test('add sources: paste, new version, real PDFs (text and scanned), non-PDF ref
   test.info().annotations.push({ type: 'run-after-intake', description: (await outcome.textContent()) ?? '' });
   expect(await page.evaluate(() => localStorage.length + sessionStorage.length)).toBe(0);
 });
+
+test('feedback after a decision (B2 route) and the aggregate page for a governance role (B4 route)', async ({ page }) => {
+  await signIn(page, /Dr Lim/);
+  await page.getByRole('button', { name: /ENC-A1/ }).click();
+  await runAt(page, '2026-09-21T16:00');
+  const dose = page.getByRole('article', { name: 'Dose differs between sources' });
+  await expect(dose.getByText(/Was this flag useful\?/)).toHaveCount(0);
+  await dose.getByRole('button', { name: 'Decide' }).click();
+  const form = page.getByRole('form', { name: /Decide: Dose differs between sources/ });
+  await form.getByRole('radio', { name: /^Accept Records/ }).check();
+  await form.getByRole('button', { name: 'Record: accept' }).click();
+  await expect(page.getByText(/Recorded: Dose differs between sources is now accepted/)).toBeVisible();
+  const card = page.getByRole('article', { name: 'Dose differs between sources' });
+  await card.getByRole('radio', { name: 'Not useful' }).check();
+  const [fb] = await Promise.all([
+    page.waitForResponse((r) => r.url().endsWith('/feedback')),
+    card.getByRole('button', { name: 'Send feedback' }).click(),
+  ]);
+  expect(fb.status()).toBe(201);
+  const sent = fb.request().postDataJSON();
+  expect(sent.usefulness).toBe('not_useful');
+  expect(typeof sent.time_on_screen_ms).toBe('number');
+  await expect(card.getByText(/^Feedback recorded: Not useful\./)).toBeVisible();
+  await shot(page, '11-feedback');
+
+  await page.getByRole('button', { name: 'Sign out' }).click();
+  const [agg] = await Promise.all([
+    page.waitForResponse((r) => r.url().includes('/api/aggregate/risk')),
+    page.getByRole('button', { name: /Quality & Risk/ }).click(),
+  ]);
+  expect(agg.status()).toBe(200);
+  await expect(page.getByRole('heading', { name: 'Flag patterns across encounters' })).toBeVisible();
+  await expect(page.getByText(/^Fewer than \d+ are shown as “<\d+”$/)).toBeVisible();
+  expect(await page.locator('body').textContent()).not.toContain('ENC-A1');
+  await shot(page, '12-aggregate');
+});
