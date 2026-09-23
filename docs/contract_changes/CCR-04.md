@@ -25,4 +25,4 @@ Lanes affected and what each must do:
     `test_aggregate_route_is_b4_placeholder_behind_b2_authz` asserts the 501 placeholder and fails
     once B4 lands.)
 Golden fixture impact: none.
-Status: approved (@k, 23 Sep 2026); part 1 landed; part 2 with B4
+Status: approved (@k, 23 Sep 2026); part 1 landed (@k, 139a600); part 2 landed on b4-governance in B4.3 (field + fill + test; make types as a separable integrator-owned commit)
