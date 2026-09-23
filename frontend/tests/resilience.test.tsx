@@ -1,5 +1,6 @@
 // Degraded and edge states (Review Standard S09-R01/R03, S16-R05; Section 13 inline decisions).
-// Mutation spot-checks: make keepOnOutage always return `next` -> the outage case fails; delete the
+// Mutation spot-checks: make keepOnOutage always return `next` -> the outage case fails; treat 4xx as
+// transient -> the 403 case fails; delete the
 // SourceViewer noRun text -> the missing-version case fails; drop `slot` from FlagCard -> the inline case fails.
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
@@ -44,6 +45,18 @@ test('an outage keeps the last results readable, labelled stale with their gener
   api.outage.on = false;
   fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
   await waitFor(() => expect(document.querySelector('.glance-headline')?.textContent).toBe('Closure blocked: 3 Tier 1 items with Dr Lim'));
+  expect(screen.queryByText(/The latest refresh did not complete/)).toBeNull();
+});
+
+test('a 403 on refresh is not an outage: earlier clinical results are removed, not kept', async () => {
+  const api = await openA1(false);
+  await runAt('2026-09-21T11:30');
+  await screen.findByRole('article', { name: 'Critical result without documented response' });
+  api.outage.on = true;
+  api.outage.status = 403;
+  await runAt('2026-09-21T16:00');
+  await screen.findByText('Flags could not be loaded (server code forbidden_role).');
+  expect(screen.queryByRole('article', { name: 'Critical result without documented response' })).toBeNull();
   expect(screen.queryByText(/The latest refresh did not complete/)).toBeNull();
 });
 
