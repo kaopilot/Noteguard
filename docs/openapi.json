@@ -2170,6 +2170,68 @@
         "title": "Staff",
         "type": "object"
       },
+      "StaleRevision": {
+        "additionalProperties": false,
+        "description": "409 body extension: current state and the other actor's decision (feedback 10).",
+        "properties": {
+          "current_revision": {
+            "exclusiveMinimum": 0.0,
+            "title": "Current Revision",
+            "type": "integer"
+          },
+          "current_state": {
+            "$ref": "#/components/schemas/FlagState"
+          },
+          "error_code": {
+            "const": "stale_revision",
+            "default": "stale_revision",
+            "title": "Error Code",
+            "type": "string"
+          },
+          "last_decision_action": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DecisionAction"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "last_decision_actor_staff_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_\\-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Decision Actor Staff Id"
+          },
+          "last_decision_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Decision At"
+          }
+        },
+        "required": [
+          "current_revision",
+          "current_state"
+        ],
+        "title": "StaleRevision",
+        "type": "object"
+      },
       "Summary": {
         "additionalProperties": false,
         "properties": {
@@ -3402,6 +3464,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaleRevision"
+                }
+              }
+            },
+            "description": "stale_revision: StaleRevision body (current state and the other actor's decision). invalid_transition: {error_code} only; branch on error_code."
           },
           "422": {
             "content": {
