@@ -60,6 +60,16 @@ export function createFakeApi() {
   const decisions: Json[] = [];
   const outage = { on: false, status: 503 };
   const network = { failNextPosts: 0 };
+  // B4's approval check: while unapproved, B2's store refuses rule-dependent work with 503 ruleset_unapproved.
+  const governance = { unapproved: false };
+  const feedback: Json[] = [];
+  // Mirrors contracts/permissions.py: aggregate roles have no clinical access.
+  const AGGREGATE_ROLES = new Set(['medical_director', 'quality_risk', 'legal']);
+  const aggregateView = { generated_at: '2026-09-21T08:05:00Z', ruleset_version: 'v1', small_cell_threshold: 5,
+    cells: [
+      { rule_id: 'DOSE-001', tier: 2, state: 'open', age_bucket: '<4h', count: '12' },
+      { rule_id: 'ALG-001', tier: 1, state: 'open', age_bucket: '<4h', count: '<5' },
+    ] };
   const added: { view: Json; text: string; key: string }[] = [];
   const allSources = () => [...sourceViews(ENC), ...added.map((a) => a.view)];
   const members = new Set(ENC.memberships.map((m: Json) => m.staff_id));
@@ -117,6 +127,10 @@ export function createFakeApi() {
     if (outage.on && method === 'GET' && route !== 'ENCOUNTER') return reply(outage.status, outage.status === 403 ? { error_code: 'forbidden_role' } : null);
     if (route === 'WORKSPACES') return reply(200, { workspace_token: TOKEN, encounter_ids: [A1], expires_at: '2026-09-23T12:00:00Z', single_process_store: true });
     if (route === 'WORKSPACE_CURRENT') { current = null; flags = []; decisions.length = 0; return reply(204); }
+    if (route === 'AGGREGATE') {
+      return AGGREGATE_ROLES.has(session.role) ? reply(200, aggregateView) : reply(403, { error_code: 'forbidden_role' });
+    }
+    if (route === 'ENCOUNTERS' && (AGGREGATE_ROLES.has(session.role) || session.role === 'clinic_admin')) return reply(200, []);
     if (route === 'ENCOUNTERS') {
       return reply(200, [{ encounter_id: A1, encounter_ref: ENC.encounter.encounter_ref, patient_label: ENC.patient.display_label, setting: ENC.encounter.setting, responsible_clinician_id: ENC.encounter.responsible_clinician_id }]);
     }
@@ -129,6 +143,9 @@ export function createFakeApi() {
     if (route === 'SOURCE_TEXT') {
       const e = textOf(p.source_version_id ?? '');
       return e ? reply(200, { note_version_id: e.source_version_id, extraction_status: e.status, text: e.text, pages: e.pages }) : reply(404, { error_code: 'not_found' });
+    }
+    if (governance.unapproved && ['CHECK_RUNS', 'BUBBLES', 'GLANCE', 'SUMMARY'].includes(route)) {
+      return reply(503, { error_code: 'ruleset_unapproved' });
     }
     if (route === 'CHECK_RUNS') {
       const prior = current ? current.scenario : null;
@@ -149,6 +166,18 @@ export function createFakeApi() {
       case 'CLOSURE':
         if (method === 'POST') return reply(409, { error_code: 'closure_blocked' });
         return reply(200, { ...current.closure, decisions });
+      case 'FEEDBACK': {
+        const f = flags.find((x) => x.flag_id === body.flag_id);
+        if (!f) return reply(404, { error_code: 'not_found' });
+        const last = [...decisions].reverse().find((d) => d.flag_id === f.flag_id);
+        if (!last) return reply(409, { error_code: 'invalid_transition' });
+        if (body.corrected_owner_staff_id && !members.has(body.corrected_owner_staff_id)) return reply(422, { error_code: 'reassign_target_invalid' });
+        const ev = { feedback_id: `fb-${feedback.length + 1}`, flag_id: f.flag_id, rule_id: f.rule_id, rule_version: 1, ruleset_version: 'v1',
+          action: last.action, reason_code: last.reason_code, corrected_owner_staff_id: body.corrected_owner_staff_id ?? null,
+          usefulness: body.usefulness, time_on_screen_ms: body.time_on_screen_ms ?? null };
+        feedback.push(ev);
+        return reply(201, ev);
+      }
       case 'FLAG_DECISIONS': {
         const f = flags.find((x) => x.flag_id === p.flag_id);
         if (!f) return reply(404, { error_code: 'not_found' });
@@ -190,5 +219,5 @@ export function createFakeApi() {
     }
     return handle(method, new URL(url, 'http://ng.test').pathname, body);
   };
-  return { fetch, requests, outage, network, added };
+  return { fetch, requests, outage, network, added, governance, feedback };
 }

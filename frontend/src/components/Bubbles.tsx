@@ -1,5 +1,5 @@
 import type { BubbleList } from '../api/types';
-import { BUBBLE_STATUS, humanize, subjectName } from '../lib/labels';
+import { AI_STATUS, BUBBLE_STATUS, subjectName } from '../lib/labels';
 import { sgtDateTime } from '../lib/time';
 import { useEnc } from './ctx';
 import { EvidenceItem } from './EvidenceItem';
@@ -15,7 +15,7 @@ export function Bubbles({ bubbles }: { bubbles: Loadable<BubbleList> }) {
           <>
             <p className="note note-quiet">
               Answered by the deterministic checker from the supplied sources up to {sgtDateTime(list.cutoff)}.
-              {list.ai_status === 'disabled' ? 'AI drafting disabled.' : `AI drafting: ${humanize(list.ai_status).toLowerCase()}.`}
+              {AI_STATUS[list.ai_status]}
             </p>
             {list.bubbles.map((b) => (
               <article key={b.bubble_id} className={`bubble bubble-${b.status}`}>

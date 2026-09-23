@@ -24,6 +24,7 @@ export function FlagList({ flags, closure, focusFlagId, onDecide, decideSlot }: 
   const { me, view } = useEnc();
   const [showDecided, setShowDecided] = useState(false);
   const blockers = new Set(closure?.tier1_blockers.map((b) => b.flag_id) ?? []);
+  const decidedIds = new Set(closure?.decisions.map((d) => d.flag_id) ?? []);
   const active = flags.filter((f) => MOVABLE_STATES.has(f.state));
   const decided = flags.filter((f) => !MOVABLE_STATES.has(f.state));
   const shown = showDecided ? flags : active;
@@ -45,6 +46,7 @@ export function FlagList({ flags, closure, focusFlagId, onDecide, decideSlot }: 
                 onDecide={onDecide}
                 focused={f.flag_id === focusFlagId}
                 slot={decideSlot?.(f)}
+                decided={decidedIds.has(f.flag_id)}
               />
             ))}
           </section>

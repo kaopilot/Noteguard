@@ -2,7 +2,7 @@
 // TypeScript fails the build if the contract adds a value this file does not describe. These maps
 // only choose words; tiers, owners, states and closure always come from the server.
 import type {
-  BubbleStatus, ChangeKind, ClosureStatus, DecisionAction, Discipline, EvidenceRole, ExtractionStatus, SourceType, Tier,
+  AIDraftStatus, BubbleStatus, ChangeKind, Usefulness, ClosureStatus, DecisionAction, Discipline, EvidenceRole, ExtractionStatus, SourceType, Tier,
 } from '../api/types';
 
 /** 'already_addressed_in_source' -> 'Already addressed in source'. */
@@ -19,6 +19,27 @@ export const DID: Record<DecisionAction, string> = {
   mark_ready_for_clinician: 'marked ready for clinician',
   dismiss: 'dismissed',
   resolve: 'resolved',
+};
+
+/** AI drafting status wording (Section 9, L10; matches B4's governance/ai_drafting.py). */
+export const AI_STATUS: Record<AIDraftStatus, string> = {
+  disabled: 'AI drafting disabled.',
+  unavailable_fallback: 'AI drafting unavailable; showing rule explanation.',
+  rejected_fallback: 'AI draft discarded by its validator; showing rule explanation.',
+  validated: 'AI-drafted wording, checked against the cited quotes.',
+};
+
+/** Shown when the server refuses rule-dependent work because the rule set is not approved (503
+ * ruleset_unapproved, B4's approval check). A governance state, not an outage. */
+export const RULESET_PAUSED = 'the rule set is awaiting clinical governance approval.';
+
+/** Usefulness feedback wording. Feedback informs offline governance review only (Section 11). */
+export const USEFULNESS: Record<Usefulness, string> = {
+  useful: 'Useful',
+  not_useful: 'Not useful',
+  wrong_owner: 'Wrong owner',
+  stale_wording: 'Wording out of date',
+  missing_rule: 'A related concern was not flagged',
 };
 
 export type TierShape = 'octagon' | 'triangle' | 'circle';

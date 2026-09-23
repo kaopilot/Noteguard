@@ -6,6 +6,7 @@ import type {
 import { mayAddSource } from '../lib/permissions';
 import { ROSTER } from '../lib/roster';
 import { sgtDateTime } from '../lib/time';
+import { RULESET_PAUSED } from '../lib/labels';
 import { AddSource } from './AddSource';
 import { Bubbles } from './Bubbles';
 import { Closure } from './Closure';
@@ -125,7 +126,9 @@ export function EncounterScreen({ me, encounterId, onBack, onSessionProblem }: {
       watch(r);
       setRunProblem(r.status === 501
         ? 'Running checks is not available in this build.'
-        : r.errorCode === 'validation_failed'
+        : r.errorCode === 'ruleset_unapproved'
+          ? `Checks are paused: ${RULESET_PAUSED} No check was run.`
+          : r.errorCode === 'validation_failed'
           ? 'Checks did not run: the server refused this cutoff. It cannot be later than the server’s current time.'
           : `Checks did not run (server code ${r.errorCode}).`);
       return;
