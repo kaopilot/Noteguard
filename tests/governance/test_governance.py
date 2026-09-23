@@ -321,18 +321,172 @@ def test_ai_disabled_by_default():
     assert r.status_code == 200 and r.json() == {"status": "disabled", "detail": "AI drafting disabled"}
 
 
+class _Provider:
+    """Test double at the provider boundary: honours the contract (assert_qualified first) and records
+    what it received. It never reports a result it did not produce."""
+
+    def __init__(self, reply="", exc=None, gate=None):
+        self.reply, self.exc, self.gate, self.calls = reply, exc, gate, []
+
+    def draft(self, payload, *, timeout_s):
+        payload.assert_qualified()
+        self.calls.append(payload.text)
+        if self.gate is not None:
+            self.gate.wait(3)
+        if self.exc is not None:
+            raise self.exc
+        return self.reply
+
+
+def _ai_fixture():
+    from noteguard.contracts.types import Flag
+    from noteguard.governance import ai_drafting as ai
+    from tests.support.golden import bundle, load
+
+    flags = {f["rule_id"]: Flag.model_validate(f) for f in load("ENC-A1_1130")["flags"]}
+    return ai, flags, bundle().registry
+
+
+def _with_quote(flag, match, new_quote):
+    from noteguard.contracts import ids
+
+    ev = tuple(e.model_copy(update={"quote": new_quote, "quote_sha256": ids.quote_sha256(new_quote)})
+               if match in e.quote.lower() else e for e in flag.evidence)
+    return flag.model_copy(update={"evidence": ev})
+
+
+def _ids(ai, flag, *needles):
+    cl = ai.build_cluster(flag)
+    return [next(e.evidence_id for e in cl if n in e.quote.lower()) for n in needles]
+
+
 def test_ai_timeout_falls_back():
     """Section 9: a provider that exceeds the timeout (or raises 5xx) yields the deterministic rule
-    text labelled 'AI drafting unavailable; showing rule explanation'; the workflow is not blocked."""
-    lane_module("noteguard.governance.ai_drafting", "B4")
-    not_implemented("B4", "slow fake provider -> status unavailable_fallback and rule text returned")
+    text labelled 'AI drafting unavailable; showing rule explanation'; the workflow is not blocked.
+
+    Also: off by default (no provider call, no egress); enabled requires a real provider; only a
+    QualifiedRedactedText reaches the provider (a synthetic NRIC in a quote never does); the breaker
+    opens after consecutive failures and closes after the cooldown; a valid draft is VALIDATED
+    (positive control). Mutation (applied): call future.result() without the timeout -> fails."""
+    import json
+    import threading
+    import time as _t
+
+    ai, flags, reg = _ai_fixture()
+    alg = flags["ALG-001"]
+    nkda, pen = _ids(ai, alg, "nkda", "penicillin")
+    good = json.dumps({"sentences": [{"text": "One source records NKDA and another records a penicillin allergy.",
+                                      "evidence_ids": [nkda, pen]}]})
+    egress_calls = []
+
+    def spy_factory(names):
+        from noteguard.redaction import get_redactor
+        egress_calls.append(tuple(names))
+        return get_redactor(names)
+
+    # Off by default: nothing is sent anywhere, the rule text is shown, status says disabled.
+    prov = _Provider(reply=good)
+    d = ai.Drafter(provider=prov, redactor_factory=spy_factory)
+    r = d.draft(alg, reg)
+    assert (r.status.value, r.text, r.detail) == ("disabled", alg.reason, "AI drafting disabled")
+    assert prov.calls == [] and egress_calls == []
+    assert ai.Drafter().status_view().model_dump(mode="json") == {"status": "disabled", "detail": "AI drafting disabled"}
+    with pytest.raises(ValueError):
+        ai.Drafter(config=ai.AIConfig(enabled=True))  # never a stand-in provider
+
+    # Positive control + egress: validated, and the provider saw only redacted, qualified text.
+    marked = _with_quote(alg, "penicillin", "Penicillin allergy - rash (per GP records) NRIC S0000001Z")
+    prov = _Provider(reply=good)
+    d = ai.Drafter(config=ai.AIConfig(enabled=True), provider=prov, redactor_factory=spy_factory)
+    r = d.draft(marked, reg, known_names=["Pharmacist Ong"])
+    assert r.status.value == "validated" and set(r.cited_evidence_ids) == {nkda, pen}
+    assert len(prov.calls) == 1 and "S0000001Z" not in prov.calls[0] and "[NRIC_FIN_1]" in prov.calls[0]
+    assert egress_calls[-1] == ("Pharmacist Ong",)
+
+    # Timeout: bounded wait, rule text, exact label; the workflow is not blocked.
+    gate = threading.Event()
+    slow = _Provider(reply=good, gate=gate)
+    d = ai.Drafter(config=ai.AIConfig(enabled=True, timeout_s=0.1), provider=slow)
+    t0 = _t.perf_counter()
+    r = d.draft(alg, reg)
+    elapsed = _t.perf_counter() - t0
+    gate.set()
+    assert (r.status.value, r.text, r.detail, r.code) == (
+        "unavailable_fallback", alg.reason, "AI drafting unavailable; showing rule explanation", ai.TIMEOUT)
+    assert elapsed < 1.0, elapsed
+    # 5xx / any provider exception.
+    d = ai.Drafter(config=ai.AIConfig(enabled=True), provider=_Provider(exc=RuntimeError("503")))
+    r = d.draft(alg, reg)
+    assert (r.status.value, r.text, r.code) == ("unavailable_fallback", alg.reason, ai.PROVIDER_ERROR)
+
+    # Circuit breaker: two failures open it; the provider is not called while open; cooldown closes it.
+    now = [1000.0]
+    failing = _Provider(exc=RuntimeError("502"))
+    d = ai.Drafter(config=ai.AIConfig(enabled=True, breaker_failures=2, breaker_cooldown_s=60), provider=failing,
+                   clock=lambda: now[0])
+    assert [d.draft(alg, reg).code for _ in range(3)] == [ai.PROVIDER_ERROR, ai.PROVIDER_ERROR, ai.CIRCUIT_OPEN]
+    assert len(failing.calls) == 2 and d.status_view().status.value == "unavailable_fallback"
+    now[0] += 61
+    d.provider = _Provider(reply=good)
+    assert d.draft(alg, reg).status.value == "validated" and d.status_view().status.value == "validated"
 
 
 def test_ai_output_validator_rejects_new_entity():
     """Section 9: output naming a registry entity absent from the evidence cluster, lacking evidence
-    ids, raising certainty, containing a forbidden phrase, or carrying tier/owner/state is discarded."""
-    lane_module("noteguard.governance.ai_drafting", "B4")
-    not_implemented("B4", "fake provider outputs a drug not in the cluster -> rejected_fallback")
+    ids, raising certainty, containing a forbidden phrase, or carrying tier/owner/state is discarded.
+
+    Each failure mode is applied alone next to a passing control on the same cluster, and one goes
+    through the Drafter end to end (REJECTED_FALLBACK with the rule text).
+    Mutations (applied): drop the entity check -> fails; drop the certainty check -> fails."""
+    import json
+
+    ai, flags, reg = _ai_fixture()
+    alg, dose = flags["ALG-001"], flags["DOSE-001"]
+    nkda, pen = _ids(ai, alg, "nkda", "penicillin")
+    cl = ai.build_cluster(alg)
+
+    def out(*items, **top):
+        return json.dumps({"sentences": [{"text": t, "evidence_ids": e} for t, e in items]} | top)
+
+    def code(raw, cluster=cl):
+        return ai.validate_output(raw, cluster, reg)[1]
+
+    assert code(out(("One source records NKDA and another records a penicillin allergy.", [nkda, pen]))) is None
+    cases = {
+        ai.ENTITY_NOT_IN_EVIDENCE: out(("The patient also takes metformin.", [nkda])),
+        ai.MISSING_EVIDENCE_IDS: out(("Another source records a penicillin allergy.", [])),
+        ai.UNKNOWN_EVIDENCE_ID: out(("Another source records a penicillin allergy.", ["E9"])),
+        ai.FORBIDDEN_PHRASE: out(("The allergy check was not done.", [pen])),
+        ai.POLARITY_UNSUPPORTED: out(("There is no penicillin allergy.", [pen])),
+        ai.SCHEMA_INVALID: "Penicillin allergy recorded.",
+    }
+    for field in ("tier", "owner_staff_id", "state"):
+        assert code(out(("A penicillin allergy is recorded.", [pen]), **{field: "x"})) == ai.EXTRA_FIELD, field
+    assert code(json.dumps({"sentences": [{"text": "A penicillin allergy is recorded.", "evidence_ids": [pen],
+                                           "owner": "x"}]})) == ai.EXTRA_FIELD
+    for expected, raw in cases.items():
+        assert code(raw) == expected, expected
+    # Certainty: a hedged source cannot become a plain statement; a hedged draft passes.
+    hedged = _with_quote(alg, "penicillin", "Query penicillin allergy - rash")
+    hcl = ai.build_cluster(hedged)
+    hpen = next(e.evidence_id for e in hcl if "penicillin" in e.quote.lower())
+    assert code(out(("A penicillin allergy with rash is recorded.", [hpen])), hcl) == ai.CERTAINTY_RAISED
+    assert code(out(("A possible penicillin allergy is recorded.", [hpen])), hcl) is None
+    # Doses must appear in the cited evidence.
+    dcl = ai.build_cluster(dose)
+    both = [e.evidence_id for e in dcl]
+    assert code(out(("Amlodipine 5 mg and 10 mg are recorded in different sources.", both)), dcl) is None
+    assert code(out(("Amlodipine 20 mg is recorded.", both)), dcl) == ai.DOSE_NOT_IN_EVIDENCE
+    # A tampered quote (hash mismatch) is not a verified cluster.
+    bad = alg.model_copy(update={"evidence": tuple(e.model_copy(update={"quote": e.quote + " x"}) for e in alg.evidence)})
+    with pytest.raises(ValueError):
+        ai.build_cluster(bad)
+
+    # End to end: the provider outputs a drug not in the cluster -> discarded, rule text shown.
+    d = ai.Drafter(config=ai.AIConfig(enabled=True), provider=_Provider(reply=cases[ai.ENTITY_NOT_IN_EVIDENCE]))
+    r = d.draft(alg, reg)
+    assert (r.status.value, r.text, r.code) == ("rejected_fallback", alg.reason, ai.ENTITY_NOT_IN_EVIDENCE)
+    assert d.status_view().status.value == "rejected_fallback"
 
 
 def test_eval_report_tier1_recall_gate():
