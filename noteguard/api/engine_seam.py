@@ -2,8 +2,8 @@
 
 B2 builds against ``noteguard.engine_stub.StubEngine`` (golden inputs only; anything else raises
 NotImplementedError, which the API reports as 501 not_implemented, never a plausible value).
-I1 swaps in the real engine with ``create_app(engine=get_engine(), bundle_loader=<B4 approved
-ruleset loader>)``. Tiers, owners, states and closure come from the engine and
+I1 swaps in the real engine with ``create_app(engine=get_engine(), bundle_loader=api_bundle_loader())``
+(B4's factory in noteguard.governance.approval, called once; a refusal is 503 ruleset_unapproved). Tiers, owners, states and closure come from the engine and
 contracts.states; the API never re-derives them.
 """
 

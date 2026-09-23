@@ -6,7 +6,8 @@ document tokens live in this process only; run one worker. Production uses Postg
 
 Configuration is code (``create_app(settings=Settings(...))``), never environment variables
 (L12). The engine is called through one seam (engine_seam.py): the stub engine until I1, then
-``create_app(engine=noteguard.engine.get_engine(), bundle_loader=<B4 approved loader>)``.
+``create_app(engine=noteguard.engine.get_engine(), bundle_loader=api_bundle_loader())`` (B4's factory,
+noteguard.governance.approval; CALL it: passing the factory itself hands the engine a function).
 """
 
 from __future__ import annotations
