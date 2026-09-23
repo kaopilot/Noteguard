@@ -171,10 +171,83 @@ def test_unapproved_ruleset_refused(tmp_path):
     assert c.get(R.FLAGS.format(encounter_id=A1), headers=h).status_code == 404  # no run was committed
 
 
+def _feedback(rule: str, n_flags: int, action: str, reason: str | None = None, *, usefulness=None, ms=None):
+    """n_flags distinct flags of one rule, one decision event each (+ optional usefulness event)."""
+    from datetime import datetime, timedelta, timezone
+
+    from noteguard.contracts import ids
+    from noteguard.contracts.types import FeedbackEvent
+
+    t0 = datetime(2026, 9, 21, 8, 0, tzinfo=timezone.utc)
+    out = []
+    for i in range(n_flags):
+        fid = ids.flag_id(rule, f"enc-{action}-{i}", f"subject-{rule}")  # distinct flag per call and index
+        base = dict(flag_id=fid, rule_id=rule, rule_version=1, ruleset_version="v1", action=action,
+                    reason_code=reason, actor_role="clinician")
+        out.append(FeedbackEvent(feedback_id=f"fb-{rule}-{action}-{i}-d", at=t0 + timedelta(minutes=i), **base))
+        if usefulness:
+            out.append(FeedbackEvent(feedback_id=f"fb-{rule}-{action}-{i}-u", at=t0 + timedelta(minutes=i, seconds=30),
+                                     usefulness=usefulness, time_on_screen_ms=ms, **base))
+    return out
+
+
 def test_protected_floor_refused():
-    """propose.py refuses lower_tier / disable_rule / narrow_rule on protected_floor rules."""
-    lane_module("noteguard.governance.propose", "B4")
-    not_implemented("B4", "submit each protected proposal kind for CRIT-001 and ALG-001; all refused")
+    """propose.py refuses lower_tier / disable_rule / narrow_rule on protected_floor rules.
+
+    Applied inputs: every reducing kind for every protected rule in the BASELINE ruleset (Tier 1 and
+    DOSE-001/002, PDF-001), with positive controls on unprotected rules (a checker that refuses
+    everything fails), and the feedback-driven path with noisy protected and noisy Tier 3 rules plus
+    an unrelated quiet rule (shape adequacy, 12.1).
+    Mutation (applied): make propose.is_protected return False -> fails."""
+    from noteguard.contracts.types import ProposalKind as K
+    from noteguard.contracts.types import RuleId
+    from noteguard.governance import propose as pr
+    from tests.support.golden import bundle
+
+    b = bundle()
+    rs, reg = b.ruleset, b.registry
+    protected = [r.rule_id for r in rs.rules if r.protected_floor or r.default_tier == 1]
+    assert {RuleId.CRIT_001, RuleId.ALG_001, RuleId.DOSE_002} <= set(protected)
+    reducing = (K.LOWER_TIER, K.DISABLE_RULE, K.NARROW_RULE, K.RETIRE_TIER3_RULE, K.ADJUST_TIER3_THRESHOLD)
+    subs = [pr.make_proposal(k, r, "v2", {}, "test", {"n": 1}) for r in protected for k in reducing]
+    ok, refused = pr.submit(subs, rs, reg)
+    assert not ok and {x.code for x in refused} == {pr.PROTECTED_FLOOR} and len(refused) == len(subs)
+
+    # Positive controls: the same kinds on unprotected rules proceed to evaluation.
+    controls = [pr.make_proposal(K.RETIRE_TIER3_RULE, RuleId.DIFF_001, "v2", {}, "test", {"n": 1}),
+                pr.make_proposal(K.LOWER_TIER, RuleId.PEND_001, "v2", {}, "test", {"n": 1}),
+                pr.make_proposal(K.ADD_SYNONYM, None, "v2", {"term_key": "drug:amlodipine", "synonym": "amlo"}, "t", {}),
+                pr.make_proposal(K.ADD_SYNONYM, None, "v2", {"cue_kind": "pending", "phrase": "outstanding"}, "t", {}),
+                pr.make_proposal(K.ADD_QUESTION_TEMPLATE, None, "v2", {"template_id": "q_new"}, "t", {})]
+    ok, refused = pr.submit(controls, rs, reg)
+    assert len(ok) == len(controls), [r.code for r in refused]
+    # Other refusals: suppressing cue (shared with protected rules), same version, wrong tier, unknown term.
+    others = {pr.NARROWS_SHARED_REGISTRY: pr.make_proposal(K.ADD_SYNONYM, None, "v2", {"cue_kind": "negation", "phrase": "nil"}, "t", {}),
+              pr.SAME_VERSION: pr.make_proposal(K.RETIRE_TIER3_RULE, RuleId.DIFF_001, "v1", {}, "t", {}),
+              pr.NOT_TIER3: pr.make_proposal(K.RETIRE_TIER3_RULE, RuleId.PEND_001, "v2", {}, "t", {}),
+              pr.UNKNOWN_TERM: pr.make_proposal(K.ADD_SYNONYM, None, "v2", {"term_key": "drug:zzz", "synonym": "z"}, "t", {})}
+    for code, p in others.items():
+        assert pr.refusal_code(p, rs, reg) == code
+
+    # Feedback-driven: ALG-001 (protected) and DIFF-001 (Tier 3) both dismissed 9/10; PEND-001 quiet.
+    events = (_feedback("ALG-001", 9, "dismiss", "not_clinically_relevant", usefulness="not_useful", ms=900)
+              + _feedback("ALG-001", 1, "accept") + _feedback("DIFF-001", 9, "dismiss", "extraction_error")
+              + _feedback("DIFF-001", 1, "accept") + _feedback("PEND-001", 10, "accept", usefulness="useful", ms=8000))
+    batch = pr.propose_from_feedback(events, rs, "v2", registry=reg)
+    assert [(p.kind, p.rule_id) for p in batch.accepted] == [(K.RETIRE_TIER3_RULE, RuleId.DIFF_001)]
+    assert [(r.proposal.kind, r.proposal.rule_id, r.code) for r in batch.refused] == [
+        (K.NARROW_RULE, RuleId.ALG_001, pr.PROTECTED_FLOOR)]
+    m = {x.rule_id: x for x in batch.metrics}
+    alg = m[RuleId.ALG_001]  # dispositions per FLAG (usefulness events do not double-count)
+    assert (alg.surfaced, alg.surfaced_basis, alg.dismissed, alg.rates["dismissal"]) == (10, "flags_with_feedback", 9, "9/10")
+    assert (alg.rates["fast_decision_share"], m[RuleId.PEND_001].rates["fast_decision_share"]) == ("9/9", "0/10")
+    # Denominator supplied (surfaced flags, incl. undecided ones) changes the rate and the outcome.
+    batch = pr.propose_from_feedback(events, rs, "v2", surfaced={RuleId.DIFF_001: 40, RuleId.ALG_001: 10}, registry=reg)
+    assert m[RuleId.DIFF_001].rates["dismissal"] == "9/10"
+    assert {x.rule_id: x.rates["dismissal"] for x in batch.metrics}[RuleId.DIFF_001] == "9/40" and not batch.accepted
+    # The threshold is read: above the sample size nothing is proposed or refused.
+    batch = pr.propose_from_feedback(events, rs, "v2", min_surfaced=11, registry=reg)
+    assert not batch.accepted and not batch.refused
 
 
 def test_aggregate_no_content_or_ids():
