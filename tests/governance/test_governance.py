@@ -251,7 +251,19 @@ def test_protected_floor_refused():
 
 
 def test_aggregate_no_content_or_ids():
-    """Aggregate view: role-gated, no content, no patient/encounter ids, small cells '<5'."""
+    """Aggregate view: role-gated, no content, no patient/encounter ids, small cells '<5'.
+
+    B4 strengthened the B0 body (all original assertions kept): the view is POPULATED by real check
+    runs (an empty view would pass the content checks vacuously), first with one workspace (every
+    cell "<5"), then with six (the Tier 1/2 cells become exact integers >= 5).
+    Mutations (applied, decisions/B4.md): show small counts as integers -> fails; remove the
+    store-layer role check in store.aggregate_rows (B2's second layer) -> fails; shift an age-bucket
+    boundary -> fails."""
+    from noteguard.api.errors import ApiError
+    from noteguard.contracts.types import Staff
+    from tests.support.api import A1, run_cutoff
+    from tests.support.builders import AUTHOR
+
     app = real_app()
     koh = client(app)
     h = login(koh, "koh")  # quality & risk
@@ -263,6 +275,42 @@ def test_aggregate_no_content_or_ids():
     lim = client(app)
     hl = login(lim, "lim")
     assert lim.get(R.AGGREGATE, headers=hl).status_code == 403
+    assert client(app).get(R.AGGREGATE).status_code == 401
+
+    # Populate: one clinician workspace with the 11:30 run -> every cell is a small cell.
+    assert run_cutoff(lim, hl, A1, "ENC-A1_1130").status_code == 200
+    r = koh.get(R.AGGREGATE, headers=h)
+    body = r.json()
+    assert r.status_code == 200 and "no-store" in r.headers.get("cache-control", "")
+    assert body["cells"] and all(c["count"] == "<5" for c in body["cells"])
+    assert body["ruleset_version"] == "v1" and body["small_cell_threshold"] == 5
+    assert not UUID.search(r.text) and "flg_" not in r.text and "Potassium" not in r.text and "penicillin" not in r.text.lower()
+    assert {tuple(sorted(c)) for c in body["cells"]} == {("age_bucket", "count", "rule_id", "state", "tier")}
+    # Five more workspaces with the same run -> 6 copies per cell -> exact counts appear.
+    for _ in range(5):
+        c = client(app)
+        hc = login(c, "lim")
+        assert run_cutoff(c, hc, A1, "ENC-A1_1130").status_code == 200
+    r = koh.get(R.AGGREGATE, headers=h)
+    body = r.json()
+    counts = {(c["rule_id"], c["state"]): c["count"] for c in body["cells"]}
+    assert counts[("ALG-001", "open")] == "6" and counts[("CRIT-001", "open")] == "6"
+    for cell in body["cells"]:
+        assert cell["count"] == "<5" or int(cell["count"]) >= 5
+    assert not UUID.search(r.text) and "flg_" not in r.text
+    for key in ("mrn", "nric", "encounter_id", "patient", "staff_id", "quote", "reason", "title"):
+        assert key not in r.text.lower()
+    # Age buckets at their boundaries (upper bounds exclusive).
+    from datetime import datetime, timedelta, timezone
+
+    from noteguard.governance.aggregate import age_bucket
+    t = datetime(2026, 9, 21, tzinfo=timezone.utc)
+    assert [age_bucket(t, t + timedelta(hours=x)) for x in (0, 3.99, 4, 23.99, 24, 90)] == [
+        "<4h", "<4h", "4-24h", "4-24h", ">24h", ">24h"]
+    # Store layer refuses a clinician even with the route guard bypassed (second layer, B2's seam).
+    lim_staff = Staff.model_validate(AUTHOR.staff_record("lim"))
+    with pytest.raises(ApiError):
+        app.state.store.aggregate_rows(lim_staff)
 
 
 def test_ai_disabled_by_default():
