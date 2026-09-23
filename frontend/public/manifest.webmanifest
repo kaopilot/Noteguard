@@ -1,0 +1,16 @@
+{
+  "name": "Noteguard",
+  "short_name": "Noteguard",
+  "description": "A read-only cross-read of one encounter's record for the care team.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#e8edee",
+  "theme_color": "#17242f",
+  "icons": [
+    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

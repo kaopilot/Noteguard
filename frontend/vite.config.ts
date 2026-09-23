@@ -20,7 +20,8 @@ function shellManifest(): Plugin {
     },
     writeBundle(_opts, bundle) {
       const files = Object.keys(bundle).filter((f) => !f.endsWith('.map') && f !== 'sw.js');
-      const shell = ['/offline.html', '/manifest.webmanifest', ...files.map((f) => `/${f}`)];
+      const icons = ['/icons/icon.svg', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/icon-maskable-512.png'];
+      const shell = ['/offline.html', '/manifest.webmanifest', ...icons, ...files.map((f) => `/${f}`)];
       const swPath = resolve(outDir, 'sw.js');
       const src = readFileSync(swPath, 'utf-8');
       const version = String(files.sort().join('|').length) + '-' + String(Date.now());
