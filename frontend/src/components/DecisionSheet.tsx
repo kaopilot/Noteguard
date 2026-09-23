@@ -54,6 +54,7 @@ export function DecisionSheet({ flag, inline = false, otherFlags, onClose, onDec
 }) {
   const { me, view, staffName } = useEnc();
   const titleId = useId();
+  const ratId = useId();
   const panel = useRef<HTMLElement | null>(null);
   const setPanel = (el: HTMLElement | null) => { panel.current = el; };
   const actions = useMemo(() => offeredActions(me, view, flag, decisionActionValues), [me, view, flag]);
@@ -228,11 +229,11 @@ export function DecisionSheet({ flag, inline = false, otherFlags, onClose, onDec
               </label>
             )}
             {action !== null && action !== 'accept' && (
-              <label className="field">
-                <span>Rationale{needsRationale ? ' (required)' : ' (optional)'}</span>
-                <textarea value={rationale} maxLength={2000} rows={3} onChange={(e) => setRationale(e.target.value)} />
-                <small>Sent with this decision only. Not stored on this device.</small>
-              </label>
+              <div className="field">
+                <label htmlFor={ratId}>Rationale{needsRationale ? ' (required)' : ' (optional)'}</label>
+                <textarea id={ratId} aria-describedby={`${ratId}-hint`} value={rationale} maxLength={2000} rows={3} onChange={(e) => setRationale(e.target.value)} />
+                <small id={`${ratId}-hint`}>Sent with this decision only. Not stored on this device.</small>
+              </div>
             )}
             {problem && <p className="note note-problem" role="alert">{problem}</p>}
             <div className="sheet-actions">

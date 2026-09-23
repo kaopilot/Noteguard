@@ -42,6 +42,16 @@ export function textOf(versionId: string): Json {
   return ENC.extractions.find((e: Json) => e.source_version_id === versionId);
 }
 
+// jsdom's File has no arrayBuffer(); FileReader is available (browsers have both).
+function readBytes(blob: Blob): Promise<Uint8Array> {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(new Uint8Array(r.result as ArrayBuffer));
+    r.onerror = () => reject(r.error);
+    r.readAsArrayBuffer(blob);
+  });
+}
+
 export function createFakeApi() {
   const requests: Req[] = [];
   let session: Json = null;
@@ -49,6 +59,42 @@ export function createFakeApi() {
   let flags: Json[] = [];
   const decisions: Json[] = [];
   const outage = { on: false, status: 503 };
+  const network = { failNextPosts: 0 };
+  const added: { view: Json; text: string; key: string }[] = [];
+  const allSources = () => [...sourceViews(ENC), ...added.map((a) => a.view)];
+  const members = new Set(ENC.memberships.map((m: Json) => m.staff_id));
+
+  // Mirrors B2's intake rules (store._check_source_meta / _add_version) closely enough for UI tests.
+  const addSource = (body: Json, type: string, bytes: Uint8Array | null): Response => {
+    if (!members.has(body.author_staff_id)) return reply(422, { error_code: 'validation_failed' });
+    if (type === 'pdf' && !(bytes && String.fromCharCode(...bytes.slice(0, 5)) === '%PDF-')) return reply(415, { error_code: 'pdf_not_a_pdf' });
+    const content = type === 'pdf' ? `pdf:${bytes?.length}` : body.text;
+    const replay = added.find((a) => a.key === body.idempotency_key);
+    if (replay) return replay.text === content ? reply(200, replay.view) : reply(409, { error_code: 'idempotency_conflict' });
+    let version = 1;
+    let sourceId = `added-${added.length + 1}`;
+    let supersedes: string | null = null;
+    if (body.source_id) {
+      const versions = allSources().filter((s: Json) => s.source_id === body.source_id);
+      if (versions.length === 0) return reply(404, { error_code: 'not_found' });
+      const cur = versions.sort((a: Json, b: Json) => b.version - a.version)[0];
+      const same = cur.title === body.title && cur.author_staff_id === body.author_staff_id && cur.discipline === body.discipline
+        && new Date(cur.source_time).getTime() === new Date(body.source_time).getTime() && cur.source_type === type;
+      if (!same || body.identifier_namespace !== undefined) return reply(422, { error_code: 'validation_failed' });
+      version = cur.version + 1;
+      sourceId = cur.source_id;
+      supersedes = cur.note_version_id;
+    }
+    const now = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
+    const slow = type === 'pdf' && String(body.file_name).includes('slow');
+    const view = { source_id: sourceId, note_version_id: `added-v${added.length + 1}`, version, supersedes_version_id: supersedes,
+      title: body.title, source_type: type, discipline: body.discipline, author_staff_id: body.author_staff_id,
+      source_time: body.source_time, version_time: now, received_at: now, sha256: 'test',
+      extraction_status: type === 'pdf' ? (slow ? 'failed' : 'complete') : 'not_applicable',
+      extraction_note: slow ? 'extraction timed out' : null, page_count: type === 'pdf' ? 1 : 0 };
+    added.push({ view, text: content, key: body.idempotency_key });
+    return slow ? reply(422, { error_code: 'pdf_extraction_timeout' }) : reply(201, view);
+  };
 
   const reply = (status: number, body?: Json) =>
     new Response(body === undefined ? null : JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'private, no-store' } });
@@ -76,8 +122,10 @@ export function createFakeApi() {
     }
     if (p.encounter_id && p.encounter_id !== A1) return reply(404, { error_code: 'not_found' });
     if (route === 'ENCOUNTER') {
-      return reply(200, { encounter: ENC.encounter, patient_label: ENC.patient.display_label, staff: ENC.staff, memberships: ENC.memberships, sources: sourceViews(ENC) });
+      return reply(200, { encounter: ENC.encounter, patient_label: ENC.patient.display_label, staff: ENC.staff, memberships: ENC.memberships, sources: allSources() });
     }
+    if (route === 'SOURCES') return addSource(body, 'pasted_text', null);
+    if (route === 'SOURCES_PDF') return addSource(body, 'pdf', body.file_bytes);
     if (route === 'SOURCE_TEXT') {
       const e = textOf(p.source_version_id ?? '');
       return e ? reply(200, { note_version_id: e.source_version_id, extraction_status: e.status, text: e.text, pages: e.pages }) : reply(404, { error_code: 'not_found' });
@@ -127,9 +175,20 @@ export function createFakeApi() {
     const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
     const method = (init?.method ?? 'GET').toUpperCase();
     const headers = Object.fromEntries(Object.entries((init?.headers ?? {}) as Record<string, string>).map(([k, v]) => [k.toLowerCase(), v]));
-    const body = typeof init?.body === 'string' ? JSON.parse(init.body) : null;
+    let body: Json = typeof init?.body === 'string' ? JSON.parse(init.body) : null;
+    if (typeof FormData !== 'undefined' && init?.body instanceof FormData) {
+      body = {};
+      for (const [k, v] of init.body.entries()) {
+        if (typeof v === 'string') body[k] = v;
+        else { body.file_name = v.name; body.file_bytes = await readBytes(v); }
+      }
+    }
     requests.push({ method, url, headers, body });
+    if (method === 'POST' && network.failNextPosts > 0) {
+      network.failNextPosts -= 1;
+      throw new TypeError('network down');
+    }
     return handle(method, new URL(url, 'http://ng.test').pathname, body);
   };
-  return { fetch, requests, outage };
+  return { fetch, requests, outage, network, added };
 }

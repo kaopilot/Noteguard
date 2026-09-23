@@ -19,6 +19,14 @@ export function hasWorkspaceToken(): boolean {
   return workspaceToken !== null;
 }
 
+/** A fresh idempotency key for one intended submission (a retry of the same content reuses it).
+ * getRandomValues works on plain-HTTP LAN addresses, where crypto.randomUUID is unavailable. */
+export function newIdempotencyKey(): string {
+  const b = new Uint8Array(16);
+  crypto.getRandomValues(b);
+  return 'ui-' + Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
+}
+
 /** Fill a route template. Params are opaque IDs only (no clinical content in URLs, Section 10.2). */
 export function routePath(route: RouteKey, params: Record<string, string> = {}): string {
   return CONTRACT.routes[route].replace(/\{(\w+)\}/g, (_m, name: string) => {
@@ -44,13 +52,15 @@ export async function api<T>(
 ): Promise<ApiResult<T>> {
   const headers: Record<string, string> = { Accept: 'application/json' };
   if (workspaceToken !== null) headers[CONTRACT.workspace_header] = workspaceToken;
-  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  const isForm = typeof FormData !== 'undefined' && body instanceof FormData;
+  // JSON bodies are declared; multipart bodies let the browser set the boundary header itself.
+  if (body !== undefined && !isForm) headers['Content-Type'] = 'application/json';
   let res: Response;
   try {
     res = await fetch(routePath(route, params), {
       method,
       headers,
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
       credentials: 'same-origin',
       cache: 'no-store',
     });

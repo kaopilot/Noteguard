@@ -3,6 +3,7 @@ import type { components } from './schema.gen';
 
 type S = components['schemas'];
 export type AIStatusView = S['AIStatusView'];
+export type AddTextSourceRequest = S['AddTextSourceRequest'];
 export type BubbleList = S['BubbleList'];
 export type BubbleStatus = S['BubbleStatus'];
 export type ChangeKind = S['ChangeKind'];

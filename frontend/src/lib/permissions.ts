@@ -37,6 +37,10 @@ export function offeredActions(me: SessionView, view: EncounterView, flag: Flag,
   return all.filter((a) => hasTransition(a, flag) && allowed(`decide_${a}`, me, view, flag.tier, flag));
 }
 
+export function mayAddSource(me: SessionView, view: EncounterView): boolean {
+  return allowed('add_source', me, view, null);
+}
+
 export function mayCloseEncounter(me: SessionView, view: EncounterView): boolean {
   return allowed('close_encounter', me, view, null);
 }

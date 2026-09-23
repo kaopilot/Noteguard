@@ -75,6 +75,10 @@ button { font: inherit; color: inherit; }
 /* Encounter header */
 .enc-head { margin-bottom: 0.75rem; }
 .enc-sub { color: var(--ink-soft); }
+.enc-head { position: relative; }
+.enc-add { float: right; margin-left: 0.75rem; }
+.field input:not([type='radio']):not([type='file']) { font: inherit; padding: 0.45rem; min-height: 44px; border: 1.5px solid var(--rule); border-radius: var(--radius-s); width: 100%; }
+.field input:disabled, .field select:disabled { background: #eef0f2; color: var(--ink-soft); }
 
 /* Glance: the one bold element */
 .glance { background: var(--paper); border-radius: var(--radius-m); padding: 1rem 1.1rem; margin-bottom: 0.75rem; border-top: 6px solid var(--t3); }
@@ -230,7 +234,7 @@ th, td { text-align: left; padding: 0.4rem 0.5rem; border-bottom: 1px solid var(
 .choice input { margin-top: 0.3rem; width: 1.1rem; height: 1.1rem; flex: none; }
 .choice small { display: block; color: var(--ink-soft); }
 .field { display: grid; gap: 0.3rem; margin: 0.75rem 0; }
-.field span { font-weight: 700; }
+.field > span, .field > label { font-weight: 700; }
 .field select, .field textarea { font: inherit; padding: 0.45rem; min-height: 44px; border: 1.5px solid var(--rule); border-radius: var(--radius-s); width: 100%; }
 .field small { color: var(--ink-soft); }
 .decide-inline { margin: 0 1rem 1rem; padding: 0.75rem 1rem; border: 2px solid var(--action); border-radius: var(--radius-m); background: #f6f8fb; }

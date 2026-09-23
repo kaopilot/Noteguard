@@ -3,8 +3,10 @@ import { api, type ApiResult } from '../api/client';
 import type {
   BubbleList, CheckRunView, ClosureView, EncounterView, Flag, FlagDetail, GlanceView, SessionView, Summary as SummaryT,
 } from '../api/types';
+import { mayAddSource } from '../lib/permissions';
 import { ROSTER } from '../lib/roster';
 import { sgtDateTime } from '../lib/time';
+import { AddSource } from './AddSource';
 import { Bubbles } from './Bubbles';
 import { Closure } from './Closure';
 import { EncounterCtx, type EncounterCtxValue, type SourceTarget } from './ctx';
@@ -69,6 +71,7 @@ export function EncounterScreen({ me, encounterId, onBack, onSessionProblem }: {
   const [runProblem, setRunProblem] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [stale, setStale] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
 
   const p = useMemo(() => ({ encounter_id: encounterId }), [encounterId]);
   const watch = useCallback(<T,>(r: ApiResult<T>): Loadable<T> => {
@@ -100,13 +103,18 @@ export function EncounterScreen({ me, encounterId, onBack, onSessionProblem }: {
     return () => window.clearInterval(t);
   }, [stale, loadDerived]);
 
+  const loadView = useCallback(async () => {
+    const v = watch(await api<EncounterView>('GET', 'ENCOUNTER', p));
+    setView(keepOnOutage(v));
+    return v;
+  }, [p, watch]);
+
   useEffect(() => {
     void (async () => {
-      const v = watch(await api<EncounterView>('GET', 'ENCOUNTER', p));
-      setView(v);
+      const v = await loadView();
       if (v.kind === 'ok') await loadDerived();
     })();
-  }, [p, watch, loadDerived]);
+  }, [loadView, loadDerived]);
 
   const runChecks = async (cutoff: string) => {
     setRunBusy(true);
@@ -184,6 +192,9 @@ export function EncounterScreen({ me, encounterId, onBack, onSessionProblem }: {
         <div className="enc-head">
           <button type="button" className="link" onClick={onBack}>All encounters</button>
           <h1>{v.encounter.encounter_ref}: {v.patient_label}</h1>
+          {mayAddSource(me, v) && (
+            <button type="button" className="btn btn-quiet enc-add" onClick={() => setAdding(true)}>Add a source</button>
+          )}
           <p className="enc-sub">{v.encounter.setting}; responsible clinician {v.encounter.responsible_clinician_id ? ctx.staffName(v.encounter.responsible_clinician_id) : 'not recorded'}</p>
         </div>
         {stale && (
@@ -196,7 +207,7 @@ export function EncounterScreen({ me, encounterId, onBack, onSessionProblem }: {
           </div>
         )}
         <Glance glance={glance} closure={closure} bubbles={bubbles} flags={flagList} onQuestions={() => setTab('questions')} />
-        <RunControl run={run} busy={runBusy} problem={runProblem} onRun={(c) => void runChecks(c)} />
+        <RunControl key={v.sources.length} run={run} busy={runBusy} problem={runProblem} onRun={(c) => void runChecks(c)} />
         {notice && <p className="note note-change" role="status">{notice}</p>}
         <nav className="tabs" aria-label="Encounter views">
           {TABS.map((t) => (
@@ -226,6 +237,20 @@ export function EncounterScreen({ me, encounterId, onBack, onSessionProblem }: {
       </main>
       {sourceOverlay && <div className="sheet-backdrop"><SourceViewer target={target} asSheet onClose={() => setTarget(null)} /></div>}
       {!wide && decision(false)}
+      {adding && (
+        <AddSource
+          onClose={() => setAdding(false)}
+          onAdded={(s, outcome) => {
+            setAdding(false);
+            setNotice(outcome === 'replay'
+              ? 'That exact content is already in the record, so nothing new was added.'
+              : outcome === 'retained'
+                ? 'The PDF was kept, but reading its text did not finish in time. It is labelled as incomplete and cannot support absence answers.'
+                : `Added: ${s?.title ?? 'source'} (version ${s?.version ?? 1}), recorded ${s ? sgtDateTime(s.version_time) : ''}. Run checks up to that time or later to include it.`);
+            void loadView();
+          }}
+        />
+      )}
     </EncounterCtx.Provider>
   );
 }
