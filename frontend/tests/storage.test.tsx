@@ -69,12 +69,13 @@ test('main path leaves nothing clinical in browser storage and keeps the token i
   fireEvent.click(within(sheet).getByRole('radio', { name: /^Accept Records/ }));
   fireEvent.click(within(sheet).getByRole('button', { name: 'Record: accept' }));
   await screen.findByText(/Recorded: Dose differs between sources is now accepted/);
-  await screen.findByText('The glance strip is not available in this build.');
+  await waitFor(() => expect(document.querySelector('.glance-headline')?.textContent).toBe('Closure blocked: 3 Tier 1 items with Dr Lim'));
+  expect(screen.queryByText(/is not available in this build/)).toBeNull();
 
   fireEvent.click(screen.getByRole('button', { name: 'Closure' }));
   await screen.findByText('Accept (open to accepted)');
   fireEvent.click(screen.getByRole('button', { name: 'Summary' }));
-  await screen.findByText('Summary is not available in this build.');
+  await screen.findByText(CONTRACT.human_review_statement);
 
   // Nothing persisted in the browser.
   expect(localStorage.length).toBe(0);

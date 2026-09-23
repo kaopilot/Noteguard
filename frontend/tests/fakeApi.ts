@@ -1,6 +1,8 @@
 // Test double of the Noteguard API for jsdom tests, built from the repo's golden fixtures and the
-// contract route templates. Mirrors the B2 API with the stub engine: 404 before the first run, and
-// 501 for bubbles, glance and summary after any decision. It is a double for UI tests only.
+// contract route templates. Mirrors the API as integrated at CP2 (real engine): 404 before the first
+// run, and views keep answering after decisions (served from the golden, so their content does not
+// reflect the decision). `stubEngine: true` restores the pre-CP2 stub behaviour (501 for bubbles, glance
+// and summary after any decision) to test the not-built rendering. A double for UI tests only.
 import clinic from '../../fixtures/encounters/clinic.json';
 import encA1 from '../../fixtures/encounters/ENC-A1.json';
 import g1130 from '../../fixtures/expected/ENC-A1_1130.json';
@@ -52,7 +54,7 @@ function readBytes(blob: Blob): Promise<Uint8Array> {
   });
 }
 
-export function createFakeApi() {
+export function createFakeApi(opts: { stubEngine?: boolean } = {}) {
   const requests: Req[] = [];
   let session: Json = null;
   let current: Json = null;
@@ -156,7 +158,7 @@ export function createFakeApi() {
       return reply(200, { run: current.run, flags, changes: current.required_changes });
     }
     if (!current) return reply(404, { error_code: 'not_found' });
-    const decided = decisions.length > 0;
+    const decided = opts.stubEngine === true && decisions.length > 0;
     switch (route) {
       case 'CHECK_RUN_LATEST': return reply(200, { run: current.run, flags, changes: current.required_changes });
       case 'FLAGS': return reply(200, flags);

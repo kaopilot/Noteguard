@@ -55,4 +55,7 @@ def create_app(*, settings: Settings | None = None, engine: EngineAPI | None = N
     return app
 
 
-app = create_app()
+from noteguard.engine import get_engine  # noqa: E402  (I1 step 4: real engine + approval gate)
+from noteguard.governance.approval import api_bundle_loader  # noqa: E402
+
+app = create_app(engine=get_engine(), bundle_loader=api_bundle_loader())

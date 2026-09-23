@@ -86,6 +86,27 @@ test('an unapproved rule set pauses checks in plain words and is never shown as 
   expect(screen.queryByRole('heading', { name: 'Which allergy entry is correct?' })).toBeNull();
 });
 
+test('a view the server reports as not built (501) says so and shows nothing in its place', async () => {
+  wide(false);
+  const api = createFakeApi({ stubEngine: true });
+  vi.stubGlobal('fetch', vi.fn(api.fetch));
+  render(<App />);
+  fireEvent.click(await screen.findByRole('button', { name: /Dr Lim/ }));
+  fireEvent.click(await screen.findByRole('button', { name: /ENC-A1/ }));
+  await screen.findByText('No check run yet');
+  await runAt('2026-09-21T16:00');
+  const dose = screen.getByRole('article', { name: 'Dose differs between sources' });
+  fireEvent.click(within(dose).getByRole('button', { name: 'Decide' }));
+  const sheet = await screen.findByRole('dialog', { name: /Decide: Dose differs/ });
+  fireEvent.click(within(sheet).getByRole('radio', { name: /^Accept Records/ }));
+  fireEvent.click(within(sheet).getByRole('button', { name: 'Record: accept' }));
+  await screen.findByText('The glance strip is not available in this build.');
+  expect(document.querySelector('.glance-headline')).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Summary' }));
+  await screen.findByText('Summary is not available in this build.');
+  expect(screen.queryByText(/Requires human review/)).toBeNull();
+});
+
 test('a cited source version whose text is gone shows an explicit state, not a blank', async () => {
   const api = await openA1(false);
   await runAt('2026-09-21T16:00');

@@ -77,4 +77,5 @@ Status: approved with defaults (@k, 22 Sep 2026, chat B1.2). Landing prepared by
   Deviation from the text above, as the review doc allowed: the ENC-B1/ENC-C1 "must not flag DET-001" lines were
   left out (exact comparison already covers them), so those two scenarios keep their sign-off.
   Checked: outside DET-001, every golden JSON is byte-identical; closure status unchanged in all five scenarios.
-  ENC-A1_1130, ENC-A1_1600 and ENC-A1_1600_rerun are PENDING re-sign-off by @k. Awaiting @k merge.
+  ENC-A1_1130, ENC-A1_1600 and ENC-A1_1600_rerun were re-signed by @k in 73a85f8 ("re-sign ENC-A1 goldens after
+  CCR-02"). LANDED: merged by @k in 336267a ("Merge ccr-01-02", 23 Sep 2026). Status line updated by I1 (session I1.5, 24 Sep 2026) at @k's request.

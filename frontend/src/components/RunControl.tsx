@@ -16,11 +16,15 @@ export function RunControl({ run, busy, problem, onRun }: {
   // Default: everything recorded so far. Compare as instants (ISO strings with and without fractional
   // seconds do not sort correctly as text) and round up to the second (see toSgtInputSecondsCeil).
   const latest = view.sources.reduce((m, s) => (Date.parse(s.version_time) > Date.parse(m) ? s.version_time : m), view.encounter.started_at);
-  const [value, setValue] = useState(toSgtInputSecondsCeil(latest));
+  const defaultValue = toSgtInputSecondsCeil(latest);
+  const [value, setValue] = useState(defaultValue);
   const [invalid, setInvalid] = useState(false);
   const [open, setOpen] = useState(false);
   const submit = () => {
-    const utc = sgtInputToUtc(value);
+    // Untouched default = "everything recorded so far": send the last recording instant exactly. The
+    // input shows whole seconds rounded up, which can be up to 1 s in the future (the server refuses
+    // that); the exact instant is never in the future and never excludes the last version.
+    const utc = value === defaultValue ? latest : sgtInputToUtc(value);
     setInvalid(utc === null);
     if (utc) {
       setOpen(false);

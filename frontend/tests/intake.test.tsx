@@ -1,6 +1,7 @@
 // Add-source UI (Section 13 intake; B2's intake rules). Mutation spot-checks: regenerate the key on
 // every submit -> the retry case fails; send identifier_namespace always -> the new-version case fails;
-// drop `disabled={amending !== null}` from Title -> the new-version case fails; delete the
+// drop `disabled={amending !== null}` from Title -> the new-version case fails; send the rounded display
+// value instead of the exact recording instant -> the cutoff case fails; delete the
 // pdf_not_a_pdf message -> the PDF case fails; drop the RunControl key -> the cutoff case fails.
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
@@ -59,6 +60,12 @@ test('the run control defaults to a cutoff that includes a newly recorded source
     expect(Date.parse(cutoff ?? '')).toBeGreaterThanOrEqual(Date.parse(recorded));
     expect(Date.parse(cutoff ?? '') - Date.parse(recorded)).toBeLessThan(1000);
   });
+  // Running with the untouched default sends the recording instant itself: never in the future
+  // (the server refuses future cutoffs), never before the new version.
+  fireEvent.click(screen.getByRole('button', { name: 'Run checks' }));
+  await waitFor(() => expect(api.requests.some((r) => r.method === 'POST' && r.url.endsWith('/check-runs'))).toBe(true));
+  const run = api.requests.find((r) => r.method === 'POST' && r.url.endsWith('/check-runs'));
+  expect(run?.body.cutoff).toBe(recorded);
 });
 
 test('a retry after a lost connection reuses the idempotency key; changing the note issues a new one', async () => {

@@ -1,4 +1,4 @@
-// B3 main path against the running API (stub engine until I1). Assertions use text unique to the
+// B3 main path against the running API: real engine + approved rule set since I1 (CP2). Assertions use text unique to the
 // element under test (L9). Screenshots go to test-results/ for visual review.
 import { expect, test, type Page } from '@playwright/test';
 
@@ -30,6 +30,14 @@ test('main path: runs, flags, evidence, source viewer, decision, closure, summar
   await expect(page.locator('.glance-headline')).toHaveText('Closure blocked: 3 Tier 1 items with Dr Lim');
   await shot(page, '01-glance-16h');
 
+  // Diff chips from the real engine's changes (the stub engine emitted none).
+  if (mobile) await page.getByRole('button', { name: 'Record', exact: true }).click();
+  const chips = page.locator('.timeline .chips');
+  await expect(chips.getByRole('button', { name: /reworded: metformin from 09:00 \(Dr Lim\)$/ })).toBeVisible();
+  await expect(chips.getByRole('button', { name: /explicit change: metformin from 10:30 \(Pharmacist Ong\)$/ })).toBeVisible();
+  await expect(chips.getByRole('button', { name: /carried forward: stable from 09:00 \(Dr Lim\)$/ })).toBeVisible();
+  if (mobile) await page.getByRole('button', { name: 'Flags', exact: true }).click();
+
   const crit = page.getByRole('article', { name: 'Critical result without documented response' });
   await expect(crit.getByText('A later check superseded this flag')).toBeVisible();
   await expect(crit.locator('.flag-facts')).toContainText('Superseded');
@@ -54,7 +62,7 @@ test('main path: runs, flags, evidence, source viewer, decision, closure, summar
   await shot(page, '03-offset-highlight');
   if (mobile) await page.getByRole('button', { name: 'Close' }).click();
 
-  // Summary works before any decision (the stub engine answers 501 after one).
+  // Summary before the decision.
   await page.getByRole('button', { name: 'Summary' }).click();
   await expect(page.getByText('Requires human review. Not the medical record. Does not diagnose or recommend treatment.')).toBeVisible();
   await shot(page, '04-summary');
@@ -70,7 +78,10 @@ test('main path: runs, flags, evidence, source viewer, decision, closure, summar
   await sheet.getByRole('radio', { name: /^Accept Records/ }).check();
   await sheet.getByRole('button', { name: 'Record: accept' }).click();
   await expect(page.getByText(/Recorded: Dose differs between sources is now accepted/)).toBeVisible();
-  await expect(page.getByText('The glance strip is not available in this build.')).toBeVisible();
+  // Real engine: the glance, questions and summary keep working after a decision (the stub answered 501).
+  await expect(page.locator('.glance-headline')).toHaveText('Closure blocked: 3 Tier 1 items with Dr Lim');
+  await expect(page.locator('.glance-decisions')).toContainText('Dr Lim accepted: Dose differs between sources');
+  await expect(page.getByText(/is not available in this build/)).toHaveCount(0);
 
   await page.getByRole('button', { name: 'Closure' }).click();
   await expect(page.locator('.closure-headline')).toHaveText('Closure blocked');
@@ -80,7 +91,7 @@ test('main path: runs, flags, evidence, source viewer, decision, closure, summar
   await shot(page, '06-closure');
 
   await page.getByRole('button', { name: 'Summary' }).click();
-  await expect(page.getByText('Summary is not available in this build.')).toBeVisible();
+  await expect(page.getByText(/^Accept · Dose differs between sources · by Dr Lim · no reason code · \d\d:\d\d$/)).toBeVisible();
 
   if (mobile) {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
@@ -239,7 +250,7 @@ test('add sources: paste, new version, real PDFs (text and scanned), non-PDF ref
   const cutoff = await page.getByLabel('Check sources up to (Singapore time)').inputValue();
   expect(cutoff > '2026-09-22').toBe(true);
   await page.getByRole('button', { name: 'Run checks' }).click();
-  const outcome = page.getByText(/Checks ran over sources up to the chosen cutoff|Running checks is not available in this build|Checks did not run/);
+  const outcome = page.getByText(/^Checks ran over sources up to the chosen cutoff/);
   await expect(outcome).toBeVisible();
   test.info().annotations.push({ type: 'run-after-intake', description: (await outcome.textContent()) ?? '' });
   expect(await page.evaluate(() => localStorage.length + sessionStorage.length)).toBe(0);
@@ -277,6 +288,7 @@ test('feedback after a decision (B2 route) and the aggregate page for a governan
   expect(agg.status()).toBe(200);
   await expect(page.getByRole('heading', { name: 'Flag patterns across encounters' })).toBeVisible();
   await expect(page.getByText(/^Fewer than \d+ are shown as “<\d+”$/)).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: 'Time to first decision' })).toBeVisible();
   expect(await page.locator('body').textContent()).not.toContain('ENC-A1');
   await shot(page, '12-aggregate');
 });

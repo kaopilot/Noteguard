@@ -1,7 +1,7 @@
 # Evaluation report: baseline v1 vs candidate v1
 
-- Report sha256: `81cc969e384be097761f2e82b9b2bd54cae97cb82ff305a02db43d5a6f18d8cc` (canonical JSON; pin this in APPROVAL_<v>.md)
-- Engine: `noteguard.engine.engine.Engine`; corpus sha256 `d7981fad5f50fe1423fea080c8a0e17ad06d7130734f83804d6c3c274742dd32`
+- Report sha256: `ba5f0711db400073c73caf1e61972a3f466b86672dcb570ce7be1a267225c725` (canonical JSON; pin this in APPROVAL_<v>.md)
+- Engine: `noteguard.engine.engine.Engine`; corpus sha256 `7a468fc159bb2a7e2117498b979f0543360632ff6b6509de000c700020695e3f`
 - Cases: {'b4_labelled': 18, 'golden': 5, 'known_limit': 1}; labels: {'b4_labelled': 14, 'golden': 19, 'known_limit': 1}
 - Tier 1 recall: baseline 17/17, candidate 17/17
 - **Gate: PASSED**
