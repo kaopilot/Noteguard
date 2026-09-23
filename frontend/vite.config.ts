@@ -50,6 +50,12 @@ export default defineConfig({
   build: { sourcemap: false, target: 'es2022' },
   test: {
     environment: 'jsdom',
+    // Node 25+ defines its own global localStorage/sessionStorage (undefined unless --localstorage-file
+    // is given). It shadows jsdom's, so every storage reference in a test would hit Node's instead of
+    // the simulated browser's. Turn Node's off in the test workers so tests see jsdom's, as on Node 22.
+    poolOptions: {
+      forks: { execArgv: Number(process.versions.node.split('.')[0]) >= 25 ? ['--no-experimental-webstorage'] : [] },
+    },
     include: ['tests/**/*.test.{ts,tsx}'],
     setupFiles: ['tests/setup.ts'],
     restoreMocks: true,
