@@ -28,7 +28,7 @@ router = APIRouter()
 
 # No response_model: declaring AggregateView would change docs/openapi.json (integrator-owned); the
 # body is the same frozen AggregateView either way. Declaring it is proposed in CCR-04.
-@router.get(R.AGGREGATE, response_model=None)
+@router.get(R.AGGREGATE, response_model=AggregateView)
 def aggregate(request: Request, staff: Staff = Depends(require_aggregate_viewer)) -> AggregateView:
     rows = request.app.state.store.aggregate_rows(staff)  # store-layer role re-check + audit (B2)
     return build_view(rows, now=utcnow(), ruleset_version=PINNED_VERSION)

@@ -163,6 +163,72 @@
         "title": "AddTextSourceRequest",
         "type": "object"
       },
+      "AggregateCell": {
+        "additionalProperties": false,
+        "description": "PHI-minimised: no content, no patient or encounter identifiers; small cells '<5'.",
+        "properties": {
+          "age_bucket": {
+            "title": "Age Bucket",
+            "type": "string"
+          },
+          "count": {
+            "title": "Count",
+            "type": "string"
+          },
+          "rule_id": {
+            "$ref": "#/components/schemas/RuleId"
+          },
+          "state": {
+            "$ref": "#/components/schemas/FlagState"
+          },
+          "tier": {
+            "$ref": "#/components/schemas/Tier"
+          }
+        },
+        "required": [
+          "rule_id",
+          "tier",
+          "state",
+          "age_bucket",
+          "count"
+        ],
+        "title": "AggregateCell",
+        "type": "object"
+      },
+      "AggregateView": {
+        "additionalProperties": false,
+        "properties": {
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/AggregateCell"
+            },
+            "title": "Cells",
+            "type": "array"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "ruleset_version": {
+            "title": "Ruleset Version",
+            "type": "string"
+          },
+          "small_cell_threshold": {
+            "default": 5,
+            "exclusiveMinimum": 0.0,
+            "title": "Small Cell Threshold",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "generated_at",
+          "ruleset_version",
+          "cells"
+        ],
+        "title": "AggregateView",
+        "type": "object"
+      },
       "Body_add_pdf_source_api_encounters__encounter_id__sources_pdf_post": {
         "properties": {
           "author_staff_id": {
@@ -2562,7 +2628,9 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/AggregateView"
+                }
               }
             },
             "description": "Successful Response"
