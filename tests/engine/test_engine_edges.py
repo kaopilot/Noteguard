@@ -7,6 +7,8 @@ asserts on the flag count of one rule, with an unrelated note in scope (12.1 sha
 
 import pytest
 
+from noteguard.contracts.types import CheckRunOutcome, EvidenceRole, ExtractionStatus
+from tests.support import golden
 from tests.support.builders import Note, build_snapshot, run_synthetic
 from tests.support.golden import bundle, flags_by_rule
 from tests.support.lanes import engine
@@ -73,3 +75,23 @@ def test_variant_encounter_generalises():
     assert any(c.kind.value == "explicit_change" and c.subject_key == "drug:atorvastatin" for c in r.changes)
     crit = [b for b in eng.answer_bubbles(snap, r, bundle(), r.run.source_cutoff) if b.question_template_id == "q_crit_response"]
     assert [(b.subject_key, b.status.value) for b in crit] == [("analyte:sodium", "documented")]
+
+
+def test_pdf_001_when_extraction_failed_without_page_table():
+    """A PDF whose extraction failed completely carries NO page table. PDF-001 must still be raised,
+    with one extraction_gap anchor whose page is unset (README convention 1: start == end, quote "").
+    Reported as a defect at I1 (23 Sep); not reproducible, pinned here.
+    Mutation: build gap evidence only from the page table -> the flag disappears (or loses its anchor)."""
+    eng = engine()
+    g = golden.load("ENC-A1_1600")
+    snap = golden.snapshot("ENC-A1_1600")
+    ext = next(e for e in snap.extractions if e.status is ExtractionStatus.NO_TEXT_LAYER)
+    failed = ext.model_copy(update={"status": ExtractionStatus.FAILED, "text": "", "pages": ()})
+    snap = snap.model_copy(update={"extractions": tuple(failed if e is ext else e for e in snap.extractions)})
+    version = next(v for v in snap.versions if v.source_version_id == ext.source_version_id)
+    r = eng.run_checks(snap, bundle(), golden.cutoff(g), run_id=g["run_id"], evaluated_at=golden.evaluated_at(g))
+    (flag,) = [f for f in flags_by_rule(r, "PDF-001") if f.subject_key == f"source:{version.source_id}"]
+    (ev,) = flag.evidence
+    assert ev.role_in_flag is EvidenceRole.EXTRACTION_GAP and ev.page is None
+    assert ev.start == ev.end == 0 and ev.quote == "" and ev.source_version_id == ext.source_version_id
+    assert r.run.outcome is CheckRunOutcome.COMPLETED_WITH_EXTRACTION_GAPS

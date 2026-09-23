@@ -118,7 +118,7 @@ session B1.1 (see `docs/handoffs/B1.md`); "inspected" = read in code, no test.
 | Owner | source-note owner (the uploader) |
 | Evidence | one `extraction_gap` per page with no text layer (`start == end ==` page start, `page` set, quote `""`) |
 
-**Raises when** an in-scope source's extraction status is not `complete` or `not_applicable`. Closed only by a human decision (manual review or OCR). While any such source is in scope, every absence answer is `incomplete_extraction` naming it (8.8).
+**Raises when** an in-scope source's extraction status is not `complete` or `not_applicable`. A completely failed extraction has NO page table; the flag is still raised, with a single gap anchor whose `page` is unset (pinned by `test_pdf_001_when_extraction_failed_without_page_table`; consumers must accept a null page). Scope is as-of: a version recorded after the cutoff (`version_time > cutoff`), such as a document uploaded today and checked "as of" an earlier time, is not in scope and raises nothing until a run at a later cutoff. Closed only by a human decision (manual review or OCR). While any such source is in scope, every absence answer is `incomplete_extraction` naming it (8.8).
 
 **Fixtures:** ENC-A1_1600 and rerun. Test: `test_question_bubble_grounding` (downgrade half). Executed. The intake half (status detection) is B2's `test_pdf_extraction_boundary`.
 
