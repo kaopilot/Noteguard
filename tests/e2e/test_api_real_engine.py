@@ -12,6 +12,7 @@ claims are compared as sets (B2 decision #14; the goldens' order is hand-declare
 from __future__ import annotations
 
 import hashlib
+from datetime import datetime, timezone
 import json
 
 import pytest
@@ -194,23 +195,28 @@ def test_critical_observation_routing_real_api():
     assert not [f for f in _get(c, h, R.FLAGS, A1) if f["rule_id"] == "CRIT-001"]
 
 
-@pytest.mark.xfail(strict=True, reason="FINDING I1 #19 (B1 via @k): no PDF-001 on a failed extraction without a page "
-                   "table; strict, so it fails loudly once the engine is fixed and this marker must go")
 def test_pdf001_on_failed_extraction_without_page_table():
     """B2 handoff: a PDF whose extraction FAILED has no page table; the real engine still raises
-    PDF-001 on it, and no absence answer claims 'not documented'. Mutation to apply: skip sources
-    with an empty page table in PDF-001 -> no flag for the failed version."""
+    PDF-001 on it (one page-less gap anchor), and every absence answer searched it as `failed`.
+    Scope is as-of (B2 decision #8): an upload is recorded at the server clock, so the run's cutoff
+    must be at or after the upload; a golden-day cutoff correctly excludes it (decisions/I1.md #26).
+    Mutation (applied, I1 #27): drop the page-less fallback in the gap anchors -> no flag."""
     c, h = session(gated_app(), "lim")
     r = upload_pdf(c, h, A1, b"%PDF-1.4\nthis is not really a pdf", author="ravi")
     assert r.status_code == 201 and r.json()["extraction_status"] == "failed"
     vid = r.json()["note_version_id"]
     t = _get(c, h, R.SOURCE_TEXT, A1, source_version_id=vid)
     assert t["extraction_status"] == "failed" and t["text"] == "" and not t.get("pages")
-    assert run_cutoff(c, h, A1, "ENC-A1_1600").status_code == 200
+    after_upload = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")  # not in the future (B2 store rule)
+    run = c.post(url(R.CHECK_RUNS, encounter_id=A1), headers=h, json={"cutoff": after_upload})
+    assert run.status_code == 200, (run.status_code, run.json())
     pdf = [f for f in _get(c, h, R.FLAGS, A1) if f["rule_id"] == "PDF-001"
            and vid in {e["note_version_id"] for e in f["evidence"]}]
     assert len(pdf) == 1 and pdf[0]["tier"] == 2
     owner = next(s for s in sources(c, h, A1) if s["note_version_id"] == vid)["author_staff_id"]
     assert pdf[0]["owner_staff_id"] == owner == staff_id("ravi")
-    for b in _get(c, h, R.BUBBLES, A1)["bubbles"]:
-        assert b["status"] != "not_documented_in_supplied_sources", b["question_template_id"]
+    (ev,) = pdf[0]["evidence"]
+    assert ev["page"] is None and ev["start"] == ev["end"] and ev["quote"] == ""
+    absence = [b["absence"] for b in _get(c, h, R.BUBBLES, A1)["bubbles"] if b["absence"]]
+    assert absence and all((vid, "failed") in {(x["note_version_id"], x["extraction_status"]) for x in a["sources_searched"]}
+                           and a["status"] != "not_documented_in_supplied_sources" for a in absence)
