@@ -35,6 +35,14 @@ from tests.support.golden import ROOT, load
 from tests.support.lanes import client, real_app
 
 pytestmark = [pytest.mark.owner("B2"), pytest.mark.api]
+
+
+def authz_depends_current_staff():
+    from fastapi import Depends
+
+    from noteguard.api.authz import current_staff
+
+    return Depends(current_staff)
 MARKER = "ZQX-MARKER-9048"
 FAKE_NRIC = "S0000002G"
 
@@ -422,13 +430,31 @@ def test_aggregate_rows_seam_for_b4():
     assert [e.outcome.value for e in reads] == ["denied", "denied", "success"]
 
 
-def test_aggregate_route_is_b4_placeholder_behind_b2_authz():
+def test_aggregate_route_behind_b2_authz():
+    """B4's aggregate view (replaced B2's 501 placeholder at the B4 merge) sits behind BOTH B2 layers:
+    the route dependency and the store re-check. Content/identifier checks are B4's
+    (test_aggregate_no_content_or_ids). Mutation (applied): drop the role check in
+    store.aggregate_rows -> with the route dependency removed, Dr Lim gets 200."""
+    from noteguard.api import authz
+    from noteguard.contracts.api_models import AggregateView
+
     app = real_app()
-    assert client(app).get(R.AGGREGATE).status_code == 401
-    assert session(app, "lim")[0].get(R.AGGREGATE).json() == {"error_code": "forbidden_role"}
-    r = session(app, "rao")[0].get(R.AGGREGATE)
-    assert r.status_code == 501 and r.json() == {"error_code": "not_implemented"}
+    assert client(app).get(R.AGGREGATE).json() == {"error_code": "unauthenticated"}
+    lim, siti = session(app, "lim")[0], session(app, "siti")[0]
+    for c in (lim, siti):  # clinician on care teams; clinic admin
+        assert c.get(R.AGGREGATE).json() == {"error_code": "forbidden_role"}
+    for key in ("rao", "koh"):  # medical director; quality/risk
+        r = session(app, key)[0].get(R.AGGREGATE)
+        assert r.status_code == 200 and "no-store" in r.headers["cache-control"]
+        AggregateView.model_validate(r.json())
+    app.dependency_overrides[authz.require_aggregate_viewer] = _aggregate_guard_removed
+    for c in (lim, siti):  # fault injection: route layer gone, the store still refuses
+        assert c.get(R.AGGREGATE).json() == {"error_code": "forbidden_role"}
     assert client(app).get(R.AI_STATUS).json() == {"status": "disabled", "detail": "AI drafting disabled"}
+
+
+def _aggregate_guard_removed(staff=authz_depends_current_staff()):  # noqa: B008
+    return staff  # fault injection: authenticated, but NO route-level aggregate role check
 
 
 # --- logs, markers, redaction (Section 10.3, 10.4) ----------------------------------------
