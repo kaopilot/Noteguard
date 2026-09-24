@@ -1,17 +1,17 @@
 # Requirements trace (B5; the honest ledger)
 
 Every row names the requirement, where it is tested or built, the evidence level and a status.
-Owner of this file: B5. Last updated in session B5.1, 24 Sep 2026, on `main` eff8608 (after I1 / CP2).
+Owner of this file: B5. Written in session B5.1 on `main` eff8608 (after I1 / CP2). Re-verified in B5.2 on `b5-docs` 5800cd2, after I1.6's handle rename, which changed comments and prose only (decisions/B5.md #15).
 
 ## Evidence runs this trace rests on
 
 | Run | Command | Result |
 |---|---|---|
-| R1, B5.1 baseline | `make setup && make test` | setup exit 0; `136 passed, 1 skipped, 1 warning in 45.67s`; tally: not implemented 0 · REAL failures 0 · setup/teardown errors 0 |
-| R2, B5.1 per-test | `uv run pytest -q -rA --junitxml=<tmp>` | `136 passed, 1 skipped, 1 warning in 43.23s`. The one skip is `test_stub_serves_goldens` (retired by design when the real API landed, decisions/B0.md #18). **Every test id cited below passed in R1 and R2.** |
+| R1, baseline | `make setup && make test` | B5.1 (eff8608): setup exit 0; `136 passed, 1 skipped, 1 warning in 45.67s`. B5.2 (a9b9f45, I1.6 tip): `136 passed, 1 skipped, 1 warning in 51.48s`. Tally both times: not implemented 0 · REAL failures 0 · setup/teardown errors 0 |
+| R2, per-test | `uv run pytest -q -rA --junitxml=<tmp>` | B5.1: `136 passed, 1 skipped, 1 warning in 43.23s`; B5.2 on 5800cd2: `136 passed, 1 skipped, 1 warning in 41.72s`. The one skip is `test_stub_serves_goldens` (retired by design when the real API landed, decisions/B0.md #18). **Every test id cited below passed in R1 and R2.** |
 | R3, approval evidence | `uv run python -m noteguard.governance.evaluate --baseline v1 --verify` | `APPROVAL_v1: consistent` |
-| R4, UI walk (not in `make test`) | `cd frontend && npm run e2e` | See the B5.1 handoff for the recorded result |
-| R5, fresh clone | clone → README steps → `make test` | See the B5.1 handoff for the recorded output |
+| R4, UI walk (not in `make test`) | `cd frontend && npm run e2e` | B5.1 on e470f3f: `12 passed (40.8s)`, 375 px and 1440 px. `frontend/src` is unchanged since |
+| R5, fresh clone | clone → README steps → `make test` | B5.1 (e470f3f): `136 passed, 1 skipped … in 45.31s`. B5.2 (5800cd2): `make setup` exit 0, Playwright install exit 0, `136 passed, 1 skipped, 1 warning in 44.20s`, tally 0/0/0, `--verify` consistent, clone clean |
 
 **Evidence levels.** **E** = executed (a test that applies an input and observes behaviour, green in R1/R2). **E-lane** = executed by a lane outside `make test`, quoted from its handoff. **I** = inspected (code or data read, no test). **NP** = not produced (reason given).
 **Status.** **holds** / **partial** (what is missing is stated) / **not built**.

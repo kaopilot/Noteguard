@@ -2,7 +2,7 @@
 
 Synthetic data only. This is a demonstrator, not a production system.
 
-- **Evidence:** `make test` → `136 passed, 1 skipped` (B5.1, 24 Sep 2026, and a fresh clone). Every claim below has a row in `docs/REQUIREMENTS_TRACE.md`, labelled executed, inspected or not produced.
+- **Evidence:** `make test` → `136 passed, 1 skipped` (B5.1 and B5.2, 24 Sep 2026, each also from a fresh clone). Every claim below has a row in `docs/REQUIREMENTS_TRACE.md`, labelled executed, inspected or not produced.
 - **Owner:** @kaopilot. Assembled by B5 from the lanes' brief parts.
 
 ## 1 · Problem and thesis
