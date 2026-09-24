@@ -24,8 +24,12 @@ Each line: date — decision — reason. All eight OPEN defaults were **confirme
 
 ## Owner handle
 - 2026-09-24 — The owner's handle is **@kaopilot**. Records written before this date said "@k"; at @kaopilot's request I1 replaced it throughout the repo (session I1.6, decisions/I1.md #41). Two hash-pinned places keep "@k" (meaning @kaopilot), because editing them would invalidate a pinned hash: one `must_not_flag` note in `fixtures/expected/ENC-A1_1600.json` (with its source line in `declarations.py` and the review-sheet line generated from it), which is inside the approved evaluation corpus, and the held-out package `fixtures/heldout/` (manifest-pinned). Git commit messages are unchanged.
-- Those records are left verbatim. They are other lanes' append-only records (18.4). Also, `fixtures/expected/*.json` and the held-out package feed the evaluation-report hash behind APPROVAL_v1 and the pinned held-out manifest, so editing them would un-verify the approval (the CCR-05 chain).
-- Files B5 writes or finalises use @kaopilot.
+- B5 checked the rename (session B5.2, decisions/B5.md #15–18):
+  - every change outside `docs/` is a comment, docstring or prose line;
+  - no pinned input moved; `--verify` is consistent; the held-out manifest still equals its pin;
+  - `make goldens` regenerates byte-identical files.
+  Two hyphenated mentions the regex missed (`@k-signed` in `docs/brief_parts/B1.md` and `docs/kickoff/B1.md`) were renamed in B5.2, in a separable commit.
+- Sentences that quote the old token itself keep "@k": this section, I1 #41 and B5 decisions #3.
 
 ## Folded from lanes (one line each; the lane file has the reasoning)
 - B0 #1 (22 Sep) — Evidence spans are statement spans defined once in `contracts/spans.py`; known limit: abbreviations such as "e.g." split a statement.
