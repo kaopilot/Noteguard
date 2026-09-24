@@ -1,6 +1,6 @@
 """DET-001 reassurance recorded after a deterioration marker (Tier 1, stretch; Section 8.2).
 
-Built in B1.2; enabled in rulesets/v1.json by CCR-02 (approved by @k, 22 Sep 2026, defaults).
+Built in B1.2; enabled in rulesets/v1.json by CCR-02 (approved by @kaopilot, 22 Sep 2026, defaults).
 
 Raises when a reassuring or discharge-readiness statement (registry ``status`` terms, live,
 not queried) sits in a source with a LATER source_time than a deterioration marker (an

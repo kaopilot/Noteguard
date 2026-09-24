@@ -1,4 +1,4 @@
-# I1 integration checklist (@k as integrator)
+# I1 integration checklist (@kaopilot as integrator)
 
 1. Merge in CP1 order B1 → B2 → B4 → B3; after each: `make test` (tally must show 0 REAL failures), fold `docs/decisions/Bx.md` into `docs/DECISIONS.md`.
 2. Swap the stub engine: B2's engine seam points at `noteguard.engine.get_engine()` (B1). The B0 stub stays in the repo for reference.

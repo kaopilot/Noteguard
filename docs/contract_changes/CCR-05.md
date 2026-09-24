@@ -6,18 +6,18 @@ What changes (files, fields, values): `fixtures/expected/declarations.py`, the O
 Why (the failing case or missing capability): I1's API-level golden run (real engine) shows the engine emitting the
   template, while B0's hand-written golden adds "on the care team" and names the attending. No test saw it: the
   engine-level comparison leaves `reason` out of FLAG_FIELDS, and B2's full-JSON API comparison ran on the stub,
-  which serves the golden itself. @k ruled that the template is right (option (a)).
+  which serves the golden itself. @kaopilot ruled that the template is right (option (a)).
 Lanes affected and what each must do:
   - Integrator (I1): edit declarations.py, `make goldens`, and land it in ONE commit with B4's refresh; then delete the
     CCR05 override in `tests/e2e/test_api_real_engine.py`.
   - B4: `labelled.corpus_sha256()` hashes the bytes of every golden JSON, so the report hash changes. Regenerate the
     committed `fixtures/labelled_eval/reports/EVAL_v1_vs_v1.json` and refresh `evaluation_report_sha256` in
     `rulesets/APPROVAL_v1.md` (metrics are expected to be unchanged: `reason` is not scored).
-  - @k: re-sign APPROVAL_v1 on the refreshed report hash (the ruleset and registry hashes do not change).
+  - @kaopilot: re-sign APPROVAL_v1 on the refreshed report hash (the ruleset and registry hashes do not change).
   - B2, B3: none (no copy of the text in frontend/; B2's golden-through-API test serves the updated golden via the stub).
 Golden fixture impact: one field of one flag in ENC-C1_1000. Attach the review-sheet diff at landing.
-Status: approved (@k, 24 Sep 2026, chat I1.1, option (a)). LANDED 24 Sep 2026 by I1 (session I1.2), merging `ccr-05`
-  into `i1-integration`. Steps: 1 I1 (1ecdecb); 2 B4 (45ee87d, 13003d3); 3 @k's written re-sign authorisation (chat I1.2),
+Status: approved (@kaopilot, 24 Sep 2026, chat I1.1, option (a)). LANDED 24 Sep 2026 by I1 (session I1.2), merging `ccr-05`
+  into `i1-integration`. Steps: 1 I1 (1ecdecb); 2 B4 (45ee87d, 13003d3); 3 @kaopilot's written re-sign authorisation (chat I1.2),
   recorded by I1 after checking the report hash; 4 --verify consistent, governance 9 passed, make test REAL 0.
 
 Landing steps:
@@ -35,8 +35,8 @@ Landing steps:
          I1 computed this independently into /tmp: the ONLY difference from the committed report is `corpus.sha256`,
          and every metric is unchanged.
        - Set `evaluation_report_sha256` in rulesets/APPROVAL_v1.md to the new hash, and set `status` back to "draft",
-         so nobody approves new evidence on @k's behalf. Commit.
-  3. @k re-signs in writing, naming the new report hash.
+         so nobody approves new evidence on @kaopilot's behalf. Commit.
+  3. @kaopilot re-signs in writing, naming the new report hash.
   4. I1 sets `status`, `approver_label` and `approved_on`, then:
        - `--verify` must print `APPROVAL_v1: consistent`;
        - `make test-governance` must give 9 passed;

@@ -23,7 +23,7 @@ Each line: date — decision — reason. All eight OPEN defaults were **confirme
 
 
 ## Owner handle
-- 2026-09-24 — The owner's handle is **@kaopilot**. Lane handoffs, lane decisions, CCRs, kickoff prompts, goldens, review sheets and `rulesets/APPROVAL_v1.md` written before this date say "@k"; that means @kaopilot.
+- 2026-09-24 — The owner's handle is **@kaopilot**. Records written before this date said "@k"; at @kaopilot's request I1 replaced it throughout the repo (session I1.6, decisions/I1.md #41). Two hash-pinned places keep "@k" (meaning @kaopilot), because editing them would invalidate a pinned hash: one `must_not_flag` note in `fixtures/expected/ENC-A1_1600.json` (with its source line in `declarations.py` and the review-sheet line generated from it), which is inside the approved evaluation corpus, and the held-out package `fixtures/heldout/` (manifest-pinned). Git commit messages are unchanged.
 - Those records are left verbatim. They are other lanes' append-only records (18.4). Also, `fixtures/expected/*.json` and the held-out package feed the evaluation-report hash behind APPROVAL_v1 and the pinned held-out manifest, so editing them would un-verify the approval (the CCR-05 chain).
 - Files B5 writes or finalises use @kaopilot.
 

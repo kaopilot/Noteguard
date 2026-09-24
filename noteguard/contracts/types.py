@@ -996,7 +996,7 @@ class TermRegistry(Frozen):
     frequencies: tuple[FrequencyTerm, ...]
     dose_units: tuple[str, ...]  # L4 broad catch: mg, mcg, g, ml, units, tablets, iu
     cues: dict[CueKind, tuple[str, ...]]
-    # CCR-01 (approved @k, 22 Sep 2026): dose unit -> (canonical unit, factor), so dose
+    # CCR-01 (approved @kaopilot, 22 Sep 2026): dose unit -> (canonical unit, factor), so dose
     # comparison needs no unit knowledge outside the registry. 1 <unit> = factor <canonical>,
     # e.g. "g": ("mg", 1000). A unit not listed compares as written (can flag, never pass).
     dose_unit_canonical: dict[str, tuple[str, float]] = {}

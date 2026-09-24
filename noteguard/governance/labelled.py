@@ -3,7 +3,7 @@
 Two parts, reported separately:
 - ``b4_labelled``: fixtures/labelled_eval/cases.json, hand-written and hand-labelled by B4 from the
   rule catalog, committed before the engine was run on it (independent of engine development).
-- ``golden``: the B0 golden scenarios (fixtures/expected), hand-written and signed off by @k at CP0.
+- ``golden``: the B0 golden scenarios (fixtures/expected), hand-written and signed off by @kaopilot at CP0.
   B1 developed the engine against them, so they are NOT independent evidence of generalisation.
 Known-limit cases are built too, but the report keeps them out of the release gate (declared).
 """

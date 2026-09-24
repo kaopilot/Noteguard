@@ -1,6 +1,6 @@
 # Noteguard — plan (seeded by B0 on 22 Sep 2026; finalised by B5 in session B5.1, 24 Sep 2026)
 
-Owner: @kaopilot. (Lane records written before 24 Sep call the owner "@k"; see docs/DECISIONS.md.)
+Owner: @kaopilot. (Lane records written before 24 Sep call the owner "@kaopilot"; see docs/DECISIONS.md.)
 
 ## Scope
 A read-only reconciliation layer for one patient encounter:

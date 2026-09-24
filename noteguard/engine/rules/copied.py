@@ -6,7 +6,7 @@ not queried) is carried forward verbatim or near-verbatim from an EARLIER source
 deterioration marker (an observation beyond a registry ``deterioration_*`` threshold) sits in
 a source strictly between the origin and the repeat. Carried text that later evidence does
 not contradict raises nothing. Critical-value thresholds are not deterioration markers here
-(@k, 22 Sep: SpO2/RR stay a DIFF-001 question in v1).
+(@kaopilot, 22 Sep: SpO2/RR stay a DIFF-001 question in v1).
 
 Subject: status:<term>@source:<source_id of the repeating note>. Evidence: claim = the
 repeat, origin = the first appearance, counter_claim = the marker statements in between.

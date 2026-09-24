@@ -1,4 +1,4 @@
-// Usefulness feedback (B3 owns it, @k 23 Sep). Mutation spot-checks: show the control on undecided
+// Usefulness feedback (B3 owns it, @kaopilot 23 Sep). Mutation spot-checks: show the control on undecided
 // flags -> case 1 fails; send a made-up time instead of the measured one -> case 1 fails; drop the
 // corrected owner -> case 2 fails; allow a second post -> case 1 fails.
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';

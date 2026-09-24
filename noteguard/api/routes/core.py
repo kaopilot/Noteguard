@@ -171,7 +171,7 @@ def get_flag(encounter_id: str, flag_id: str, ctx: Guard, request: Request):
 
 _DECISION_409 = {409: {"model": StaleRevision, "description": (
     "stale_revision: StaleRevision body (current state and the other actor's decision). "
-    "invalid_transition: {error_code} only; branch on error_code.")}}  # CCR-03 (approved by @k, 23 Sep 2026)
+    "invalid_transition: {error_code} only; branch on error_code.")}}  # CCR-03 (approved by @kaopilot, 23 Sep 2026)
 
 
 @router.post(R.FLAG_DECISIONS, response_model=FlagDetail, responses=_DECISION_409)

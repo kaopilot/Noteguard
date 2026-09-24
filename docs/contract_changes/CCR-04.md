@@ -25,6 +25,6 @@ Lanes affected and what each must do:
     `test_aggregate_route_is_b4_placeholder_behind_b2_authz` asserts the 501 placeholder and fails
     once B4 lands.)
 Golden fixture impact: none.
-Status: approved (@k, 23 Sep 2026). LANDED: part 1 (@k, 139a600); part 2 in B4.3 (7076a70; make types 4bf22d5;
+Status: approved (@kaopilot, 23 Sep 2026). LANDED: part 1 (@kaopilot, 139a600); part 2 in B4.3 (7076a70; make types 4bf22d5;
   merged 00cbe6b); B3 part in B3.4 (68ce0bd: the generated AggregateView/AggregateCell replace the local stand-in).
-  Status line updated by I1 (session I1.4, 24 Sep 2026) at @k's request.
+  Status line updated by I1 (session I1.4, 24 Sep 2026) at @kaopilot's request.

@@ -3,7 +3,7 @@ owner: I1 (Section 18.5: API-level runs of the goldens, count integrity, groundi
 critical-observation routing; plus PDF-001 on a failed extraction from B2's handoff).
 
 Every test builds ``gated_app()``, the same wiring as ``noteguard/api/app.py`` after I1 step 4.
-Until @k approves v1, every check run is 503 ruleset_unapproved, so these tests fail by design.
+Until @kaopilot approves v1, every check run is 503 ruleset_unapproved, so these tests fail by design.
 
 Comparisons with the goldens ignore only run-specific values (ids and clocks of this run), and
 the test checks those separately: flags link to this run's ids. Closure blocker lists and summary

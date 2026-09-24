@@ -26,7 +26,7 @@ from ..settings import utcnow
 router = APIRouter()
 
 
-# CCR-04 part 1 (@k): AggregateView is declared, so it is in docs/openapi.json and schema.gen.ts.
+# CCR-04 part 1 (@kaopilot): AggregateView is declared, so it is in docs/openapi.json and schema.gen.ts.
 @router.get(R.AGGREGATE, response_model=AggregateView)
 def aggregate(request: Request, staff: Staff = Depends(require_aggregate_viewer)) -> AggregateView:
     rows = request.app.state.store.aggregate_rows(staff)  # store-layer role re-check + audit (B2)

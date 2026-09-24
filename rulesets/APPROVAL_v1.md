@@ -1,13 +1,13 @@
 # Approval record — ruleset v1 / registry v1
 
-**Status: APPROVED** (24 Sep 2026, CCR-05 step 3: @k re-signed on report sha256 `ba5f0711…` by written
+**Status: APPROVED** (24 Sep 2026, CCR-05 step 3: @kaopilot re-signed on report sha256 `ba5f0711…` by written
 authorisation in chat session I1.2, "you can sign for me"; recorded by I1 after checking that the committed
-report's hash equals I1's independent recomputation and that only `corpus.sha256` changed). @k first approved
+report's hash equals I1's independent recomputation and that only `corpus.sha256` changed). @kaopilot first approved
 this record on 24 Sep 2026 (chat I1.1) on report `81cc969e…`. The runtime (`noteguard.governance.approval`) refuses to load a
 ruleset unless this record is `approved`, names an evaluation report, and its hashes equal the
 bytes of `rulesets/v1.json` and `rulesets/registry_v1.json` (checked on every load).
 
-Prepared by B4 (session B4.1, 23 Sep 2026) for @k's CP2 decision: the hashes below are the current
+Prepared by B4 (session B4.1, 23 Sep 2026) for @kaopilot's CP2 decision: the hashes below are the current
 files after CCR-01 and CCR-02, and `evaluation_report_sha256` is the report
 `fixtures/labelled_eval/reports/EVAL_v1_vs_v1.json` (gate PASSED; Tier 1 recall 17/17 on the gated
 corpus; engine `noteguard.engine.engine.Engine`). The report hash is the sha256 of its canonical

@@ -1,7 +1,7 @@
 """Author the synthetic seed encounters (B0). ALL NAMES AND CONTENT ARE FICTIONAL.
 
 Run: `uv run python fixtures/author_fixtures.py` (writes fixtures/encounters/*.json and
-fixtures/pdfs/*.pdf). The declarations below ARE the fixture; @k signs them off at CP0.
+fixtures/pdfs/*.pdf). The declarations below ARE the fixture; @kaopilot signs them off at CP0.
 After CP0 only a CCR changes them.
 
 IDs: deterministic UUIDv4-format values derived from a readable label (fixture-only

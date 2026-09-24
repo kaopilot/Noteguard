@@ -133,7 +133,7 @@ session B1.1 (see `docs/handoffs/B1.md`); "inspected" = read in code, no test.
 | Evidence | `claim` = the repeat, `origin` = first appearance, `counter_claim` = deterioration statements in between |
 | Question | rendered from the rule's `question_template`, e.g. *Is the 16:00 "Patient stable" statement current?* |
 
-**Raises when** a reassuring status statement is carried forward from an earlier source and a deterioration marker appears in a source strictly between the origin and the repeat. A review question, never a verdict. Critical-value thresholds are not deterioration markers here (@k decision, 22 Sep).
+**Raises when** a reassuring status statement is carried forward from an earlier source and a deterioration marker appears in a source strictly between the origin and the repeat. A review question, never a verdict. Critical-value thresholds are not deterioration markers here (@kaopilot decision, 22 Sep).
 
 **Not raised:** carried text with no contradicting marker in between.
 
@@ -150,14 +150,14 @@ session B1.1 (see `docs/handoffs/B1.md`); "inspected" = read in code, no test.
 
 **Raises when** the encounter records no responsible clinician. Every other Tier 1 flag then routes to the attending.
 
-**Fixtures:** ENC-C1_1000 (golden pending @k review). Test: `test_golden_engine[ENC-C1_1000]`. Executed.
+**Fixtures:** ENC-C1_1000 (golden pending @kaopilot review). Test: `test_golden_engine[ENC-C1_1000]`. Executed.
 
 ## DET-001 — Reassurance recorded after a deterioration marker (enabled in v1 by CCR-02)
 
 | Field | Value |
 |---|---|
 | Lens / tier | continuity / 1 (protected floor) |
-| Status | enabled in `rulesets/v1.json` by **CCR-02** (approved by @k, 22 Sep 2026, defaults) |
+| Status | enabled in `rulesets/v1.json` by **CCR-02** (approved by @kaopilot, 22 Sep 2026, defaults) |
 | Registry terms | `status` terms; `analyte` terms with `deterioration_*` thresholds (placeholders) |
 | Subject key | the status term key, e.g. `status:stable` (one flag per reassurance kind) |
 | Owner | responsible clinician (else attending); evidence authors affected |

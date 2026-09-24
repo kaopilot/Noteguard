@@ -154,7 +154,7 @@ def test_unapproved_ruleset_refused(tmp_path):
     assert e.value.codes == (ap.APPROVAL_RECORD_MISSING,)
 
     # The REAL pinned record: loadable iff approved, with a report hash and matching hashes
-    # (today: draft, so refused; after @k's CP2 approval: loads). Oracle computed independently.
+    # (today: draft, so refused; after @kaopilot's CP2 approval: loads). Oracle computed independently.
     real = ap.parse_approval_record(ROOT / "rulesets" / "APPROVAL_v1.md")
     from noteguard.contracts import ids
     authorised = (real.status.value == "approved" and real.evaluation_report_sha256 is not None
@@ -601,7 +601,7 @@ def test_approval_verify_and_offline_clis(tmp_path):
     """CP2 guard: an APPROVED record must be backed by the committed report AND a fresh rerun of the
     evaluation that passes the gate (evaluate.verify_approval / --verify). Each problem is isolated on
     a copy; the real record is checked whenever it is approved (today it is a draft). Both offline
-    CLIs run end to end on files (they are the tools @k and I1 use).
+    CLIs run end to end on files (they are the tools @kaopilot and I1 use).
     Mutation (applied): drop the fresh-rerun comparison in verify_approval -> fails."""
     import json
     import shutil

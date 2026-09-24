@@ -5,7 +5,7 @@ Read this, not the JSON. Sign off by adding your initials and time at the bottom
 
 ## ENC-A1_1130
 
-Sign-off: @k, 22 Sep 2026 (re-signed after CCR-02)
+Sign-off: @kaopilot, 22 Sep 2026 (re-signed after CCR-02)
 
 Cutoff 11:30 SGT; fresh run; outcome `completed`; closure **blocked**.
 
@@ -39,7 +39,7 @@ Cutoff 11:30 SGT; fresh run; outcome `completed`; closure **blocked**.
 
 ## ENC-A1_1600
 
-Sign-off: @k, 22 Sep 2026 (re-signed after CCR-02)
+Sign-off: @kaopilot, 22 Sep 2026 (re-signed after CCR-02)
 
 Cutoff 16:00 SGT; fresh run; outcome `completed_with_extraction_gaps`; closure **blocked**.
 
@@ -79,7 +79,7 @@ Cutoff 16:00 SGT; fresh run; outcome `completed_with_extraction_gaps`; closure *
 
 ## ENC-A1_1600_rerun
 
-Sign-off: @k, 22 Sep 2026 (re-signed after CCR-02)
+Sign-off: @kaopilot, 22 Sep 2026 (re-signed after CCR-02)
 
 Cutoff 16:00 SGT; rerun after ENC-A1_1130 (prior flags supplied); outcome `completed_with_extraction_gaps`; closure **blocked**.
 
@@ -113,7 +113,7 @@ Cutoff 16:00 SGT; rerun after ENC-A1_1130 (prior flags supplied); outcome `compl
 
 ## ENC-B1_1600
 
-Sign-off: @k, 22 Sep 2026 (review sheet read in chat B0.1)
+Sign-off: @kaopilot, 22 Sep 2026 (review sheet read in chat B0.1)
 
 Cutoff 16:00 SGT; fresh run; outcome `completed`; closure **clear**.
 
@@ -134,7 +134,7 @@ Cutoff 16:00 SGT; fresh run; outcome `completed`; closure **clear**.
 
 ## ENC-C1_1000
 
-Sign-off: @k, 22 Sep 2026 (approved in chat B1.2)
+Sign-off: @kaopilot, 22 Sep 2026 (approved in chat B1.2)
 
 Cutoff 10:00 SGT; fresh run; outcome `completed`; closure **blocked**.
 
@@ -159,4 +159,4 @@ Cutoff 10:00 SGT; fresh run; outcome `completed`; closure **blocked**.
 
 ---
 
-Sign-off is recorded per scenario above (from `SIGNOFF` in declarations.py). A new or changed scenario needs @k's review before it merges.
+Sign-off is recorded per scenario above (from `SIGNOFF` in declarations.py). A new or changed scenario needs @kaopilot's review before it merges.

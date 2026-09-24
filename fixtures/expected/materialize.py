@@ -384,7 +384,7 @@ def review_sheet(built: dict[str, dict]) -> str:
                 if v.source_id == s.source_id:
                     vlabel[v.source_version_id] = f"{enc.label(key)} v{v.version}"
         signed = getattr(DECL, "SIGNOFF", {}).get(name)
-        lines += [f"## {name}", "", f"Sign-off: {signed}" if signed else "Sign-off: **PENDING (@k)**", "",
+        lines += [f"## {name}", "", f"Sign-off: {signed}" if signed else "Sign-off: **PENDING (@kaopilot)**", "",
                   f"Cutoff {name.split('_')[1][:2]}:{name.split('_')[1][2:4]} SGT"
                   + (f"; rerun after {g['prior_scenario']} (prior flags supplied)" if g["prior_scenario"] else "; fresh run")
                   + f"; outcome `{g['run']['outcome']}`; closure **{g['closure']['status']}**.", "",
@@ -414,7 +414,7 @@ def review_sheet(built: dict[str, dict]) -> str:
             f"`{c['kind']}` {c['subject_key']}: \u201c{c['from_evidence']['quote']}\u201d \u2192 \u201c{c['to_evidence']['quote']}\u201d"
             for c in g["required_changes"]) or "none"), ""]
     lines += ["---", "", "Sign-off is recorded per scenario above (from `SIGNOFF` in declarations.py). A new or "
-              "changed scenario needs @k's review before it merges.", ""]
+              "changed scenario needs @kaopilot's review before it merges.", ""]
     return "\n".join(lines)
 
 

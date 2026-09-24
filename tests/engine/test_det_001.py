@@ -1,6 +1,6 @@
 """DET-001 reassurance after deterioration (stretch; B1.2). owner: B1.
 
-DET-001 is enabled in rulesets/v1.json by CCR-02 (approved @k, 22 Sep 2026, defaults); its ENC-A1 behaviour
+DET-001 is enabled in rulesets/v1.json by CCR-02 (approved @kaopilot, 22 Sep 2026, defaults); its ENC-A1 behaviour
 is pinned by the goldens. ``det_bundle()`` still forces it on, so these cases keep testing the rule even if
 a later ruleset disables it. Written by the engine's own lane: a regression guard, not independent evidence.
 """
